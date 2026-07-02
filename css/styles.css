@@ -266,22 +266,23 @@ input:focus-visible,
   text-orientation: mixed;
 }
 
-/* === Main Content Area: Photo left + Info right === */
+/* === Main Content Area: Photo + Info === */
 .card__main-area {
   display: flex;
-  align-items: flex-start;
-  gap: 10px;
+  flex-direction: column;
+  align-items: flex-end;
+  gap: 8px;
   flex: 1;
   min-height: 0;
-  margin-top: 50px;
+  margin-top: 8px;
   padding-right: 50px;
 }
 
 /* Photo Area */
 .card__photo-area {
   position: relative;
-  width: 90px;
-  min-width: 90px;
+  width: 110px;
+  min-width: 110px;
   flex-shrink: 0;
 }
 
@@ -290,18 +291,18 @@ input:focus-visible,
   position: absolute;
   top: -6px;
   left: -8px;
-  width: 100px;
-  height: 130px;
+  width: 120px;
+  height: 95px;
   background-color: var(--color-accent);
   border-radius: 0 40% 50% 0;
   z-index: 0;
 }
 
-/* Photo frame with green border — portrait 3x4 format */
+/* Photo frame with green border — horizontal/landscape format */
 .card__photo-frame {
   position: relative;
-  width: 88px;
-  height: 110px;
+  width: 108px;
+  height: 80px;
   border: 3px solid var(--color-primary);
   border-radius: 4px;
   overflow: hidden;
@@ -332,20 +333,21 @@ input:focus-visible,
   object-fit: cover;
 }
 
-/* Info Area (right of photo) */
+/* Info Area (below photo, vertical text) */
 .card__info-area {
-  flex: 1;
   min-width: 0;
   display: flex;
-  flex-direction: column;
-  gap: 4px;
+  flex-direction: row;
+  gap: 6px;
+  writing-mode: vertical-rl;
+  transform: rotate(180deg);
+  align-self: flex-end;
 }
 
 .card__info-columns {
   display: flex;
-  gap: 6px;
-  flex: 1;
-  min-height: 0;
+  flex-direction: row;
+  gap: 4px;
 }
 
 .card__cie-text {
