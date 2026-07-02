@@ -1,0 +1,21 @@
+{
+  "name": "CIE - Carteirinha Estudantil",
+  "short_name": "CIE",
+  "description": "Carteira de Identificação Estudantil Digital",
+  "icons": [
+    {
+      "src": "assets/icons/icon-192x192.png",
+      "sizes": "192x192",
+      "type": "image/png"
+    },
+    {
+      "src": "assets/icons/icon-512x512.png",
+      "sizes": "512x512",
+      "type": "image/png"
+    }
+  ],
+  "theme_color": "#1a6b5a",
+  "background_color": "#FFFFFF",
+  "display": "standalone",
+  "start_url": "./index.html"
+}

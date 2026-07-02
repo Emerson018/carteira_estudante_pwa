@@ -1,0 +1,19 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 60 70" width="60" height="70">
+  <!-- Overlapping circles design -->
+  <!-- Green circle (left) -->
+  <circle cx="22" cy="24" r="14" fill="#1a6b5a" opacity="0.85"/>
+  <!-- Yellow circle (center) -->
+  <circle cx="30" cy="20" r="14" fill="#c8d84c" opacity="0.75"/>
+  <!-- Red circle (right) -->
+  <circle cx="38" cy="24" r="14" fill="#cc0000" opacity="0.7"/>
+  <!-- 2026 text centered -->
+  <text x="30" y="29" text-anchor="middle" font-family="Arial, sans-serif" font-size="12" font-weight="bold" fill="#FFFFFF" stroke="#333" stroke-width="0.3">2026</text>
+  <!-- Small rainbow ribbon below -->
+  <rect x="20" y="40" width="4" height="6" rx="1" fill="#cc0000"/>
+  <rect x="24" y="40" width="4" height="6" rx="0" fill="#ff9800"/>
+  <rect x="28" y="40" width="4" height="6" rx="0" fill="#c8d84c"/>
+  <rect x="32" y="40" width="4" height="6" rx="0" fill="#1a6b5a"/>
+  <rect x="36" y="40" width="4" height="6" rx="1" fill="#1565c0"/>
+  <!-- Validity text below -->
+  <text x="30" y="58" text-anchor="middle" font-family="Arial, sans-serif" font-size="5" fill="#1a6b5a" font-weight="bold">VALIDADE: 31/03/2027</text>
+</svg>

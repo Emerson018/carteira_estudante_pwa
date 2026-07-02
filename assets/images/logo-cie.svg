@@ -1,0 +1,20 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 60 60" width="60" height="60">
+  <!-- Outer circle -->
+  <circle cx="30" cy="30" r="28" fill="#1a6b5a" stroke="#145a4a" stroke-width="1"/>
+  <!-- Inner ring -->
+  <circle cx="30" cy="30" r="23" fill="none" stroke="#FFFFFF" stroke-width="1.5" opacity="0.8"/>
+  <!-- Inner circle background -->
+  <circle cx="30" cy="30" r="20" fill="#1a6b5a"/>
+  <!-- CIE text -->
+  <text x="30" y="35" text-anchor="middle" font-family="Arial, sans-serif" font-size="14" font-weight="bold" fill="#FFFFFF" letter-spacing="1">CIE</text>
+  <!-- Top arc text -->
+  <path id="top-arc" d="M12,30 A18,18 0 0,1 48,30" fill="none"/>
+  <text font-family="Arial, sans-serif" font-size="5" fill="#FFFFFF" opacity="0.8">
+    <textPath href="#top-arc" startOffset="50%" text-anchor="middle">CARTEIRA ESTUDANTIL</textPath>
+  </text>
+  <!-- Bottom arc text -->
+  <path id="bottom-arc" d="M14,34 A18,18 0 0,0 46,34" fill="none"/>
+  <text font-family="Arial, sans-serif" font-size="5" fill="#FFFFFF" opacity="0.8">
+    <textPath href="#bottom-arc" startOffset="50%" text-anchor="middle">IDENTIFICAÇÃO</textPath>
+  </text>
+</svg>

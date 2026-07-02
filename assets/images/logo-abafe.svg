@@ -1,0 +1,35 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 200 80" width="200" height="80">
+  <!-- ABAFE Logo: AB + triangle with globe + FE -->
+  
+  <!-- Letter A -->
+  <text x="10" y="52" font-family="'Arial Black', 'Impact', sans-serif" font-size="42" font-weight="900" fill="#1a1a1a">AB</text>
+  
+  <!-- Yellow triangle (the A in ABAFE) -->
+  <polygon points="95,8 115,52 75,52" fill="#f5d600"/>
+  
+  <!-- Brazil globe inside triangle -->
+  <circle cx="95" cy="38" r="14" fill="#1a3a7a"/>
+  <!-- Globe band -->
+  <ellipse cx="95" cy="38" rx="14" ry="5" fill="none" stroke="#1a6b5a" stroke-width="1.5"/>
+  <!-- Globe text "ORDEM E PROGRESSO" simplified -->
+  <text x="95" y="41" text-anchor="middle" font-family="Arial, sans-serif" font-size="3.5" fill="#f5d600" font-weight="bold">ORDEM E PROGRESSO</text>
+  <!-- Stars simplified -->
+  <circle cx="86" cy="35" r="0.8" fill="#fff"/>
+  <circle cx="88" cy="33" r="0.8" fill="#fff"/>
+  <circle cx="91" cy="32" r="0.8" fill="#fff"/>
+  <circle cx="94" cy="34" r="0.8" fill="#fff"/>
+  <circle cx="97" cy="33" r="0.8" fill="#fff"/>
+  <circle cx="100" cy="35" r="0.8" fill="#fff"/>
+  <circle cx="102" cy="37" r="0.8" fill="#fff"/>
+  <circle cx="89" cy="43" r="0.8" fill="#fff"/>
+  <circle cx="92" cy="44" r="0.8" fill="#fff"/>
+  <circle cx="96" cy="43" r="0.8" fill="#fff"/>
+  <circle cx="99" cy="42" r="0.8" fill="#fff"/>
+  <circle cx="87" cy="38" r="0.8" fill="#fff"/>
+  
+  <!-- Letters FE -->
+  <text x="116" y="52" font-family="'Arial Black', 'Impact', sans-serif" font-size="42" font-weight="900" fill="#1a1a1a">FE</text>
+  
+  <!-- Subtitle -->
+  <text x="100" y="70" text-anchor="middle" font-family="Arial, sans-serif" font-size="7" fill="#333333" letter-spacing="0.3">ASSOCIAÇÃO BRASILEIRA DE APRENDIZADO E FOCO NO ESTUDANTE</text>
+</svg>

@@ -1,0 +1,16 @@
+{
+  "name": "carteirinha-estudante-pwa",
+  "version": "1.0.0",
+  "description": "PWA da Carteira de Identificação Estudantil (CIE)",
+  "private": true,
+  "scripts": {
+    "test": "vitest --run",
+    "test:watch": "vitest",
+    "test:coverage": "vitest --run --coverage"
+  },
+  "devDependencies": {
+    "fast-check": "4.8.0",
+    "happy-dom": "20.10.6",
+    "vitest": "4.1.9"
+  }
+}
