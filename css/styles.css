@@ -2,858 +2,421 @@
    Carteirinha Estudantil PWA — Estilos
    ========================================================= */
 
-/* --- CSS Custom Properties --- */
+/* === Variáveis === */
 :root {
-  --color-primary: #1a6b5a;
-  --color-primary-light: #238c76;
-  --color-white: #FFFFFF;
-  --color-accent: #c8d84c;
-  --color-gray-inactive: #999999;
-  --color-gray-nav: #9E9E9E;
-  --color-error: #e74c3c;
-  --color-bg: #FFFFFF;
-  --color-text-dark: #333333;
-  --color-placeholder: #cccccc;
-
-  --font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
-
-  --max-width: 428px;
-  --min-width: 320px;
-
-  --nav-height: 60px;
-
-  --card-border-radius: 12px;
-  --card-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
-  --card-aspect-ratio: 0.63;
-
-  --flip-duration: 0.6s;
-  --flip-easing: ease-in-out;
-
-  --perspective: 1000px;
+  --cor-primaria: #0d6e75;
+  --cor-fundo: #f8f9fa;
+  --cor-fundo-carteira: #e9eceb;
+  --cor-texto-principal: #333;
+  --cor-erro: #e74c3c;
+  --nav-height: 70px;
 }
 
-/* --- Reset e Base --- */
-*,
-*::before,
-*::after {
-  box-sizing: border-box;
+/* === Reset === */
+*, *::before, *::after {
   margin: 0;
   padding: 0;
-}
-
-html {
-  font-size: 16px;
-  -webkit-text-size-adjust: 100%;
+  box-sizing: border-box;
+  font-family: 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+  -webkit-tap-highlight-color: transparent;
 }
 
 body {
-  font-family: var(--font-family);
-  background-color: var(--color-bg);
-  color: var(--color-text-dark);
-  min-width: var(--min-width);
-  max-width: var(--max-width);
-  margin: 0 auto;
-  min-height: 100vh;
-  overflow-x: hidden;
-  padding-bottom: var(--nav-height);
-  -webkit-font-smoothing: antialiased;
-  -moz-osx-font-smoothing: grayscale;
-}
-
-/* --- Skip Link (Acessibilidade por teclado) --- */
-.skip-link {
-  position: absolute;
-  top: -100%;
-  left: 0;
-  z-index: 1000;
-  padding: 8px 16px;
-  background-color: var(--color-primary);
-  color: var(--color-white);
-  font-size: 0.875rem;
-  font-weight: 600;
-  text-decoration: none;
-  border-radius: 0 0 4px 0;
-}
-
-.skip-link:focus {
-  top: 0;
-}
-
-img {
-  max-width: 100%;
-  height: auto;
-  display: block;
-}
-
-button {
-  font-family: inherit;
-  border: none;
-  cursor: pointer;
-  background: none;
-}
-
-/* --- Focus Visible (Acessibilidade por teclado) --- */
-:focus-visible {
-  outline: 2px solid var(--color-primary);
-  outline-offset: 2px;
-}
-
-button:focus-visible,
-a:focus-visible,
-input:focus-visible,
-[tabindex="0"]:focus-visible {
-  outline: 2px solid var(--color-primary);
-  outline-offset: 2px;
-}
-
-/* --- Utilitários de Truncamento --- */
-.text-truncate {
-  overflow: hidden;
-  text-overflow: ellipsis;
-  white-space: nowrap;
-}
-
-/* =========================================================
-   Cabeçalho
-   ========================================================= */
-.header {
-  background-color: var(--color-primary);
-  padding: 20px 16px;
+  background-color: #333;
   display: flex;
-  align-items: center;
-  justify-content: space-between;
-}
-
-.header__content {
-  flex: 1;
-  min-width: 0;
-}
-
-.header__greeting {
-  color: var(--color-white);
-  font-weight: 700;
-  font-size: 1.25rem;
-  line-height: 1.3;
-  overflow: hidden;
-  text-overflow: ellipsis;
-  white-space: nowrap;
-}
-
-.header__subtitle {
-  color: var(--color-white);
-  font-weight: 400;
-  font-size: 0.875rem;
-  margin-top: 2px;
-}
-
-.header__menu-btn {
-  width: 40px;
-  height: 40px;
-  border-radius: 50%;
-  background-color: var(--color-primary-light);
-  display: flex;
-  align-items: center;
   justify-content: center;
-  flex-shrink: 0;
-  margin-left: 12px;
+  align-items: center;
+  min-height: 100vh;
 }
 
-.header__menu-btn:active {
-  opacity: 0.8;
-}
-
-.header__menu-icon {
-  width: 20px;
-  height: 14px;
+/* === Container do App === */
+.app-container {
+  width: 100%;
+  max-width: 414px;
+  height: 100vh;
+  max-height: 896px;
+  background-color: var(--cor-fundo);
   display: flex;
   flex-direction: column;
-  justify-content: space-between;
-}
-
-.header__menu-icon span {
-  display: block;
-  width: 100%;
-  height: 2px;
-  background-color: var(--color-white);
-  border-radius: 1px;
-}
-
-/* =========================================================
-   Container do Cartão (Flip)
-   ========================================================= */
-.card-section {
-  padding: 20px 16px;
-}
-
-.card-container,
-.card-flip {
-  perspective: var(--perspective);
-  width: 100%;
-}
-
-.card-inner,
-.card-flip__inner {
   position: relative;
+  overflow: hidden;
+  box-shadow: 0 0 20px rgba(0,0,0,0.5);
+}
+
+/* === Cabeçalho === */
+.header {
+  background-color: var(--cor-primaria);
+  color: white;
+  padding: 50px 20px 20px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.header-titles h1,
+.header #greeting {
+  font-size: 24px;
+  font-weight: 600;
+  margin-bottom: 5px;
+  color: white;
+}
+
+.header-titles p {
+  font-size: 14px;
+  font-weight: 300;
+  opacity: 0.9;
+}
+
+.menu-btn {
+  background: rgba(255,255,255,0.2);
+  border: none;
+  width: 40px;
+  height: 40px;
+  border-radius: 8px;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  gap: 5px;
+  cursor: pointer;
+}
+
+.menu-btn span {
+  width: 20px;
+  height: 2px;
+  background: white;
+  border-radius: 2px;
+}
+
+/* === Área Principal === */
+.main-content {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  overflow-y: auto;
+  padding-bottom: var(--nav-height);
+}
+
+.section--inicio {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 20px;
+}
+
+/* === Carteirinha — Cena 3D === */
+.card-scene {
+  width: 320px;
+  height: 500px;
+  perspective: 1000px;
+  cursor: pointer;
+}
+
+.card-inner {
   width: 100%;
-  padding-bottom: calc(100% / var(--card-aspect-ratio));
-  transition: transform var(--flip-duration) var(--flip-easing);
+  height: 100%;
+  position: relative;
+  transition: transform 0.6s ease-in-out;
   transform-style: preserve-3d;
 }
 
-.card-inner.is-flipped,
-.card-flip__inner.is-flipped {
+.card-inner.is-flipped {
   transform: rotateY(180deg);
 }
 
-.card-front,
-.card-back,
-.card--back {
+.card-face {
   position: absolute;
-  top: 0;
-  left: 0;
   width: 100%;
   height: 100%;
   backface-visibility: hidden;
   -webkit-backface-visibility: hidden;
-  border-radius: var(--card-border-radius);
-  box-shadow: var(--card-shadow);
+  border-radius: 20px;
+  box-shadow: 0 10px 20px rgba(0,0,0,0.15);
   overflow: hidden;
-  background-color: var(--color-white);
 }
 
-.card-back,
-.card--back {
-  transform: rotateY(180deg);
-}
-
-/* =========================================================
-   Cartão Frontal — Layout (Reference Design)
-   ========================================================= */
-
-/* Card Front Base */
-.card--front {
-  display: flex;
-  flex-direction: column;
-  padding: 10px 12px;
-  background-color: var(--color-white);
+/* === Frente do Cartão === */
+.card-front {
+  background-color: var(--cor-fundo-carteira);
   background-image: url('../assets/images/card-bg.svg');
   background-size: cover;
   background-position: center;
   background-repeat: no-repeat;
+}
+
+.card-back {
+  transform: rotateY(180deg);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: #fff;
+  color: #999;
+  font-size: 14px;
+  padding: 20px;
+  text-align: center;
+}
+
+/* === Conteúdo Interno Deitado (90deg) === */
+.card-landscape-content {
+  width: 500px;
+  height: 320px;
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%) rotate(90deg);
+  display: flex;
+  background: transparent;
+}
+
+/* === Área da Foto (Esquerda) === */
+.card-left-section {
+  width: 160px;
+  padding: 30px 0 0 20px;
+  z-index: 2;
+}
+
+.photo-placeholder {
+  width: 120px;
+  height: 160px;
+  background-color: #fff;
+  border-radius: 10px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+  text-align: center;
+  padding: 10px;
+  overflow: hidden;
+  position: relative;
+}
+
+.photo-placeholder svg {
+  width: 50px;
+  height: 50px;
+  fill: #aaa;
+  margin-bottom: 10px;
+}
+
+.photo-placeholder span {
+  font-size: 11px;
+  color: #666;
+  font-weight: bold;
+}
+
+.photo-img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
   position: absolute;
   top: 0;
   left: 0;
-  width: 100%;
-  height: 100%;
-  backface-visibility: hidden;
-  -webkit-backface-visibility: hidden;
-  border-radius: var(--card-border-radius);
-  box-shadow: var(--card-shadow);
-  overflow: hidden;
+  border-radius: 10px;
 }
 
-/* === CIE Header — vertical along right side of card === */
-.card__cie-header {
-  position: absolute;
-  top: 10px;
-  right: 8px;
+.photo-default {
   display: flex;
-  flex-direction: row;
-  align-items: flex-start;
-  gap: 3px;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+}
+
+/* === Área Central (Textos) === */
+.card-center-section {
+  flex: 1;
+  padding: 20px 10px;
   z-index: 2;
-  writing-mode: vertical-rl;
-  text-orientation: mixed;
-}
-
-/* === Main Content Area: Photo + Info === */
-.card__main-area {
   display: flex;
   flex-direction: column;
-  align-items: flex-end;
-  gap: 8px;
-  flex: 1;
-  min-height: 0;
-  margin-top: 8px;
-  padding-right: 50px;
-}
-
-/* Photo Area */
-.card__photo-area {
-  position: relative;
-  width: 110px;
-  min-width: 110px;
-  flex-shrink: 0;
-}
-
-/* Decorative curved yellow-green shape behind photo */
-.card__photo-decorative {
-  position: absolute;
-  top: -6px;
-  left: -8px;
-  width: 120px;
-  height: 95px;
-  background-color: var(--color-accent);
-  border-radius: 0 40% 50% 0;
-  z-index: 0;
-}
-
-/* Photo frame with green border — horizontal/landscape format */
-.card__photo-frame {
-  position: relative;
-  width: 108px;
-  height: 80px;
-  border: 3px solid var(--color-primary);
-  border-radius: 4px;
-  overflow: hidden;
-  z-index: 1;
-  background-color: #e0e0e0;
-}
-
-.card__photo {
-  width: 100%;
-  height: 100%;
-  object-fit: cover;
-  display: block;
-}
-
-.card__photo-placeholder {
-  width: 100%;
-  height: 100%;
-  display: flex;
-  align-items: center;
   justify-content: center;
-  overflow: hidden;
-  background-color: #e0e0e0;
 }
 
-.card__photo-placeholder-img {
-  width: 100%;
-  height: 100%;
-  object-fit: cover;
-}
-
-/* Info Area (below photo, vertical text) */
-.card__info-area {
-  min-width: 0;
+.cie-header {
   display: flex;
-  flex-direction: row;
-  gap: 6px;
-  writing-mode: vertical-rl;
-  transform: rotate(180deg);
-  align-self: flex-end;
+  align-items: flex-start;
+  gap: 5px;
+  color: var(--cor-primaria);
+  margin-bottom: 25px;
+  margin-left: 20px;
 }
 
-.card__info-columns {
-  display: flex;
-  flex-direction: row;
-  gap: 4px;
-}
-
-.card__cie-text {
+.cie-header h2 {
   font-size: 32px;
-  font-weight: 700;
-  color: var(--color-primary);
+  font-weight: 900;
   line-height: 1;
-  letter-spacing: 2px;
 }
 
-.card__cie-vertical-text {
-  font-size: 7px;
-  font-weight: 600;
-  color: var(--color-primary);
-  letter-spacing: 0.5px;
-  line-height: 1.2;
-}
-
-.card__cie-description {
-  font-size: 6.5px;
-  font-weight: 600;
-  color: var(--color-primary);
-  line-height: 1.3;
-  letter-spacing: 0.3px;
-}
-
-/* === MIDDLE ROW: Vertical Info + Data Fields === */
-/* (kept for backward compat but primary layout uses card__main-area) */
-
-/* Vertical Info (Institution + Course) */
-.card__vertical-info {
-  display: flex;
-  flex-direction: row;
-  gap: 3px;
-  flex-shrink: 0;
-}
-
-.card__vertical-institution {
-  writing-mode: vertical-rl;
-  text-orientation: mixed;
-  transform: rotate(180deg);
-  font-size: 9px;
-  font-weight: 700;
-  color: var(--color-text-dark);
-  letter-spacing: 0.5px;
-  line-height: 1.1;
-  overflow: hidden;
-  text-overflow: ellipsis;
-  white-space: nowrap;
-  max-height: 100%;
-}
-
-.card__vertical-course {
-  writing-mode: vertical-rl;
-  text-orientation: mixed;
-  transform: rotate(180deg);
-  font-size: 7.5px;
-  font-weight: 600;
-  color: var(--color-text-dark);
-  letter-spacing: 0.3px;
-  line-height: 1.1;
-  overflow: hidden;
-  text-overflow: ellipsis;
-  white-space: nowrap;
-  max-height: 100%;
-}
-
-/* Data Fields */
-.card__data-fields {
-  display: flex;
-  flex-direction: column;
-  justify-content: center;
-  gap: 3px;
-  flex: 1;
-  min-width: 0;
-}
-
-.card__field-name {
-  font-size: 13px;
-  font-weight: 700;
-  color: var(--color-text-dark);
-  overflow: hidden;
-  text-overflow: ellipsis;
-  white-space: nowrap;
-  display: block;
-}
-
-.card__field-line {
-  display: flex;
-  align-items: center;
-  gap: 4px;
-}
-
-.card__field-label {
+.cie-header p {
   font-size: 8px;
   font-weight: 600;
-  color: var(--color-gray-inactive);
-  white-space: nowrap;
+  line-height: 1.3;
+  text-transform: uppercase;
+  padding-top: 3px;
 }
 
-.card__field-value {
-  font-size: 10px;
-  font-weight: 600;
-  color: var(--color-text-dark);
-  overflow: hidden;
-  text-overflow: ellipsis;
-  white-space: nowrap;
-}
-
-.card__field-value--placeholder {
-  color: var(--color-placeholder);
-  font-style: italic;
-  font-weight: 400;
-}
-
-/* === BOTTOM ROW: Seal + Cod + QR + ABOFE === */
-.card__bottom-row {
+.student-info {
   display: flex;
-  align-items: center;
-  justify-content: space-between;
-  padding-top: 6px;
-  border-top: 1px solid #e8e8e8;
-  margin-top: 6px;
-  flex-shrink: 0;
-  gap: 4px;
+  flex-direction: column;
+  gap: 12px;
 }
 
-/* Seal Area */
-.card__seal-area {
+.info-item {
+  font-size: 12px;
+  color: #111;
+}
+
+.info-item strong {
+  font-weight: 800;
+  margin-right: 4px;
+  text-transform: uppercase;
+}
+
+.info-name {
+  font-size: 16px;
+  font-weight: bold;
+  margin-bottom: 5px;
+  color: var(--cor-texto-principal);
+}
+
+/* Placeholder styles for card fields */
+.info-name:empty::before,
+#card-cpf:empty::before,
+#card-nascimento:empty::before,
+#card-curso:empty::before,
+#card-instituicao:empty::before {
+  content: attr(data-placeholder);
+  color: #aaa;
+  font-style: italic;
+}
+
+/* === Área Direita (Logo + QR) === */
+.card-right-section {
+  width: 140px;
+  background-color: #fff;
+  z-index: 2;
   display: flex;
   flex-direction: column;
   align-items: center;
-  gap: 2px;
-  flex-shrink: 0;
+  justify-content: space-between;
+  padding: 20px 10px;
+  box-shadow: -2px 0 10px rgba(0,0,0,0.05);
 }
 
-.card__seal-img {
-  width: 44px;
+.abafe-logo-img {
+  width: 90px;
   height: auto;
   object-fit: contain;
 }
 
-.card__seal-year {
-  font-size: 0;
-  visibility: hidden;
-  position: absolute;
+.qr-wrapper {
+  width: 80px;
+  height: 80px;
 }
 
-.card__seal-validity {
-  font-size: 6px;
-  font-weight: 600;
-  color: var(--color-primary);
-  white-space: nowrap;
-}
-
-/* Cod Area */
-.card__cod-area {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  gap: 2px;
-  flex-shrink: 0;
-}
-
-.card__cod-label {
-  font-size: 6px;
-  font-weight: 600;
-  color: var(--color-gray-inactive);
-  text-align: center;
-  white-space: nowrap;
-}
-
-.card__logo-cie {
-  width: 24px;
-  height: 24px;
-  object-fit: contain;
-}
-
-/* QR Area */
-.card__qr-area {
-  width: 64px;
-  height: 64px;
-  min-width: 64px;
-  min-height: 64px;
-  flex-shrink: 0;
-}
-
-.card__qr-area canvas {
+.qr-wrapper canvas {
   width: 100% !important;
   height: 100% !important;
   display: block;
 }
 
-.card__qr-placeholder {
-  width: 64px;
-  height: 64px;
-  background-color: #f5f5f5;
-  border: 1px dashed #ccc;
+.fake-qr {
+  width: 80px;
+  height: 80px;
+  background-image: linear-gradient(45deg, #000 25%, transparent 25%, transparent 75%, #000 75%, #000),
+                    linear-gradient(45deg, #000 25%, transparent 25%, transparent 75%, #000 75%, #000);
+  background-size: 10px 10px;
+  background-position: 0 0, 5px 5px;
+  border: 2px solid #000;
+  padding: 4px;
   display: flex;
   align-items: center;
   justify-content: center;
-  font-size: 9px;
-  color: var(--color-gray-inactive);
-  border-radius: 4px;
+  font-size: 10px;
+  color: #666;
 }
 
-/* ABAFE + QR Stack */
-.card__qr-abafe-stack {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  gap: 4px;
-  flex-shrink: 0;
-}
-
-/* ABAFE Area */
-.card__abafe-area {
-  flex-shrink: 0;
-}
-
-.card__logo-abafe {
-  width: 60px;
-  height: auto;
-  object-fit: contain;
-}
-
-/* =========================================================
-   Cartão Verso
-   ========================================================= */
-.card-back,
-.card--back {
-  display: flex;
-  flex-direction: column;
-  padding: 16px;
-  background: linear-gradient(135deg, var(--color-primary) 0%, #146b58 100%);
-  color: var(--color-white);
-}
-
-.card-back__header {
+.card-code {
+  font-size: 10px;
+  font-weight: bold;
   text-align: center;
-  margin-bottom: 12px;
+  color: #555;
+  margin-top: 8px;
 }
 
-.card-back__title {
-  font-size: 14px;
-  font-weight: 700;
-  text-transform: uppercase;
-  letter-spacing: 1px;
+.card-year {
+  font-size: 24px;
+  font-weight: 900;
+  color: var(--cor-primaria);
+  transform: scaleX(1.2);
+  letter-spacing: -1px;
 }
 
-.card-back__subtitle {
-  font-size: 9px;
-  opacity: 0.8;
-  margin-top: 2px;
-}
-
-.card-back__content {
-  flex: 1;
-  display: flex;
-  flex-direction: column;
-  justify-content: center;
-  gap: 8px;
-}
-
-.card-back__field {
-  display: flex;
-  flex-direction: column;
-  gap: 2px;
-}
-
-.card-back__field-label {
+.card-validity {
   font-size: 8px;
-  opacity: 0.7;
-  text-transform: uppercase;
-  letter-spacing: 0.5px;
-}
-
-.card-back__field-value {
-  font-size: 11px;
-  font-weight: 500;
-  overflow: hidden;
-  text-overflow: ellipsis;
-  white-space: nowrap;
-}
-
-.card-back__footer {
   text-align: center;
-  margin-top: 12px;
-  padding-top: 8px;
-  border-top: 1px solid rgba(255, 255, 255, 0.2);
+  color: #666;
 }
 
-.card-back__footer-text {
-  font-size: 8px;
-  opacity: 0.7;
-}
-
-/* =========================================================
-   Texto Instrucional
-   ========================================================= */
-.card-instruction,
+/* === Texto de Instrução === */
 .instruction-text {
+  margin-top: 20px;
+  font-size: 13px;
+  color: #666;
   text-align: center;
-  font-size: 0.75rem;
-  color: var(--color-gray-inactive);
-  padding: 12px 16px 0;
 }
 
-/* =========================================================
-   Barra de Navegação Inferior
-   ========================================================= */
+/* === Navegação Inferior === */
 .bottom-nav {
   position: fixed;
   bottom: 0;
   left: 50%;
   transform: translateX(-50%);
   width: 100%;
-  max-width: var(--max-width);
-  height: var(--nav-height);
-  background-color: var(--color-white);
+  max-width: 414px;
+  background-color: #fff;
   display: flex;
-  align-items: center;
-  justify-content: space-around;
-  box-shadow: 0 -2px 8px rgba(0, 0, 0, 0.08);
+  justify-content: space-between;
+  padding: 10px 20px 20px;
+  border-top: 1px solid #eee;
   z-index: 100;
 }
 
-.bottom-nav__tab {
+.nav-item {
   display: flex;
   flex-direction: column;
   align-items: center;
-  justify-content: center;
-  flex: 1;
-  height: 100%;
-  color: var(--color-gray-nav);
-  text-decoration: none;
-  transition: color 0.2s ease;
-  -webkit-tap-highlight-color: transparent;
+  gap: 5px;
+  color: #999;
+  font-size: 12px;
+  cursor: pointer;
+  border: none;
+  background: none;
+  font-family: inherit;
 }
 
-.bottom-nav__tab--active {
-  color: var(--color-primary);
+.nav-item.active,
+.nav-item.bottom-nav__tab--active {
+  color: var(--cor-primaria);
+  font-weight: 600;
 }
 
-.bottom-nav__tab-icon {
+.nav-item svg {
   width: 24px;
   height: 24px;
-  margin-bottom: 2px;
   fill: currentColor;
 }
 
-.bottom-nav__tab-label {
-  font-size: 10px;
-  line-height: 1.2;
-}
-
-.bottom-nav__tab--center {
-  position: relative;
-}
-
-.bottom-nav__tab--center .bottom-nav__tab-icon {
-  width: 28px;
-  height: 28px;
-  background-color: var(--color-primary);
-  border-radius: 50%;
-  padding: 4px;
-  fill: var(--color-white);
-}
-
-.bottom-nav__tab--center.bottom-nav__tab--active .bottom-nav__tab-icon {
-  background-color: var(--color-primary);
-}
-
-/* =========================================================
-   Formulário de Edição
-   ========================================================= */
-.edit-section {
-  padding: 20px 16px;
-  display: none;
-}
-
-.edit-section--active {
-  display: block;
-}
-
-.edit-section__title {
-  font-size: 1.125rem;
-  font-weight: 700;
-  color: var(--color-text-dark);
-  margin-bottom: 16px;
-}
-
-.form-group {
-  margin-bottom: 16px;
-}
-
-.form-group__label {
-  display: block;
-  font-size: 0.8125rem;
-  font-weight: 600;
-  color: var(--color-text-dark);
-  margin-bottom: 6px;
-}
-
-.form-group__input {
-  width: 100%;
-  padding: 10px 12px;
-  font-size: 0.875rem;
-  font-family: var(--font-family);
-  border: 1.5px solid #e0e0e0;
-  border-radius: 8px;
-  background-color: var(--color-white);
-  color: var(--color-text-dark);
-  transition: border-color 0.2s ease;
-  outline: none;
-}
-
-.form-group__input:focus {
-  border-color: var(--color-primary);
-}
-
-.form-group__input::placeholder {
-  color: var(--color-placeholder);
-}
-
-/* Estado de Erro */
-.form-group__input--error {
-  border-color: var(--color-error);
-}
-
-.form-group__input--error:focus {
-  border-color: var(--color-error);
-}
-
-.form-group__error {
-  display: none;
-  font-size: 0.75rem;
-  color: var(--color-error);
-  margin-top: 4px;
-}
-
-.form-group__input--error ~ .form-group__error {
-  display: block;
-}
-
-/* Upload de Foto */
-.form-group__file-input {
-  display: none;
-}
-
-.form-group__file-btn {
-  display: inline-flex;
-  align-items: center;
-  gap: 8px;
-  padding: 10px 16px;
-  font-size: 0.875rem;
-  font-weight: 500;
-  color: var(--color-primary);
-  background-color: rgba(26, 107, 90, 0.08);
-  border: 1.5px dashed var(--color-primary);
-  border-radius: 8px;
-  cursor: pointer;
-  transition: background-color 0.2s ease;
-}
-
-.form-group__file-btn:hover,
-.form-group__file-btn:active {
-  background-color: rgba(26, 107, 90, 0.15);
-}
-
-.form-group__file-preview {
-  margin-top: 8px;
-  width: 60px;
-  height: 80px;
-  border-radius: 6px;
-  object-fit: cover;
-  border: 1px solid #e0e0e0;
-}
-
-/* Botão Salvar */
-.form-group__submit {
-  width: 100%;
-  padding: 12px;
-  font-size: 1rem;
-  font-weight: 600;
-  color: var(--color-white);
-  background-color: var(--color-primary);
-  border-radius: 8px;
-  transition: background-color 0.2s ease, opacity 0.2s ease;
-}
-
-.form-group__submit:active {
-  opacity: 0.85;
-}
-
-/* =========================================================
-   Formulário de Edição (edit-form)
-   ========================================================= */
+/* === Formulário de Edição === */
 .edit-form-section {
-  padding: 20px 16px;
+  padding: 20px;
 }
 
 .edit-form__title {
   font-size: 1.125rem;
   font-weight: 700;
-  color: var(--color-text-dark);
+  color: var(--cor-texto-principal);
   margin-bottom: 16px;
 }
 
@@ -865,7 +428,7 @@ input:focus-visible,
   display: block;
   font-size: 0.8125rem;
   font-weight: 600;
-  color: var(--color-text-dark);
+  color: var(--cor-texto-principal);
   margin-bottom: 6px;
 }
 
@@ -873,25 +436,25 @@ input:focus-visible,
   width: 100%;
   padding: 10px 12px;
   font-size: 0.875rem;
-  font-family: var(--font-family);
+  font-family: inherit;
   border: 1.5px solid #e0e0e0;
   border-radius: 8px;
-  background-color: var(--color-white);
-  color: var(--color-text-dark);
+  background-color: #fff;
+  color: var(--cor-texto-principal);
   transition: border-color 0.2s ease;
   outline: none;
 }
 
 .edit-form__input:focus {
-  border-color: var(--color-primary);
+  border-color: var(--cor-primaria);
 }
 
 .edit-form__input::placeholder {
-  color: var(--color-placeholder);
+  color: #ccc;
 }
 
 .edit-form__input--error {
-  border-color: var(--color-error);
+  border-color: var(--cor-erro);
 }
 
 .edit-form__input--file {
@@ -902,7 +465,7 @@ input:focus-visible,
   display: block;
   min-height: 1.1em;
   font-size: 0.75rem;
-  color: var(--color-error);
+  color: var(--cor-erro);
   margin-top: 4px;
 }
 
@@ -911,12 +474,11 @@ input:focus-visible,
   padding: 12px;
   font-size: 1rem;
   font-weight: 600;
-  color: var(--color-white);
-  background-color: var(--color-primary);
+  color: #fff;
+  background-color: var(--cor-primaria);
   border-radius: 8px;
   border: none;
   cursor: pointer;
-  transition: background-color 0.2s ease, opacity 0.2s ease;
   margin-top: 8px;
 }
 
@@ -924,228 +486,83 @@ input:focus-visible,
   opacity: 0.85;
 }
 
-/* =========================================================
-   Notificação / Toast
-   ========================================================= */
+/* === Notificação === */
 .notification {
   position: fixed;
   top: 16px;
   left: 50%;
   transform: translateX(-50%);
-  max-width: calc(var(--max-width) - 32px);
+  max-width: 380px;
   width: calc(100% - 32px);
   padding: 12px 16px;
-  background-color: var(--color-text-dark);
-  color: var(--color-white);
+  background-color: #333;
+  color: #fff;
   font-size: 0.8125rem;
   border-radius: 8px;
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+  box-shadow: 0 4px 12px rgba(0,0,0,0.2);
   z-index: 200;
   opacity: 0;
   pointer-events: none;
-  transition: opacity 0.3s ease, transform 0.3s ease;
-  transform: translateX(-50%) translateY(-8px);
+  transition: opacity 0.3s ease;
 }
 
 .notification--visible {
   opacity: 1;
   pointer-events: auto;
-  transform: translateX(-50%) translateY(0);
 }
 
-.notification--error {
-  background-color: var(--color-error);
-}
-
-/* =========================================================
-   Seções / Páginas (SPA)
-   ========================================================= */
-.page-section {
+/* === Seções ocultas === */
+.section {
   display: none;
 }
 
-.page-section--active {
-  display: block;
-}
-
-.section {
-  padding: 16px 12px;
-  word-wrap: break-word;
-  overflow-wrap: break-word;
-}
-
-/* =========================================================
-   Estado Offline
-   ========================================================= */
-.offline-message {
+.section--inicio {
   display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  padding: 48px 24px;
-  text-align: center;
 }
 
-.offline-message__icon {
-  width: 64px;
-  height: 64px;
-  margin-bottom: 16px;
-  color: var(--color-gray-inactive);
-}
-
-.offline-message__title {
-  font-size: 1.125rem;
-  font-weight: 700;
-  margin-bottom: 8px;
-}
-
-.offline-message__text {
-  font-size: 0.875rem;
-  color: var(--color-gray-inactive);
-  line-height: 1.5;
-}
-
-/* =========================================================
-   Media Queries — Responsividade 320px a 428px
-   ========================================================= */
-
-/* Telas muito pequenas (320px - 360px) */
+/* === Responsividade === */
 @media (max-width: 360px) {
-  .header {
-    padding: 16px 12px;
+  .card-scene {
+    width: 280px;
+    height: 440px;
   }
 
-  .header__greeting {
-    font-size: 1.1rem;
+  .card-landscape-content {
+    width: 440px;
+    height: 280px;
   }
 
-  .header__menu-btn {
-    width: 36px;
-    height: 36px;
+  .card-left-section {
+    width: 130px;
+    padding: 20px 0 0 15px;
   }
 
-  .card-section {
-    padding: 16px 12px;
+  .photo-placeholder {
+    width: 100px;
+    height: 130px;
   }
 
-  .card--front {
-    padding: 8px 10px;
+  .card-right-section {
+    width: 120px;
   }
 
-  .card__photo-area {
-    width: 65px;
-    min-width: 65px;
+  .cie-header h2 {
+    font-size: 26px;
   }
 
-  .card__photo-frame {
-    width: 62px;
-    height: 78px;
-  }
-
-  .card__photo-decorative {
-    width: 72px;
-    height: 90px;
-  }
-
-  .card__cie-text {
-    font-size: 24px;
-  }
-
-  .card__field-name {
-    font-size: 11px;
-  }
-
-  .card__field-value {
-    font-size: 9px;
-  }
-
-  .card__bottom-row {
-    padding-top: 4px;
-    margin-top: 4px;
-  }
-
-  .card__seal-img {
-    width: 36px;
-  }
-
-  .card__qr-area {
-    width: 50px;
-    height: 50px;
-    min-width: 50px;
-    min-height: 50px;
-  }
-
-  .card__qr-placeholder {
-    width: 50px;
-    height: 50px;
-  }
-
-  .card__logo-abafe {
-    width: 50px;
-  }
-
-  .bottom-nav__tab-label {
-    font-size: 9px;
-  }
-
-  .form-group__input {
-    padding: 8px 10px;
-    font-size: 0.8125rem;
-  }
-
-  .edit-form__input {
-    padding: 8px 10px;
-    font-size: 0.8125rem;
-  }
-
-  .edit-form__title {
-    font-size: 1rem;
+  .abafe-logo-img {
+    width: 70px;
   }
 }
 
-/* Telas pequenas (361px - 390px) */
-@media (min-width: 361px) and (max-width: 390px) {
-  .card__photo-area {
-    width: 70px;
-    min-width: 70px;
+@media (min-width: 415px) {
+  .card-scene {
+    width: 340px;
+    height: 530px;
   }
 
-  .card__cie-text {
-    font-size: 28px;
-  }
-}
-
-/* Telas médias-grandes (391px - 428px) */
-@media (min-width: 391px) {
-  .card__qr-area {
-    width: 70px;
-    height: 70px;
-    min-width: 70px;
-    min-height: 70px;
-  }
-
-  .card__qr-placeholder {
-    width: 70px;
-    height: 70px;
-  }
-
-  .card__seal-img {
-    width: 48px;
-  }
-
-  .card__logo-abafe {
-    width: 64px;
-  }
-
-  .bottom-nav__tab-label {
-    font-size: 11px;
-  }
-}
-
-/* Garantir que a barra de navegação não exceda a largura máxima */
-@media (min-width: 429px) {
-  body {
-    border-left: 1px solid #f0f0f0;
-    border-right: 1px solid #f0f0f0;
+  .card-landscape-content {
+    width: 530px;
+    height: 340px;
   }
 }

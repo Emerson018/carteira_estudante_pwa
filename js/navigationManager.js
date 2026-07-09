@@ -61,14 +61,14 @@ export class NavigationManager {
     const nav = document.getElementById('bottom-nav');
     if (!nav) return;
 
-    const tabs = nav.querySelectorAll('.bottom-nav__tab');
+    const tabs = nav.querySelectorAll('.nav-item');
 
     tabs.forEach((tab, index) => {
       if (index === activeIndex) {
-        tab.classList.add('bottom-nav__tab--active');
+        tab.classList.add('active');
         tab.setAttribute('aria-current', 'page');
       } else {
-        tab.classList.remove('bottom-nav__tab--active');
+        tab.classList.remove('active');
         tab.removeAttribute('aria-current');
       }
     });
@@ -107,7 +107,7 @@ export class NavigationManager {
     const nav = document.getElementById('bottom-nav');
     if (!nav) return;
 
-    const tabs = nav.querySelectorAll('.bottom-nav__tab');
+    const tabs = nav.querySelectorAll('.nav-item');
 
     tabs.forEach((tab) => {
       tab.addEventListener('click', () => {

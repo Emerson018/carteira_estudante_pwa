@@ -91,11 +91,8 @@ export class CardManager {
 
     if (value) {
       element.textContent = value;
-      element.classList.remove('card__field-value--placeholder');
     } else {
-      const placeholder = element.getAttribute('data-placeholder') || '';
-      element.textContent = placeholder;
-      element.classList.add('card__field-value--placeholder');
+      element.textContent = '';
     }
   }
 
@@ -109,11 +106,11 @@ export class CardManager {
     this._animating = true;
     this._flipped = !this._flipped;
 
-    if (this._flipInner) {
+    if (this._flipCard) {
       if (this._flipped) {
-        this._flipInner.classList.add('is-flipped');
+        this._flipCard.classList.add('is-flipped');
       } else {
-        this._flipInner.classList.remove('is-flipped');
+        this._flipCard.classList.remove('is-flipped');
       }
     }
 

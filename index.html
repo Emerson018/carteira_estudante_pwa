@@ -2,8 +2,8 @@
 <html lang="pt-BR">
 <head>
   <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <meta name="theme-color" content="#1a6b5a">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <meta name="theme-color" content="#0d6e75">
   <meta name="description" content="Carteira de Identificação Estudantil Digital - CIE">
   <link rel="manifest" href="manifest.json">
   <link rel="icon" type="image/png" sizes="192x192" href="assets/icons/icon-192x192.png">
@@ -12,294 +12,180 @@
   <link rel="stylesheet" href="css/styles.css">
 </head>
 <body>
-  <!-- Skip link para acessibilidade por teclado -->
-  <a href="#main-content" class="skip-link">Pular para conteúdo principal</a>
+  <div class="app-container">
 
-  <!-- Cabeçalho -->
-  <header class="header" role="banner">
-    <div class="header__content">
-      <h1 class="header__greeting" id="greeting">Olá, Estudante!</h1>
-      <p class="header__subtitle">Sua carteirinha estudantil</p>
-    </div>
-    <button class="header__menu-btn" id="menu-btn" aria-label="Abrir menu de navegação" type="button">
-      <span class="header__menu-icon" aria-hidden="true">
+    <!-- Cabeçalho -->
+    <header class="header">
+      <div class="header-titles">
+        <h1 id="greeting">Olá, Estudante!</h1>
+        <p>Sua carteira estudantil</p>
+      </div>
+      <button class="menu-btn" id="menu-btn" aria-label="Abrir menu de navegação" type="button">
         <span></span>
         <span></span>
         <span></span>
-      </span>
-    </button>
-  </header>
+      </button>
+    </header>
 
-  <!-- Conteúdo Principal -->
-  <main class="main-content" id="main-content" role="main" aria-label="Conteúdo principal">
+    <!-- Conteúdo Principal -->
+    <main class="main-content">
 
-    <!-- Seção Início -->
-    <section class="section section--inicio" id="section-inicio" aria-label="Página inicial com carteirinha">
+      <!-- Seção Início -->
+      <section class="section section--inicio" id="section-inicio">
 
-      <!-- Container do Cartão com Flip -->
-      <div class="card-wrapper">
-        <div class="card-flip" id="card-flip" role="button" tabindex="0" aria-label="Carteirinha estudantil. Toque para virar o cartão.">
-          <div class="card-flip__inner" id="card-flip-inner">
+        <!-- Carteirinha com Flip -->
+        <div class="card-scene" id="card-flip" role="button" tabindex="0" aria-label="Carteirinha estudantil. Toque para virar o cartão.">
+          <div class="card-inner" id="card-flip-inner">
 
-            <!-- Cartão Frontal -->
-            <div class="card card--front" aria-label="Frente da carteirinha estudantil">
-              <!-- CIE Header - vertical along the right side -->
-              <div class="card__cie-header">
-                <span class="card__cie-text">CIE</span>
-                <span class="card__cie-description">CARTEIRA DE<br>IDENTIFICAÇÃO<br>ESTUDANTIL</span>
-              </div>
+            <!-- Frente da Carteirinha -->
+            <div class="card-face card-front">
+              <div class="card-landscape-content">
 
-              <!-- Main content area: Photo on top, Info below -->
-              <div class="card__main-area">
-                <!-- Photo with decorative element -->
-                <div class="card__photo-area">
-                  <div class="card__photo-decorative" aria-hidden="true"></div>
-                  <div class="card__photo-frame">
-                    <img class="card__photo" id="card-photo" src="" alt="Foto do estudante">
-                    <div class="card__photo-placeholder" id="card-photo-placeholder">
-                      <img src="assets/images/foto-generica.svg" alt="" aria-hidden="true" class="card__photo-placeholder-img">
+                <!-- Área da Foto -->
+                <div class="card-left-section">
+                  <div class="photo-placeholder" id="card-photo-wrapper">
+                    <img class="photo-img" id="card-photo" src="" alt="Foto do estudante" style="display:none;">
+                    <div class="photo-default" id="card-photo-placeholder">
+                      <svg viewBox="0 0 24 24"><path d="M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z"/></svg>
+                      <span>[Sua Foto Aqui]</span>
                     </div>
                   </div>
                 </div>
 
-                <!-- Info section below photo -->
-                <div class="card__info-area">
-                  <span class="card__field-name" id="card-nome" data-placeholder="Nome do estudante"></span>
-                  <div class="card__info-columns">
-                    <div class="card__vertical-info">
-                      <span class="card__vertical-institution" id="card-instituicao" data-placeholder="Instituição"></span>
-                      <span class="card__vertical-course" id="card-curso" data-placeholder="Curso"></span>
-                    </div>
-                    <div class="card__data-fields">
-                      <div class="card__field-line">
-                        <span class="card__field-label">CPF/CIN:</span>
-                        <span class="card__field-value" id="card-cpf" data-placeholder="XXX.XXX.XXX-XX"></span>
-                      </div>
-                      <div class="card__field-line">
-                        <span class="card__field-label">Nasc.:</span>
-                        <span class="card__field-value" id="card-nascimento" data-placeholder="DD/MM/AAAA"></span>
-                      </div>
-                    </div>
+                <!-- Área Central (Textos) -->
+                <div class="card-center-section">
+                  <div class="cie-header">
+                    <h2>CIE</h2>
+                    <p>Carteira de<br>Identificação<br>Estudantil</p>
+                  </div>
+                  <div class="student-info">
+                    <div class="info-name" id="card-nome" data-placeholder="Nome do estudante"></div>
+                    <div class="info-item"><strong>CPF/CIN:</strong> <span id="card-cpf" data-placeholder="000.000.000-00"></span></div>
+                    <div class="info-item"><strong>Nasc.:</strong> <span id="card-nascimento" data-placeholder="DD/MM/AAAA"></span></div>
+                    <div class="info-item"><strong>CURSO/SÉRIE:</strong> <span id="card-curso" data-placeholder="Curso"></span></div>
+                    <div class="info-item"><strong>INSTITUIÇÃO:</strong> <span id="card-instituicao" data-placeholder="Instituição"></span></div>
                   </div>
                 </div>
-              </div>
 
-              <!-- Bottom Row: Seal + Cod + QR/ABAFE -->
-              <div class="card__bottom-row">
-                <div class="card__seal-area" aria-label="Selo do ano">
-                  <img class="card__seal-img" src="assets/images/selo-2026.svg" alt="Selo 2026">
-                  <span class="card__seal-year" id="card-seal-year" hidden>2026</span>
-                  <span class="card__seal-validity" id="card-validade" data-placeholder="31/03/2027"></span>
-                </div>
-                <div class="card__cod-area">
-                  <span class="card__cod-label">CÓD. USO / CIE</span>
-                  <img class="card__logo-cie" src="assets/images/logo-cie.svg" alt="Selo CIE">
-                </div>
-                <div class="card__qr-abafe-stack">
-                  <div class="card__abafe-area">
-                    <img class="card__logo-abafe" src="assets/images/logo-abafe.svg" alt="Logo ABAFE">
-                  </div>
-                  <div class="card__qr-area" aria-label="Código QR de identificação">
+                <!-- Área Direita (Logo + QR) -->
+                <div class="card-right-section">
+                  <img src="assets/images/logo-abafe.svg" alt="Logo ABAFE" class="abafe-logo-img">
+                  <div class="qr-wrapper">
                     <canvas id="qr-canvas" width="80" height="80"></canvas>
-                    <div class="card__qr-placeholder" id="qr-placeholder">
-                      <span aria-hidden="true">QR</span>
+                    <div class="fake-qr" id="qr-placeholder">
+                      <span>QR</span>
                     </div>
                   </div>
+                  <div class="card-code">
+                    CÓD. USO / CIE
+                  </div>
+                  <div class="card-year" id="card-seal-year">2026</div>
+                  <div class="card-validity"><span>Validade: </span><span id="card-validade" data-placeholder="31/03/2027"></span></div>
                 </div>
+
               </div>
             </div>
 
-            <!-- Cartão Verso -->
-            <div class="card card--back" aria-label="Verso da carteirinha estudantil">
-              <div class="card__back-content">
-                <p class="card__back-title">CARTEIRA DE IDENTIFICAÇÃO ESTUDANTIL</p>
-                <p class="card__back-text">Este documento é de uso exclusivo para identificação estudantil.</p>
-                <div class="card__back-barcode" aria-label="Código de barras"></div>
-                <p class="card__back-info">Documento digital - CIE</p>
-              </div>
+            <!-- Verso da Carteirinha -->
+            <div class="card-face card-back">
+              <p>Espaço para informações do verso (Regras, código de barras, etc).</p>
             </div>
 
           </div>
         </div>
-      </div>
 
-      <!-- Texto Instrucional -->
-      <p class="instruction-text" aria-live="polite">Toque na carteirinha para exibir o lado oposto.</p>
+        <p class="instruction-text">Toque na carteirinha para exibir o lado oposto.</p>
 
-    </section>
+      </section>
 
-    <!-- Seção Indique -->
-    <section class="section section--indique" id="section-indique" aria-label="Indicação" hidden>
-      <h2>Indique</h2>
-      <p>Compartilhe com seus amigos.</p>
-    </section>
+      <!-- Seção Indique -->
+      <section class="section section--indique" id="section-indique" hidden>
+        <h2>Indique</h2>
+        <p>Compartilhe com seus amigos.</p>
+      </section>
 
-    <!-- Seção Central -->
-    <section class="section section--central" id="section-central" aria-label="Central" hidden>
-      <h2>Central</h2>
-    </section>
+      <!-- Seção Carteiras -->
+      <section class="section section--carteiras" id="section-carteiras" hidden>
+        <h2>Carteiras</h2>
+        <p>Suas carteirinhas estudantis.</p>
+      </section>
 
-    <!-- Seção Carteiras -->
-    <section class="section section--carteiras" id="section-carteiras" aria-label="Minhas carteiras" hidden>
-      <h2>Carteiras</h2>
-      <p>Suas carteirinhas estudantis.</p>
-    </section>
+      <!-- Seção Avisos -->
+      <section class="section section--avisos" id="section-avisos" hidden>
+        <h2>Avisos</h2>
+        <p>Nenhum aviso no momento.</p>
+      </section>
 
-    <!-- Seção Avisos -->
-    <section class="section section--avisos" id="section-avisos" aria-label="Avisos e notificações" hidden>
-      <h2>Avisos</h2>
-      <p>Nenhum aviso no momento.</p>
-    </section>
+      <!-- Formulário de Edição -->
+      <section class="edit-form-section" id="edit-form-section" hidden>
+        <h2 class="edit-form__title">Editar Carteirinha</h2>
+        <form class="edit-form" id="edit-form" novalidate>
+          <div class="edit-form__group">
+            <label class="edit-form__label" for="input-nome">Nome completo</label>
+            <input class="edit-form__input" type="text" id="input-nome" name="nome" maxlength="80" placeholder="Nome do estudante" autocomplete="name" aria-describedby="error-nome">
+            <span class="edit-form__error" id="error-nome" role="alert" aria-live="assertive"></span>
+          </div>
+          <div class="edit-form__group">
+            <label class="edit-form__label" for="input-curso">Curso / Série</label>
+            <input class="edit-form__input" type="text" id="input-curso" name="curso" maxlength="100" placeholder="Ex: GRADUAÇÃO - CIÊNCIA DA COMPUTAÇÃO" aria-describedby="error-curso">
+            <span class="edit-form__error" id="error-curso" role="alert" aria-live="assertive"></span>
+          </div>
+          <div class="edit-form__group">
+            <label class="edit-form__label" for="input-instituicao">Instituição</label>
+            <input class="edit-form__input" type="text" id="input-instituicao" name="instituicao" maxlength="100" placeholder="Nome da Instituição" aria-describedby="error-instituicao">
+            <span class="edit-form__error" id="error-instituicao" role="alert" aria-live="assertive"></span>
+          </div>
+          <div class="edit-form__group">
+            <label class="edit-form__label" for="input-nascimento">Data de nascimento</label>
+            <input class="edit-form__input" type="text" id="input-nascimento" name="nascimento" placeholder="DD/MM/AAAA" maxlength="10" inputmode="numeric" aria-describedby="error-nascimento">
+            <span class="edit-form__error" id="error-nascimento" role="alert" aria-live="assertive"></span>
+          </div>
+          <div class="edit-form__group">
+            <label class="edit-form__label" for="input-cpf">CPF</label>
+            <input class="edit-form__input" type="text" id="input-cpf" name="cpf" placeholder="Somente números (11 dígitos)" maxlength="11" inputmode="numeric" aria-describedby="error-cpf">
+            <span class="edit-form__error" id="error-cpf" role="alert" aria-live="assertive"></span>
+          </div>
+          <div class="edit-form__group">
+            <label class="edit-form__label" for="input-validade">Ano de validade</label>
+            <input class="edit-form__input" type="number" id="input-validade" name="validade" placeholder="Ex: 2026" min="2024" max="2034" aria-describedby="error-validade">
+            <span class="edit-form__error" id="error-validade" role="alert" aria-live="assertive"></span>
+          </div>
+          <div class="edit-form__group">
+            <label class="edit-form__label" for="input-foto">Foto (JPEG ou PNG, máx. 5 MB)</label>
+            <input class="edit-form__input edit-form__input--file" type="file" id="input-foto" name="foto" accept="image/jpeg,image/png" aria-describedby="error-foto">
+            <span class="edit-form__error" id="error-foto" role="alert" aria-live="assertive"></span>
+          </div>
+          <button class="edit-form__submit" type="submit">Salvar</button>
+        </form>
+      </section>
 
-    <!-- Formulário de Edição -->
-    <section class="edit-form-section" id="edit-form-section" aria-label="Editar informações da carteirinha" hidden>
-      <h2 class="edit-form__title">Editar Carteirinha</h2>
-      <form class="edit-form" id="edit-form" novalidate>
-        <div class="edit-form__group">
-          <label class="edit-form__label" for="input-nome">Nome completo</label>
-          <input
-            class="edit-form__input"
-            type="text"
-            id="input-nome"
-            name="nome"
-            maxlength="80"
-            placeholder="Nome do estudante"
-            autocomplete="name"
-            aria-describedby="error-nome"
-          >
-          <span class="edit-form__error" id="error-nome" role="alert" aria-live="assertive"></span>
-        </div>
+    </main>
 
-        <div class="edit-form__group">
-          <label class="edit-form__label" for="input-curso">Curso</label>
-          <input
-            class="edit-form__input"
-            type="text"
-            id="input-curso"
-            name="curso"
-            maxlength="100"
-            placeholder="Ex: GRADUAÇÃO - CIÊNCIA DA COMPUTAÇÃO"
-            aria-describedby="error-curso"
-          >
-          <span class="edit-form__error" id="error-curso" role="alert" aria-live="assertive"></span>
-        </div>
+    <!-- Navegação Inferior -->
+    <nav class="bottom-nav" id="bottom-nav" role="navigation" aria-label="Navegação principal">
+      <button class="nav-item active" data-tab="0" data-section="section-inicio" type="button" aria-label="Início" aria-current="page">
+        <svg viewBox="0 0 24 24"><path d="M10 20v-6h4v6h5v-8h3L12 3 2 12h3v8z"/></svg>
+        <span>Início</span>
+      </button>
+      <button class="nav-item" data-tab="1" data-section="section-indique" type="button" aria-label="Indique">
+        <svg viewBox="0 0 24 24"><path d="M16 11c1.66 0 2.99-1.34 2.99-3S17.66 5 16 5c-1.66 0-3 1.34-3 3s1.34 3 3 3zm-8 0c1.66 0 2.99-1.34 2.99-3S9.66 5 8 5C6.34 5 5 6.34 5 8s1.34 3 3 3zm0 2c-2.33 0-7 1.17-7 3.5V19h14v-2.5c0-2.33-4.67-3.5-7-3.5zm8 0c-.29 0-.62.02-.97.05 1.16.84 1.97 1.97 1.97 3.45V19h6v-2.5c0-2.33-4.67-3.5-7-3.5z"/></svg>
+        <span>Indique</span>
+      </button>
+      <button class="nav-item" data-tab="2" data-section="section-carteiras" type="button" aria-label="Carteiras">
+        <svg viewBox="0 0 24 24"><path d="M20 4H4c-1.11 0-1.99.89-1.99 2L2 18c0 1.11.89 2 2 2h16c1.11 0 2-.89 2-2V6c0-1.11-.89-2-2-2zm0 14H4v-6h16v6zm0-10H4V6h16v2z"/></svg>
+        <span>Carteiras</span>
+      </button>
+      <button class="nav-item" data-tab="3" data-section="section-avisos" type="button" aria-label="Avisos">
+        <svg viewBox="0 0 24 24"><path d="M12 22c1.1 0 2-.9 2-2h-4c0 1.1.9 2 2 2zm6-6v-5c0-3.07-1.63-5.64-4.5-6.32V4c0-.83-.67-1.5-1.5-1.5s-1.5.67-1.5 1.5v.68C7.64 5.36 6 7.92 6 11v5l-2 2v1h16v-1l-2-2zm-2 1H8v-6c0-2.48 1.51-4.5 4-4.5s4 2.02 4 4.5v6z"/></svg>
+        <span>Avisos</span>
+      </button>
+    </nav>
 
-        <div class="edit-form__group">
-          <label class="edit-form__label" for="input-instituicao">Instituição</label>
-          <input
-            class="edit-form__input"
-            type="text"
-            id="input-instituicao"
-            name="instituicao"
-            maxlength="80"
-            placeholder="Ex: UNIRITTER"
-            aria-describedby="error-instituicao"
-          >
-          <span class="edit-form__error" id="error-instituicao" role="alert" aria-live="assertive"></span>
-        </div>
+    <!-- Notificação -->
+    <div class="notification" id="notification" role="alert" aria-live="polite" hidden>
+      <p class="notification__message" id="notification-message"></p>
+    </div>
 
-        <div class="edit-form__group">
-          <label class="edit-form__label" for="input-nascimento">Data de nascimento</label>
-          <input
-            class="edit-form__input"
-            type="text"
-            id="input-nascimento"
-            name="nascimento"
-            placeholder="DD/MM/AAAA"
-            maxlength="10"
-            inputmode="numeric"
-            aria-describedby="error-nascimento"
-          >
-          <span class="edit-form__error" id="error-nascimento" role="alert" aria-live="assertive"></span>
-        </div>
-
-        <div class="edit-form__group">
-          <label class="edit-form__label" for="input-cpf">CPF</label>
-          <input
-            class="edit-form__input"
-            type="text"
-            id="input-cpf"
-            name="cpf"
-            placeholder="Somente números (11 dígitos)"
-            maxlength="11"
-            inputmode="numeric"
-            aria-describedby="error-cpf"
-          >
-          <span class="edit-form__error" id="error-cpf" role="alert" aria-live="assertive"></span>
-        </div>
-
-        <div class="edit-form__group">
-          <label class="edit-form__label" for="input-validade">Ano de validade</label>
-          <input
-            class="edit-form__input"
-            type="number"
-            id="input-validade"
-            name="validade"
-            placeholder="Ex: 2026"
-            min="2024"
-            max="2034"
-            aria-describedby="error-validade"
-          >
-          <span class="edit-form__error" id="error-validade" role="alert" aria-live="assertive"></span>
-        </div>
-
-        <div class="edit-form__group">
-          <label class="edit-form__label" for="input-foto">Foto (JPEG ou PNG, máx. 5 MB)</label>
-          <input
-            class="edit-form__input edit-form__input--file"
-            type="file"
-            id="input-foto"
-            name="foto"
-            accept="image/jpeg,image/png"
-            aria-describedby="error-foto"
-          >
-          <span class="edit-form__error" id="error-foto" role="alert" aria-live="assertive"></span>
-        </div>
-
-        <button class="edit-form__submit" type="submit" aria-label="Salvar alterações na carteirinha">
-          Salvar
-        </button>
-      </form>
-    </section>
-
-  </main>
-
-  <!-- Barra de Navegação Inferior -->
-  <nav class="bottom-nav" id="bottom-nav" role="navigation" aria-label="Navegação principal">
-    <button class="bottom-nav__tab bottom-nav__tab--active" data-tab="0" data-section="section-inicio" aria-label="Início" aria-current="page" type="button">
-      <svg class="bottom-nav__icon" viewBox="0 0 24 24" width="24" height="24" aria-hidden="true">
-        <path d="M10 20v-6h4v6h5v-8h3L12 3 2 12h3v8z"/>
-      </svg>
-      <span class="bottom-nav__label">Início</span>
-    </button>
-    <button class="bottom-nav__tab" data-tab="1" data-section="section-indique" aria-label="Indique" type="button">
-      <svg class="bottom-nav__icon" viewBox="0 0 24 24" width="24" height="24" aria-hidden="true">
-        <path d="M18 16.08c-.76 0-1.44.3-1.96.77L8.91 12.7c.05-.23.09-.46.09-.7s-.04-.47-.09-.7l7.05-4.11c.54.5 1.25.81 2.04.81 1.66 0 3-1.34 3-3s-1.34-3-3-3-3 1.34-3 3c0 .24.04.47.09.7L8.04 9.81C7.5 9.31 6.79 9 6 9c-1.66 0-3 1.34-3 3s1.34 3 3 3c.79 0 1.5-.31 2.04-.81l7.12 4.16c-.05.21-.08.43-.08.65 0 1.61 1.31 2.92 2.92 2.92 1.61 0 2.92-1.31 2.92-2.92s-1.31-2.92-2.92-2.92z"/>
-      </svg>
-      <span class="bottom-nav__label">Indique</span>
-    </button>
-    <button class="bottom-nav__tab bottom-nav__tab--center" data-tab="2" data-section="section-central" aria-label="Central" type="button">
-      <svg class="bottom-nav__icon bottom-nav__icon--center" viewBox="0 0 24 24" width="28" height="28" aria-hidden="true">
-        <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-2 15l-5-5 1.41-1.41L10 14.17l7.59-7.59L19 8l-9 9z"/>
-      </svg>
-    </button>
-    <button class="bottom-nav__tab" data-tab="3" data-section="section-carteiras" aria-label="Carteiras" type="button">
-      <svg class="bottom-nav__icon" viewBox="0 0 24 24" width="24" height="24" aria-hidden="true">
-        <path d="M21 18v1c0 1.1-.9 2-2 2H5c-1.11 0-2-.9-2-2V5c0-1.1.89-2 2-2h14c1.1 0 2 .9 2 2v1h-9c-1.11 0-2 .9-2 2v8c0 1.1.89 2 2 2h9zm-9-2h10V8H12v8zm4-2.5c-.83 0-1.5-.67-1.5-1.5s.67-1.5 1.5-1.5 1.5.67 1.5 1.5-.67 1.5-1.5 1.5z"/>
-      </svg>
-      <span class="bottom-nav__label">Carteiras</span>
-    </button>
-    <button class="bottom-nav__tab" data-tab="4" data-section="section-avisos" aria-label="Avisos" type="button">
-      <svg class="bottom-nav__icon" viewBox="0 0 24 24" width="24" height="24" aria-hidden="true">
-        <path d="M12 22c1.1 0 2-.9 2-2h-4c0 1.1.89 2 2 2zm6-6v-5c0-3.07-1.64-5.64-4.5-6.32V4c0-.83-.67-1.5-1.5-1.5s-1.5.67-1.5 1.5v.68C7.63 5.36 6 7.92 6 11v5l-2 2v1h16v-1l-2-2z"/>
-      </svg>
-      <span class="bottom-nav__label">Avisos</span>
-    </button>
-  </nav>
-
-  <!-- Mensagem de armazenamento -->
-  <div class="notification" id="notification" role="alert" aria-live="polite" hidden>
-    <p class="notification__message" id="notification-message"></p>
   </div>
 
   <!-- Scripts -->
