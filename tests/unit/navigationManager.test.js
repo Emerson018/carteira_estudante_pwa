@@ -14,19 +14,19 @@ function setupDOM() {
     <section id="edit-form-section" hidden></section>
 
     <nav class="bottom-nav" id="bottom-nav">
-      <button class="bottom-nav__tab bottom-nav__tab--active" data-tab="0" data-section="section-inicio" aria-current="page" type="button">
+      <button class="nav-item active" data-tab="0" data-section="section-inicio" aria-current="page" type="button">
         <span class="bottom-nav__label">Início</span>
       </button>
-      <button class="bottom-nav__tab" data-tab="1" data-section="section-indique" type="button">
+      <button class="nav-item" data-tab="1" data-section="section-indique" type="button">
         <span class="bottom-nav__label">Indique</span>
       </button>
-      <button class="bottom-nav__tab" data-tab="2" data-section="section-central" type="button">
+      <button class="nav-item" data-tab="2" data-section="section-central" type="button">
         <span class="bottom-nav__label">Central</span>
       </button>
-      <button class="bottom-nav__tab" data-tab="3" data-section="section-carteiras" type="button">
+      <button class="nav-item" data-tab="3" data-section="section-carteiras" type="button">
         <span class="bottom-nav__label">Carteiras</span>
       </button>
-      <button class="bottom-nav__tab" data-tab="4" data-section="section-avisos" type="button">
+      <button class="nav-item" data-tab="4" data-section="section-avisos" type="button">
         <span class="bottom-nav__label">Avisos</span>
       </button>
     </nav>
@@ -47,12 +47,12 @@ describe('NavigationManager', () => {
     });
 
     it('deve ter a classe active na primeira aba ao iniciar', () => {
-      const tabs = document.querySelectorAll('.bottom-nav__tab');
-      expect(tabs[0].classList.contains('bottom-nav__tab--active')).toBe(true);
+      const tabs = document.querySelectorAll('.nav-item');
+      expect(tabs[0].classList.contains('active')).toBe(true);
     });
 
     it('deve ter aria-current="page" na primeira aba ao iniciar', () => {
-      const tabs = document.querySelectorAll('.bottom-nav__tab');
+      const tabs = document.querySelectorAll('.nav-item');
       expect(tabs[0].getAttribute('aria-current')).toBe('page');
     });
 
@@ -73,19 +73,19 @@ describe('NavigationManager', () => {
 
     it('deve remover classe active das demais abas', () => {
       navManager.activateTab(3);
-      const tabs = document.querySelectorAll('.bottom-nav__tab');
+      const tabs = document.querySelectorAll('.nav-item');
       tabs.forEach((tab, index) => {
         if (index === 3) {
-          expect(tab.classList.contains('bottom-nav__tab--active')).toBe(true);
+          expect(tab.classList.contains('active')).toBe(true);
         } else {
-          expect(tab.classList.contains('bottom-nav__tab--active')).toBe(false);
+          expect(tab.classList.contains('active')).toBe(false);
         }
       });
     });
 
     it('deve mover aria-current="page" para a aba ativa', () => {
       navManager.activateTab(4);
-      const tabs = document.querySelectorAll('.bottom-nav__tab');
+      const tabs = document.querySelectorAll('.nav-item');
       tabs.forEach((tab, index) => {
         if (index === 4) {
           expect(tab.getAttribute('aria-current')).toBe('page');
@@ -153,21 +153,21 @@ describe('NavigationManager', () => {
 
   describe('Eventos de click', () => {
     it('deve ativar aba ao clicar no botão correspondente', () => {
-      const tabs = document.querySelectorAll('.bottom-nav__tab');
+      const tabs = document.querySelectorAll('.nav-item');
       tabs[3].click();
       expect(navManager.getActiveTab()).toBe(3);
-      expect(tabs[3].classList.contains('bottom-nav__tab--active')).toBe(true);
+      expect(tabs[3].classList.contains('active')).toBe(true);
     });
 
     it('deve desativar aba anterior ao clicar em outra', () => {
-      const tabs = document.querySelectorAll('.bottom-nav__tab');
+      const tabs = document.querySelectorAll('.nav-item');
       tabs[2].click();
-      expect(tabs[0].classList.contains('bottom-nav__tab--active')).toBe(false);
-      expect(tabs[2].classList.contains('bottom-nav__tab--active')).toBe(true);
+      expect(tabs[0].classList.contains('active')).toBe(false);
+      expect(tabs[2].classList.contains('active')).toBe(true);
     });
 
     it('deve trocar a seção visível ao clicar', () => {
-      const tabs = document.querySelectorAll('.bottom-nav__tab');
+      const tabs = document.querySelectorAll('.nav-item');
       tabs[4].click();
       expect(document.getElementById('section-avisos').hasAttribute('hidden')).toBe(false);
       expect(document.getElementById('section-inicio').hasAttribute('hidden')).toBe(true);

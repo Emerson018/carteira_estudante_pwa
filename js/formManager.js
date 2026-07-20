@@ -20,6 +20,7 @@ export class FormManager {
   static ERRORS = {
     nome: 'Nome é obrigatório.',
     curso: 'Curso é obrigatório.',
+    instituicao: 'Instituição é obrigatória.',
     nascimento: 'Data inválida. Use o formato DD/MM/AAAA.',
     cpf: 'CPF deve conter exatamente 11 dígitos numéricos.',
     validade: `Ano de validade deve estar entre ${new Date().getFullYear()} e ${new Date().getFullYear() + 10}.`,
@@ -32,9 +33,10 @@ export class FormManager {
    * @param {function} [options.onFieldChange] - Callback chamado quando um campo válido é alterado: (fieldName, value) => void
    * @param {function} [options.onPhotoChange] - Callback chamado quando uma foto válida é processada: (dataUrl) => void
    */
-  constructor({ onFieldChange, onPhotoChange } = {}) {
+  constructor({ onFieldChange, onPhotoChange, onSave } = {}) {
     this.onFieldChange = onFieldChange || null;
     this.onPhotoChange = onPhotoChange || null;
+    this.onSave = onSave || null;
     this._lastValidValues = {};
     this._bound = false;
   }
@@ -102,6 +104,11 @@ export class FormManager {
       errors.curso = FormManager.ERRORS.curso;
     }
 
+    // Instituição: obrigatório, max 100 chars
+    if (!data.instituicao || typeof data.instituicao !== 'string' || data.instituicao.trim().length === 0) {
+      errors.instituicao = FormManager.ERRORS.instituicao;
+    }
+
     // Data de nascimento: formato DD/MM/AAAA
     if (data.nascimento !== undefined && data.nascimento !== '') {
       if (!this.validateDate(data.nascimento)) {
@@ -161,6 +168,26 @@ export class FormManager {
   }
 
   /**
+   * Preenche os campos do formulário com os dados fornecidos.
+   * @param {object} data - Dados do estudante
+   */
+  populateForm(data) {
+    if (!data) return;
+    const textFields = ['nome', 'curso', 'instituicao', 'nascimento', 'cpf', 'codigo'];
+    textFields.forEach((field) => {
+      const input = document.getElementById(`input-${field}`);
+      if (input) {
+        input.value = data[field] || '';
+      }
+    });
+
+    const validadeInput = document.getElementById('input-validade');
+    if (validadeInput) {
+      validadeInput.value = data.validade || '';
+    }
+  }
+
+  /**
    * Faz o binding dos campos do formulário com eventos de input/change.
    * Gerencia estado de erros visualmente.
    */
@@ -174,7 +201,7 @@ export class FormManager {
     this._bound = true;
 
     // Campos de texto
-    const textFields = ['nome', 'curso', 'nascimento', 'cpf'];
+    const textFields = ['nome', 'curso', 'instituicao', 'nascimento', 'cpf', 'codigo'];
     textFields.forEach((field) => {
       const input = document.getElementById(`input-${field}`);
       if (!input) return;
@@ -212,6 +239,14 @@ export class FormManager {
           });
       });
     }
+
+    // Evento de submit do formulário (botão Salvar)
+    form.addEventListener('submit', (e) => {
+      e.preventDefault();
+      if (this.onSave) {
+        this.onSave();
+      }
+    });
   }
 
   /**
@@ -230,6 +265,13 @@ export class FormManager {
         break;
       case 'curso':
         isValid = typeof value === 'string' && value.trim().length > 0;
+        break;
+      case 'instituicao':
+        isValid = typeof value === 'string' && value.trim().length > 0;
+        break;
+      case 'codigo':
+        // Campo opcional — qualquer valor é aceito
+        isValid = true;
         break;
       case 'nascimento':
         // Permite campo vazio durante digitação; valida se tiver 10 chars

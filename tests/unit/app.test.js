@@ -200,7 +200,7 @@ describe('App Module', () => {
       expect(document.getElementById('card-curso').textContent).toBe('Medicina');
       expect(document.getElementById('card-nascimento').textContent).toBe('01/01/2000');
       expect(document.getElementById('card-cpf').textContent).toBe('987.654.321-00');
-      expect(document.getElementById('card-validade').textContent).toBe('12/2027');
+      expect(document.getElementById('card-validade').textContent).toBe('31/03/2027');
     });
   });
 

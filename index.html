@@ -41,8 +41,15 @@
             <div class="card-face card-front">
               <div class="card-landscape-content">
 
-                <!-- Área da Foto -->
+                <!-- Área da Foto + CIE + Nome (Esquerda em landscape -> Topo em portrait) -->
                 <div class="card-left-section">
+                  <div class="card-identity-group">
+                    <div class="cie-header">
+                      <h2>CIE</h2>
+                      <p>Carteira de<br>Identificação<br>Estudantil</p>
+                    </div>
+                    <div class="info-name" id="card-nome" data-placeholder="Nome do estudante"></div>
+                  </div>
                   <div class="photo-placeholder" id="card-photo-wrapper">
                     <img class="photo-img" id="card-photo" src="" alt="Foto do estudante" style="display:none;">
                     <div class="photo-default" id="card-photo-placeholder">
@@ -52,35 +59,33 @@
                   </div>
                 </div>
 
-                <!-- Área Central (Textos) -->
+                <!-- Área Central (Dados do estudante) (Centro em landscape -> Meio em portrait) -->
                 <div class="card-center-section">
-                  <div class="cie-header">
-                    <h2>CIE</h2>
-                    <p>Carteira de<br>Identificação<br>Estudantil</p>
-                  </div>
                   <div class="student-info">
-                    <div class="info-name" id="card-nome" data-placeholder="Nome do estudante"></div>
                     <div class="info-item"><strong>CPF/CIN:</strong> <span id="card-cpf" data-placeholder="000.000.000-00"></span></div>
                     <div class="info-item"><strong>Nasc.:</strong> <span id="card-nascimento" data-placeholder="DD/MM/AAAA"></span></div>
-                    <div class="info-item"><strong>CURSO/SÉRIE:</strong> <span id="card-curso" data-placeholder="Curso"></span></div>
-                    <div class="info-item"><strong>INSTITUIÇÃO:</strong> <span id="card-instituicao" data-placeholder="Instituição"></span></div>
+                    <div class="info-item"><span id="card-curso" data-placeholder="Curso"></span></div>
+                    <div class="info-item"><span id="card-instituicao" data-placeholder="Instituição"></span></div>
                   </div>
                 </div>
 
                 <!-- Área Direita (Logo + QR) -->
                 <div class="card-right-section">
-                  <img src="assets/images/logo-abafe.svg" alt="Logo ABAFE" class="abafe-logo-img">
-                  <div class="qr-wrapper">
-                    <canvas id="qr-canvas" width="80" height="80"></canvas>
-                    <div class="fake-qr" id="qr-placeholder">
-                      <span>QR</span>
+                  <img src="assets/images/logo-abafe.png" alt="Logo ABAFE" class="abafe-logo-img">
+                  <div class="qr-code-box">
+                    <div class="qr-wrapper">
+                      <canvas id="qr-canvas" width="80" height="80"></canvas>
+                      <div class="fake-qr" id="qr-placeholder">
+                        <span>QR</span>
+                      </div>
                     </div>
+                    <div class="card-code-group">
+                      <div class="card-code">CÓD. USO / CIE</div>
+                      <div class="card-codigo" id="card-codigo" data-placeholder="6382B41F"></div>
+                    </div>
+                    <div class="card-year" id="card-seal-year"><img src="assets/images/selo-2026.png" alt="2026" class="selo-2026-img"></div>
+                    <div class="card-validity"><span>Validade: </span><span id="card-validade" data-placeholder="31/03/2027"></span></div>
                   </div>
-                  <div class="card-code">
-                    CÓD. USO / CIE
-                  </div>
-                  <div class="card-year" id="card-seal-year">2026</div>
-                  <div class="card-validity"><span>Validade: </span><span id="card-validade" data-placeholder="31/03/2027"></span></div>
                 </div>
 
               </div>
@@ -151,6 +156,11 @@
             <span class="edit-form__error" id="error-validade" role="alert" aria-live="assertive"></span>
           </div>
           <div class="edit-form__group">
+            <label class="edit-form__label" for="input-codigo">Código de uso (CÓD. USO / CIE)</label>
+            <input class="edit-form__input" type="text" id="input-codigo" name="codigo" maxlength="20" placeholder="Ex: 6382B41F" aria-describedby="error-codigo">
+            <span class="edit-form__error" id="error-codigo" role="alert" aria-live="assertive"></span>
+          </div>
+          <div class="edit-form__group">
             <label class="edit-form__label" for="input-foto">Foto (JPEG ou PNG, máx. 5 MB)</label>
             <input class="edit-form__input edit-form__input--file" type="file" id="input-foto" name="foto" accept="image/jpeg,image/png" aria-describedby="error-foto">
             <span class="edit-form__error" id="error-foto" role="alert" aria-live="assertive"></span>
@@ -189,6 +199,8 @@
   </div>
 
   <!-- Scripts -->
+  <script src="js/vendor/jspdf.umd.min.js"></script>
+  <script src="js/vendor/html2canvas.min.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/qrcode@1.5.4/build/qrcode.min.js"></script>
   <script type="module" src="js/app.js"></script>
 </body>

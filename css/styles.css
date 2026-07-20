@@ -140,7 +140,7 @@ body {
 /* === Frente do Cartão === */
 .card-front {
   background-color: var(--cor-fundo-carteira);
-  background-image: url('../assets/images/card-bg.svg');
+  background-image: url('../assets/images/card-bg.jpg');
   background-size: cover;
   background-position: center;
   background-repeat: no-repeat;
@@ -172,9 +172,21 @@ body {
 
 /* === Área da Foto (Esquerda) === */
 .card-left-section {
-  width: 160px;
-  padding: 30px 0 0 20px;
+  width: 140px;
+  padding: 15px 0 15px 15px;
   z-index: 2;
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-start;
+  gap: 10px;
+  align-items: flex-start;
+}
+
+.card-identity-group {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  align-items: flex-start;
 }
 
 .photo-placeholder {
@@ -226,11 +238,11 @@ body {
 /* === Área Central (Textos) === */
 .card-center-section {
   flex: 1;
-  padding: 20px 10px;
+  padding: 95px 5px 20px 5px; /* Alinha o início dos dados com a borda direita da foto no modo retrato (pontos vermelhos) */
   z-index: 2;
   display: flex;
   flex-direction: column;
-  justify-content: center;
+  justify-content: flex-start;
 }
 
 .cie-header {
@@ -238,8 +250,6 @@ body {
   align-items: flex-start;
   gap: 5px;
   color: var(--cor-primaria);
-  margin-bottom: 25px;
-  margin-left: 20px;
 }
 
 .cie-header h2 {
@@ -259,25 +269,39 @@ body {
 .student-info {
   display: flex;
   flex-direction: column;
-  gap: 12px;
+  gap: 8px; /* Reduzido de 12px para 8px para ficar mais compacto e perto da foto */
 }
 
 .info-item {
   font-size: 12px;
   color: #111;
+  white-space: nowrap; /* Garante que os dados do estudante fiquem em linha única */
 }
 
 .info-item strong {
   font-weight: 800;
   margin-right: 4px;
+}
+
+#card-curso {
+  font-weight: bold;
+  text-transform: uppercase;
+  white-space: normal;     /* Permite quebra de linha */
+  word-break: break-word;  /* Quebra se necessário */
+  max-width: 110px;        /* Limita largura para caber ~2 linhas */
+  line-height: 1.3;
+}
+
+#card-instituicao {
+  font-weight: bold;
   text-transform: uppercase;
 }
 
 .info-name {
   font-size: 16px;
   font-weight: bold;
-  margin-bottom: 5px;
   color: var(--cor-texto-principal);
+  white-space: nowrap;
 }
 
 /* Placeholder styles for card fields */
@@ -294,25 +318,42 @@ body {
 /* === Área Direita (Logo + QR) === */
 .card-right-section {
   width: 140px;
-  background-color: #fff;
+  height: 100%; /* Preenche 100% da altura do landscape (que é a largura do cartão no retrato) */
   z-index: 2;
   display: flex;
   flex-direction: column;
   align-items: center;
+  justify-content: flex-end; /* Garante que o bloco branco seja empurrado até a borda esquerda no modo retrato */
+  gap: 10px;
+  padding: 15px 10px 0 10px; /* Sem padding inferior para encostar na borda esquerda do cartão */
+  margin-right: 28px; /* Afastamento da base do cartão (portrait bottom) */
+  background: transparent; /* Fundo transparente para que o logo fique fora do campo branco */
+}
+
+.qr-code-box {
+  width: 100%;
+  flex: 1; /* Expande até encostar perfeitamente no final/canto esquerdo do cartão */
+  background-color: #fff;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
   justify-content: space-between;
-  padding: 20px 10px;
-  box-shadow: -2px 0 10px rgba(0,0,0,0.05);
+  padding: 10px 5px;
+  box-shadow: 0 0 10px rgba(0,0,0,0.1);
+  border-radius: 0; /* Cantos bem quadrados, não arredondados */
+  margin-bottom: 0; /* Colado na borda esquerda do cartão */
 }
 
 .abafe-logo-img {
-  width: 90px;
+  width: 150px; /* Aumentado para coincidir com a altura do card do QR code no modo retrato */
   height: auto;
   object-fit: contain;
+  mix-blend-mode: multiply; /* Remove o fundo branco da imagem */
 }
 
 .qr-wrapper {
-  width: 80px;
-  height: 80px;
+  width: 70px;
+  height: 70px;
 }
 
 .qr-wrapper canvas {
@@ -322,35 +363,66 @@ body {
 }
 
 .fake-qr {
-  width: 80px;
-  height: 80px;
+  width: 70px;
+  height: 70px;
   background-image: linear-gradient(45deg, #000 25%, transparent 25%, transparent 75%, #000 75%, #000),
                     linear-gradient(45deg, #000 25%, transparent 25%, transparent 75%, #000 75%, #000);
-  background-size: 10px 10px;
-  background-position: 0 0, 5px 5px;
+  background-size: 9px 9px;
+  background-position: 0 0, 4.5px 4.5px;
   border: 2px solid #000;
   padding: 4px;
   display: flex;
   align-items: center;
   justify-content: center;
-  font-size: 10px;
+  font-size: 9px;
   color: #666;
 }
 
+.card-code-group {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 2px;
+}
+
 .card-code {
-  font-size: 10px;
+  font-size: 7px;
   font-weight: bold;
-  text-align: center;
+  text-align: left;
   color: #555;
-  margin-top: 8px;
+  letter-spacing: 0.5px;
+  text-transform: uppercase;
+}
+
+.card-codigo {
+  font-size: 13px;
+  font-weight: 900;
+  color: #111; /* Preto, igual aos demais dados do cartão */
+  letter-spacing: 1px;
+  line-height: 1;
+  white-space: nowrap;
+}
+
+.card-codigo:empty::before {
+  content: attr(data-placeholder);
+  color: #aaa;
+  font-weight: 900;
+  font-size: 13px;
 }
 
 .card-year {
-  font-size: 24px;
-  font-weight: 900;
-  color: var(--cor-primaria);
-  transform: scaleX(1.2);
-  letter-spacing: -1px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+}
+
+.selo-2026-img {
+  width: 40px;
+  height: auto;
+  object-fit: contain;
+  display: block;
+  transform: rotate(270deg); /* Rotaciona 180 graus para ler na mesma direção das outras informações */
 }
 
 .card-validity {
@@ -533,8 +605,17 @@ body {
   }
 
   .card-left-section {
-    width: 130px;
-    padding: 20px 0 0 15px;
+    width: 120px;
+    padding: 10px 0 10px 10px;
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-start;
+    gap: 8px;
+    align-items: flex-start;
+  }
+
+  .card-center-section {
+    padding: 75px 5px 20px 5px;
   }
 
   .photo-placeholder {
@@ -544,6 +625,9 @@ body {
 
   .card-right-section {
     width: 120px;
+    height: 100%;
+    padding: 10px 5px 0 5px;
+    margin-right: 20px;
   }
 
   .cie-header h2 {
@@ -551,7 +635,7 @@ body {
   }
 
   .abafe-logo-img {
-    width: 70px;
+    width: 105px;
   }
 }
 

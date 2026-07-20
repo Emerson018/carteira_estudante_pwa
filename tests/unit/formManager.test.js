@@ -127,6 +127,7 @@ describe('FormManager', () => {
       const result = fm.validate({
         nome: 'Maria Silva',
         curso: 'Ciência da Computação',
+        instituicao: 'Uniritter',
         nascimento: '15/03/2000',
         cpf: '12345678901',
         validade: new Date().getFullYear() + 1
@@ -136,37 +137,43 @@ describe('FormManager', () => {
     });
 
     it('retorna erro para nome vazio', () => {
-      const result = fm.validate({ nome: '', curso: 'Curso', nascimento: '', cpf: '', validade: '' });
+      const result = fm.validate({ nome: '', curso: 'Curso', instituicao: 'Uniritter', nascimento: '', cpf: '', validade: '' });
       expect(result.isValid).toBe(false);
       expect(result.errors.nome).toBeDefined();
     });
 
     it('retorna erro para curso vazio', () => {
-      const result = fm.validate({ nome: 'Teste', curso: '', nascimento: '', cpf: '', validade: '' });
+      const result = fm.validate({ nome: 'Teste', curso: '', instituicao: 'Uniritter', nascimento: '', cpf: '', validade: '' });
       expect(result.isValid).toBe(false);
       expect(result.errors.curso).toBeDefined();
     });
 
+    it('retorna erro para instituição vazia', () => {
+      const result = fm.validate({ nome: 'Teste', curso: 'Curso', instituicao: '', nascimento: '', cpf: '', validade: '' });
+      expect(result.isValid).toBe(false);
+      expect(result.errors.instituicao).toBeDefined();
+    });
+
     it('retorna erro para nascimento inválido', () => {
-      const result = fm.validate({ nome: 'Teste', curso: 'Curso', nascimento: '99/99/9999', cpf: '', validade: '' });
+      const result = fm.validate({ nome: 'Teste', curso: 'Curso', instituicao: 'Uniritter', nascimento: '99/99/9999', cpf: '', validade: '' });
       expect(result.isValid).toBe(false);
       expect(result.errors.nascimento).toBeDefined();
     });
 
     it('retorna erro para CPF inválido', () => {
-      const result = fm.validate({ nome: 'Teste', curso: 'Curso', nascimento: '', cpf: '123', validade: '' });
+      const result = fm.validate({ nome: 'Teste', curso: 'Curso', instituicao: 'Uniritter', nascimento: '', cpf: '123', validade: '' });
       expect(result.isValid).toBe(false);
       expect(result.errors.cpf).toBeDefined();
     });
 
     it('retorna erro para validade inválida', () => {
-      const result = fm.validate({ nome: 'Teste', curso: 'Curso', nascimento: '', cpf: '', validade: 1999 });
+      const result = fm.validate({ nome: 'Teste', curso: 'Curso', instituicao: 'Uniritter', nascimento: '', cpf: '', validade: 1999 });
       expect(result.isValid).toBe(false);
       expect(result.errors.validade).toBeDefined();
     });
 
     it('não valida campos opcionais quando vazios', () => {
-      const result = fm.validate({ nome: 'Teste', curso: 'Curso', nascimento: '', cpf: '', validade: '' });
+      const result = fm.validate({ nome: 'Teste', curso: 'Curso', instituicao: 'Uniritter', nascimento: '', cpf: '', validade: '' });
       expect(result.isValid).toBe(true);
     });
   });

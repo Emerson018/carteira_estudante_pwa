@@ -12,5 +12,9 @@
     "fast-check": "4.8.0",
     "happy-dom": "20.10.6",
     "vitest": "4.1.9"
+  },
+  "dependencies": {
+    "html2canvas": "^1.4.1",
+    "jspdf": "^4.2.1"
   }
 }

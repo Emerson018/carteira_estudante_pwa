@@ -9,6 +9,7 @@ import { CardManager } from './cardManager.js';
 import { FormManager } from './formManager.js';
 import { QRManager } from './qrManager.js';
 import { NavigationManager } from './navigationManager.js';
+import { PDFGenerator } from './pdfGenerator.js';
 
 /**
  * Dados padrão do estudante quando não há dados salvos.
@@ -16,9 +17,11 @@ import { NavigationManager } from './navigationManager.js';
 const DEFAULT_STUDENT_DATA = {
   nome: '',
   curso: '',
+  instituicao: '',
   nascimento: '',
   cpf: '',
   validade: new Date().getFullYear() + 1,
+  codigo: '',
   foto: null
 };
 
@@ -36,9 +39,10 @@ export class App {
     this.studentData = { ...DEFAULT_STUDENT_DATA };
     this.storageManager = null;
     this.cardManager = null;
-    this.qrManager = null;
     this.formManager = null;
+    this.qrManager = null;
     this.navigationManager = null;
+    this.pdfGenerator = null;
   }
 
   /**
@@ -130,6 +134,21 @@ export class App {
   }
 
   /**
+   * Chamado quando o usuário clica no botão "Salvar".
+   * Salva os dados e gera o PDF do certificado baseado no modelo certificado.pdf.
+   */
+  async onSave() {
+    this.showNotification('Gerando certificado PDF...');
+    try {
+      await this.pdfGenerator.generatePDF(this.studentData);
+      this.showNotification('Carteirinha salva e PDF gerado com sucesso!');
+    } catch (err) {
+      console.error('Erro ao gerar PDF:', err);
+      this.showNotification('Carteirinha salva com sucesso!');
+    }
+  }
+
+  /**
    * Alterna a visibilidade da seção do formulário de edição.
    */
   toggleEditForm() {
@@ -186,13 +205,18 @@ export class App {
       this.cardManager.updateCard(this.studentData);
     }
 
-    // g. Criar FormManager com callbacks
+    // g. Criar PDFGenerator
+    this.pdfGenerator = new PDFGenerator();
+
+    // h. Criar FormManager com callbacks
     this.formManager = new FormManager({
       onFieldChange: (field, value) => this.onFieldChange(field, value),
-      onPhotoChange: (dataUrl) => this.onPhotoChange(dataUrl)
+      onPhotoChange: (dataUrl) => this.onPhotoChange(dataUrl),
+      onSave: () => this.onSave()
     });
 
-    // h. Bind form events
+    // i. Preencher formulário e bind form events
+    this.formManager.populateForm(this.studentData);
     this.formManager.bindForm();
 
     // i. Criar NavigationManager (auto-binds tab clicks no constructor)

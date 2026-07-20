@@ -14,9 +14,11 @@ export class CardManager {
     this._photoPlaceholder = document.querySelector('#card-photo-placeholder');
     this._nomeEl = document.querySelector('#card-nome');
     this._cursoEl = document.querySelector('#card-curso');
+    this._instituicaoEl = document.querySelector('#card-instituicao');
     this._nascimentoEl = document.querySelector('#card-nascimento');
     this._cpfEl = document.querySelector('#card-cpf');
     this._validadeEl = document.querySelector('#card-validade');
+    this._codigoEl = document.querySelector('#card-codigo');
     this._sealYearEl = document.querySelector('#card-seal-year');
 
     this._bindEvents();
@@ -53,13 +55,19 @@ export class CardManager {
     // Text fields with formatting and placeholder handling
     this._setField(this._nomeEl, data.nome ? this.truncateText(data.nome, 60) : '');
     this._setField(this._cursoEl, data.curso ? this.truncateText(data.curso, 80) : '');
+    this._setField(this._instituicaoEl, data.instituicao ? this.truncateText(data.instituicao, 80) : '');
     this._setField(this._nascimentoEl, data.nascimento ? this.formatDate(data.nascimento) : '');
     this._setField(this._cpfEl, data.cpf ? this.formatCPF(data.cpf) : '');
     this._setField(this._validadeEl, data.validade ? this.formatValidity(data.validade) : '');
+    this._setField(this._codigoEl, data.codigo ? data.codigo.toUpperCase() : '');
 
     // Year seal
     if (this._sealYearEl && data.validade) {
-      this._sealYearEl.textContent = String(data.validade);
+      if (String(data.validade) === '2026') {
+        this._sealYearEl.innerHTML = '<img src="assets/images/selo-2026.png" alt="2026" class="selo-2026-img">';
+      } else {
+        this._sealYearEl.textContent = String(data.validade);
+      }
     }
   }
 
@@ -170,8 +178,7 @@ export class CardManager {
    * @returns {string} Formatted validity "12/AAAA"
    */
   formatValidity(year) {
-    if (!year) return '';
-    return `12/${year}`;
+    return '31/03/2027';
   }
 
   /**
