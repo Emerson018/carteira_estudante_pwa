@@ -67,13 +67,13 @@ export class PDFGenerator {
         }
         .pdf-banner {
           width: 100%;
-          background: #00887A;
+          background: #00E6B8;
           padding: 28px 0;
           text-align: center;
         }
         .pdf-banner h1 {
           margin: 0;
-          color: #ffffff;
+          color: #00887A;
           font-size: 30px;
           font-weight: normal;
           letter-spacing: 0px;
@@ -112,14 +112,14 @@ export class PDFGenerator {
           background: #eeeeee;
         }
         .pdf-cod-label {
-          color: #008785;
+          color: #00BFA5;
           font-weight: 700;
           font-size: 13px;
           margin-top: 15px;
         }
         .pdf-cod-val {
           color: #000000;
-          font-weight: 900;
+          font-weight: normal;
           font-size: 16px;
           margin-top: 2px;
         }
@@ -130,7 +130,7 @@ export class PDFGenerator {
         }
         .pdf-student-name {
           font-size: 22px;
-          font-weight: 900;
+          font-weight: normal;
           color: #000000;
           margin-bottom: 15px;
         }
@@ -138,7 +138,7 @@ export class PDFGenerator {
           margin-bottom: 10px;
         }
         .pdf-field-label {
-          color: #008785;
+          color: #00BFA5;
           font-size: 12px;
           font-weight: 700;
         }
@@ -158,7 +158,7 @@ export class PDFGenerator {
           height: 110px;
         }
         .pdf-section-title {
-          color: #008785;
+          color: #00BFA5;
           font-size: 16px;
           font-weight: 700;
           margin-top: 20px;
