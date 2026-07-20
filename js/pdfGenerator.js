@@ -67,7 +67,7 @@ export class PDFGenerator {
         }
         .pdf-banner {
           width: 100%;
-          background: #00D8A6;
+          background: #00887A;
           padding: 28px 0;
           text-align: center;
         }
@@ -75,7 +75,7 @@ export class PDFGenerator {
           margin: 0;
           color: #ffffff;
           font-size: 30px;
-          font-weight: 900;
+          font-weight: normal;
           letter-spacing: 0px;
         }
         .pdf-body {
@@ -112,7 +112,7 @@ export class PDFGenerator {
           background: #eeeeee;
         }
         .pdf-cod-label {
-          color: #00BFA5;
+          color: #008785;
           font-weight: 700;
           font-size: 13px;
           margin-top: 15px;
@@ -138,7 +138,7 @@ export class PDFGenerator {
           margin-bottom: 10px;
         }
         .pdf-field-label {
-          color: #00BFA5;
+          color: #008785;
           font-size: 12px;
           font-weight: 700;
         }
@@ -158,7 +158,7 @@ export class PDFGenerator {
           height: 110px;
         }
         .pdf-section-title {
-          color: #00BFA5;
+          color: #008785;
           font-size: 16px;
           font-weight: 700;
           margin-top: 20px;
