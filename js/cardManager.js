@@ -62,12 +62,8 @@ export class CardManager {
     this._setField(this._codigoEl, data.codigo ? data.codigo.toUpperCase() : '');
 
     // Year seal
-    if (this._sealYearEl && data.validade) {
-      if (String(data.validade) === '2026') {
-        this._sealYearEl.innerHTML = '<img src="assets/images/selo-2026.png" alt="2026" class="selo-2026-img">';
-      } else {
-        this._sealYearEl.textContent = String(data.validade);
-      }
+    if (this._sealYearEl) {
+      this._sealYearEl.innerHTML = '<img src="assets/images/selo-2026.png" alt="2026" class="selo-2026-img">';
     }
   }
 
