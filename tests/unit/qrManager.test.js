@@ -9,56 +9,37 @@ describe('QRManager', () => {
   });
 
   describe('buildQRData', () => {
-    it('deve montar string no formato CIE|Nome:...|CPF:...|Validade:...', () => {
+    it('deve montar URL para o documento PDF online', () => {
       const result = qrManager.buildQRData({
         nome: 'Maria Silva',
         cpf: '12345678901',
-        validade: 2026
+        codigo: '6382b41f'
       });
 
-      expect(result).toBe('CIE|Nome:Maria Silva|CPF:12345678901|Validade:2026');
+      expect(result).toContain('/assets/referencia/certificado.pdf');
+      expect(result).toContain('code=6382b41f');
+      expect(result).toContain('cpf=12345678901');
+      expect(result).toContain('nome=Maria%20Silva');
     });
 
-    it('deve incluir nome completo com espaços e caracteres acentuados', () => {
+    it('deve incluir nome completo codificado e código de uso', () => {
       const result = qrManager.buildQRData({
         nome: 'José Araújo da Conceição',
         cpf: '98765432100',
-        validade: 2027
+        codigo: 'ABC12345'
       });
 
-      expect(result).toBe('CIE|Nome:José Araújo da Conceição|CPF:98765432100|Validade:2027');
+      expect(result).toContain('code=abc12345');
+      expect(result).toContain('nome=Jos%C3%A9%20Ara%C3%BAjo%20da%20Concei%C3%A7%C3%A3o');
     });
 
-    it('deve aceitar validade como string', () => {
+    it('deve usar código padrão se código não for fornecido', () => {
       const result = qrManager.buildQRData({
         nome: 'Ana',
-        cpf: '11122233344',
-        validade: '2028'
+        cpf: '11122233344'
       });
 
-      expect(result).toBe('CIE|Nome:Ana|CPF:11122233344|Validade:2028');
-    });
-
-    it('deve gerar string que contém todos os campos fornecidos', () => {
-      const nome = 'Carlos Eduardo';
-      const cpf = '55566677788';
-      const validade = 2025;
-
-      const result = qrManager.buildQRData({ nome, cpf, validade });
-
-      expect(result).toContain(nome);
-      expect(result).toContain(cpf);
-      expect(result).toContain(String(validade));
-    });
-
-    it('deve começar com prefixo CIE|', () => {
-      const result = qrManager.buildQRData({
-        nome: 'Teste',
-        cpf: '00000000000',
-        validade: 2026
-      });
-
-      expect(result.startsWith('CIE|')).toBe(true);
+      expect(result).toContain('code=6382b41f');
     });
   });
 
@@ -98,7 +79,7 @@ describe('QRManager', () => {
       const result = qrManager.generate({
         nome: 'Maria Silva',
         cpf: '12345678901',
-        validade: 2026
+        codigo: '6382b41f'
       });
 
       expect(result).toBe(true);
@@ -106,7 +87,7 @@ describe('QRManager', () => {
       expect(placeholder.style.display).toBe('none');
       expect(globalThis.QRCode.toCanvas).toHaveBeenCalledWith(
         canvas,
-        'CIE|Nome:Maria Silva|CPF:12345678901|Validade:2026',
+        expect.stringContaining('/assets/referencia/certificado.pdf'),
         { width: 80, margin: 1, errorCorrectionLevel: 'M' }
       );
 

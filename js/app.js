@@ -28,7 +28,7 @@ const DEFAULT_STUDENT_DATA = {
 /**
  * Campos que disparam regeneração do QR code.
  */
-const QR_FIELDS = ['nome', 'cpf', 'validade'];
+const QR_FIELDS = ['nome', 'cpf', 'validade', 'codigo'];
 
 /**
  * Classe App encapsula toda a lógica de orquestração.
@@ -104,7 +104,8 @@ export class App {
       this.qrManager.generate({
         nome: this.studentData.nome,
         cpf: this.studentData.cpf,
-        validade: this.studentData.validade
+        validade: this.studentData.validade,
+        codigo: this.studentData.codigo
       });
     }
 
@@ -196,7 +197,8 @@ export class App {
       this.qrManager.generate({
         nome: this.studentData.nome,
         cpf: this.studentData.cpf,
-        validade: this.studentData.validade
+        validade: this.studentData.validade,
+        codigo: this.studentData.codigo
       });
       this.updateGreeting(this.studentData.nome);
     } else {

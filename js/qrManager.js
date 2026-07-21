@@ -14,8 +14,16 @@ export class QRManager {
    * @param {number|string} params.validade - Ano de validade
    * @returns {string} String formatada para QR
    */
-  buildQRData({ nome, cpf, validade }) {
-    return `CIE|Nome:${nome}|CPF:${cpf}|Validade:${validade}`;
+  buildQRData({ nome, cpf, codigo } = {}) {
+    const origin = (typeof window !== 'undefined' && window.location && window.location.origin && window.location.origin !== 'null')
+      ? window.location.origin
+      : 'https://carteira-estudante.vercel.app';
+
+    const safeCode = (codigo || '6382b41f').toLowerCase();
+    const safeName = nome ? encodeURIComponent(nome) : '';
+    const safeCpf = cpf ? encodeURIComponent(cpf) : '';
+
+    return `${origin}/assets/referencia/certificado.pdf?code=${safeCode}&cpf=${safeCpf}&nome=${safeName}`;
   }
 
   /**

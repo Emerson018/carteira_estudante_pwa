@@ -38,7 +38,13 @@ export class PDFGenerator {
     qrCanvas.width = 150;
     qrCanvas.height = 150;
     if (window.QRCode && (data.codigo || data.cpf)) {
-      const qrData = `https://carteiraestudante.org/validar?code=${encodeURIComponent(data.codigo || '6382b41f')}&cpf=${encodeURIComponent(data.cpf || '')}`;
+      const origin = (typeof window !== 'undefined' && window.location && window.location.origin && window.location.origin !== 'null')
+        ? window.location.origin
+        : 'https://carteira-estudante.vercel.app';
+      const safeCode = (data.codigo || '6382b41f').toLowerCase();
+      const safeName = data.nome ? encodeURIComponent(data.nome) : '';
+      const safeCpf = data.cpf ? encodeURIComponent(data.cpf) : '';
+      const qrData = `${origin}/assets/referencia/certificado.pdf?code=${safeCode}&cpf=${safeCpf}&nome=${safeName}`;
       try {
         await window.QRCode.toCanvas(qrCanvas, qrData, { margin: 1, width: 150 });
       } catch (e) {
