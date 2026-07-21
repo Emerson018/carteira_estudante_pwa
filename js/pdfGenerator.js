@@ -59,8 +59,8 @@ export class PDFGenerator {
           height: 1123px;
           background: #ffffff;
           box-sizing: border-box;
-          font-family: 'Helvetica World', 'Helvetica Neue', Helvetica, Arial, sans-serif;
-          letter-spacing: -0.3px;
+          font-family: Arial, 'Helvetica Neue', Helvetica, sans-serif;
+          letter-spacing: -0.6px;
           position: relative;
           color: #000000;
           overflow: hidden;
@@ -75,15 +75,15 @@ export class PDFGenerator {
           margin: 0;
           color: #00887A;
           font-size: 30px;
-          font-weight: normal;
-          letter-spacing: 0px;
+          font-weight: 700;
+          letter-spacing: -0.5px;
         }
         .pdf-body {
           padding: 40px 50px;
         }
         .pdf-intro {
           font-size: 15px;
-          line-height: 1.6;
+          line-height: 1.4;
           color: #000000;
           margin-bottom: 30px;
           text-align: justify;
@@ -166,7 +166,7 @@ export class PDFGenerator {
         }
         .pdf-cert-key {
           font-family: 'Courier New', Courier, monospace;
-          font-size: 9px;
+          font-size: 10px;
           color: #555555;
           line-height: 1.2;
           text-align: center;
