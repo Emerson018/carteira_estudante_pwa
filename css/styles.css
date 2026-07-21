@@ -140,7 +140,7 @@ body {
 /* === Frente do Cartão === */
 .card-front {
   background-color: var(--cor-fundo-carteira);
-  background-image: url('../assets/images/card-bg.jpg');
+  background-image: url('../assets/images/card-bg.png');
   background-size: cover;
   background-position: center;
   background-repeat: no-repeat;
