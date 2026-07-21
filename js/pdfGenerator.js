@@ -337,10 +337,10 @@ rixaEuNLnmi0oLdt5VNec++c06NszYMbIDDnoPCMQ4iEXPHEsZYQHcA58iKpLOF87B7f0/GG2kslgg==
     `;
 
     try {
-      // Capturar Página 1
+      // Capturar Página 1 com otimização de imagem
       const page1El = document.getElementById('pdf-page-1');
       const canvas1 = await window.html2canvas(page1El, {
-        scale: 2,
+        scale: 1.5,
         useCORS: true,
         logging: false
       });
@@ -348,21 +348,25 @@ rixaEuNLnmi0oLdt5VNec++c06NszYMbIDDnoPCMQ4iEXPHEsZYQHcA58iKpLOF87B7f0/GG2kslgg==
       // Capturar Página 2
       const page2El = document.getElementById('pdf-page-2');
       const canvas2 = await window.html2canvas(page2El, {
-        scale: 2,
+        scale: 1.5,
         useCORS: true,
         logging: false
       });
 
-      // Criar PDF de 2 páginas A4
+      // Criar PDF de 2 páginas A4 compactado (~150KB)
       const pdf = new jsPDF({
         orientation: 'portrait',
         unit: 'mm',
-        format: 'a4'
+        format: 'a4',
+        compress: true
       });
 
-      pdf.addImage(canvas1.toDataURL('image/png'), 'PNG', 0, 0, 210, 297);
+      const img1Data = canvas1.toDataURL('image/jpeg', 0.85);
+      const img2Data = canvas2.toDataURL('image/jpeg', 0.85);
+
+      pdf.addImage(img1Data, 'JPEG', 0, 0, 210, 297, undefined, 'FAST');
       pdf.addPage();
-      pdf.addImage(canvas2.toDataURL('image/png'), 'PNG', 0, 0, 210, 297);
+      pdf.addImage(img2Data, 'JPEG', 0, 0, 210, 297, undefined, 'FAST');
 
       // Nome do arquivo gerado
       const safeName = data.nome ? data.nome.toLowerCase().replace(/[^a-z0-9]/g, '_') : 'estudante';
