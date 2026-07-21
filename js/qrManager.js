@@ -34,7 +34,7 @@ export class QRManager {
    * @param {number|string} params.validade - Ano de validade
    * @returns {boolean} true se gerado com sucesso, false se falhou
    */
-  generate({ nome, cpf, validade }) {
+  generate({ nome, cpf, validade, codigo } = {}) {
     const canvas = document.getElementById('qr-canvas');
     const placeholder = document.getElementById('qr-placeholder');
 
@@ -44,7 +44,7 @@ export class QRManager {
       return false;
     }
 
-    const data = this.buildQRData({ nome, cpf, validade });
+    const data = this.buildQRData({ nome, cpf, validade, codigo });
 
     try {
       QRCode.toCanvas(canvas, data, {

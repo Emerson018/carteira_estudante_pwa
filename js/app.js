@@ -205,6 +205,7 @@ export class App {
       // f. Sem dados: saudação padrão e placeholders
       this.updateGreeting('');
       this.cardManager.updateCard(this.studentData);
+      this.qrManager.generate(this.studentData);
     }
 
     // g. Criar PDFGenerator
