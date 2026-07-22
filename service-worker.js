@@ -1,7 +1,7 @@
 // Service Worker - Carteirinha Estudantil PWA
 // Estratégia: Cache-first para assets estáticos, fallback offline
 
-const CACHE_NAME = 'cie-pwa-v4';
+const CACHE_NAME = 'cie-pwa-v5';
 
 const ASSETS_TO_CACHE = [
   './index.html',
@@ -15,6 +15,7 @@ const ASSETS_TO_CACHE = [
   './js/pdfGenerator.js',
   './js/vendor/jspdf.umd.min.js',
   './js/vendor/html2canvas.min.js',
+  './js/vendor/qrcode.min.js',
   './manifest.json',
   './assets/icons/icon-192x192.png',
   './assets/icons/icon-512x512.png',
@@ -26,8 +27,7 @@ const ASSETS_TO_CACHE = [
   './assets/images/selo-2026.png',
   './assets/images/selo-2026.svg',
   './assets/images/foto-generica.svg',
-  './assets/images/card-bg.svg',
-  'https://cdn.jsdelivr.net/npm/qrcode@1.5.4/build/qrcode.min.js'
+  './assets/images/card-bg.svg'
 ];
 
 // Evento install: pre-cache de todos os assets essenciais
