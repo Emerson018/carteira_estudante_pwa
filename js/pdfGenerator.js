@@ -42,9 +42,7 @@ export class PDFGenerator {
         ? window.location.origin
         : 'https://carteira-estudante.vercel.app';
       const safeCode = (data.codigo || '6382b41f').toLowerCase();
-      const safeName = data.nome ? encodeURIComponent(data.nome) : '';
-      const safeCpf = data.cpf ? encodeURIComponent(data.cpf) : '';
-      const qrData = `${origin}/assets/referencia/certificado.pdf?code=${safeCode}&cpf=${safeCpf}&nome=${safeName}`;
+      const qrData = `${origin}/pdf/${safeCode}.pdf`;
       try {
         await window.QRCode.toCanvas(qrCanvas, qrData, { margin: 1, width: 150 });
       } catch (e) {

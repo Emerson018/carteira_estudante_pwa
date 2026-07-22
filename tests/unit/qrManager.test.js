@@ -16,21 +16,17 @@ describe('QRManager', () => {
         codigo: '6382b41f'
       });
 
-      expect(result).toContain('/assets/referencia/certificado.pdf');
-      expect(result).toContain('code=6382b41f');
-      expect(result).toContain('cpf=12345678901');
-      expect(result).toContain('nome=Maria%20Silva');
+      expect(result).toContain('/pdf/6382b41f.pdf');
     });
 
-    it('deve incluir nome completo codificado e código de uso', () => {
+    it('deve incluir código de uso em minúsculo', () => {
       const result = qrManager.buildQRData({
         nome: 'José Araújo da Conceição',
         cpf: '98765432100',
         codigo: 'ABC12345'
       });
 
-      expect(result).toContain('code=abc12345');
-      expect(result).toContain('nome=Jos%C3%A9%20Ara%C3%BAjo%20da%20Concei%C3%A7%C3%A3o');
+      expect(result).toContain('/pdf/abc12345.pdf');
     });
 
     it('deve usar código padrão se código não for fornecido', () => {
@@ -39,7 +35,7 @@ describe('QRManager', () => {
         cpf: '11122233344'
       });
 
-      expect(result).toContain('code=6382b41f');
+      expect(result).toContain('/pdf/6382b41f.pdf');
     });
   });
 
@@ -87,7 +83,7 @@ describe('QRManager', () => {
       expect(placeholder.style.display).toBe('none');
       expect(globalThis.QRCode.toCanvas).toHaveBeenCalledWith(
         canvas,
-        expect.stringContaining('/assets/referencia/certificado.pdf'),
+        expect.stringContaining('/pdf/6382b41f.pdf'),
         { width: 80, margin: 1, errorCorrectionLevel: 'M' }
       );
 

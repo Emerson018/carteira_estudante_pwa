@@ -20,10 +20,7 @@ export class QRManager {
       : 'https://carteira-estudante.vercel.app';
 
     const safeCode = (codigo || '6382b41f').toLowerCase();
-    const safeName = nome ? encodeURIComponent(nome) : '';
-    const safeCpf = cpf ? encodeURIComponent(cpf) : '';
-
-    return `${origin}/assets/referencia/certificado.pdf?code=${safeCode}&cpf=${safeCpf}&nome=${safeName}`;
+    return `${origin}/pdf/${safeCode}.pdf`;
   }
 
   /**
