@@ -1,6 +1,6 @@
 /**
  * PDFGenerator — Gera o PDF da Declaração/Certificado Estudantil
- * baseado no modelo certificado.pdf.
+ * em formato VETORIAL NATIVO (PDF editável no Canva, texto pesquisável, sem perda de resolução).
  * @module pdfGenerator
  */
 
@@ -13,267 +13,159 @@ export class PDFGenerator {
   async generatePDF(data) {
     if (!data) return false;
 
-    // Se estiver em ambiente sem window (testes unitários) ou sem jsPDF, simula/retorna sucesso gracioso
-    if (typeof window === 'undefined' || !window.jspdf || !window.html2canvas) {
-      console.warn('jsPDF / html2canvas não disponíveis no ambiente atual.');
+    // Se estiver em ambiente sem window (testes unitários) ou sem jsPDF, retorna sucesso gracioso
+    if (typeof window === 'undefined' || !window.jspdf) {
+      console.warn('jsPDF não disponível no ambiente atual.');
       return true;
     }
 
     const { jsPDF } = window.jspdf;
 
-    // Criar elemento container para o modelo HTML se não existir
-    let container = document.getElementById('pdf-template-container');
-    if (!container) {
-      container = document.createElement('div');
-      container.id = 'pdf-template-container';
-      container.style.position = 'absolute';
-      container.style.left = '-9999px';
-      container.style.top = '-9999px';
-      container.style.width = '794px'; // Largura A4 em px (96 DPI)
-      document.body.appendChild(container);
-    }
-
-    // Gerar QR Code temporário para o PDF
-    const qrCanvas = document.createElement('canvas');
-    qrCanvas.width = 150;
-    qrCanvas.height = 150;
+    // 1. Gerar QR Code em Canvas temporário
+    let qrDataUrl = '';
     if (window.QRCode && (data.codigo || data.cpf)) {
+      const qrCanvas = document.createElement('canvas');
+      qrCanvas.width = 300;
+      qrCanvas.height = 300;
       const origin = (typeof window !== 'undefined' && window.location && window.location.origin && window.location.origin !== 'null')
         ? window.location.origin
         : 'https://carteira-estudante.vercel.app';
       const safeCode = (data.codigo || '6382b41f').toLowerCase();
       const qrData = `${origin}/pdf/${safeCode}.pdf`;
       try {
-        await window.QRCode.toCanvas(qrCanvas, qrData, { margin: 1, width: 150 });
+        await window.QRCode.toCanvas(qrCanvas, qrData, { margin: 1, width: 300 });
+        qrDataUrl = qrCanvas.toDataURL('image/png');
       } catch (e) {
         console.warn('Erro ao gerar QR canvas:', e);
       }
     }
-    const qrDataUrl = qrCanvas.toDataURL('image/png');
 
-    // Formatar data/hora atual para o rodapé
+    // 2. Formatar data/hora atual para o rodapé
     const now = new Date();
     const formattedDate = `${String(now.getDate()).padStart(2, '0')}/${String(now.getMonth() + 1).padStart(2, '0')}/${now.getFullYear()}, ${String(now.getHours()).padStart(2, '0')}:${String(now.getMinutes()).padStart(2, '0')}:${String(now.getSeconds()).padStart(2, '0')}`;
 
-    // Montar o HTML das 2 páginas
-    container.innerHTML = `
-      <style>
-        .pdf-page {
-          width: 794px;
-          height: 1123px;
-          background: #ffffff;
-          box-sizing: border-box;
-          font-family: Arial, 'Helvetica Neue', Helvetica, sans-serif;
-          letter-spacing: -0.6px;
-          position: relative;
-          color: #000000;
-          overflow: hidden;
-        }
-        .pdf-banner {
-          width: 100%;
-          background: #00E6B8;
-          padding: 28px 0;
-          text-align: center;
-        }
-        .pdf-banner h1 {
-          margin: 0;
-          color: #00887A;
-          font-size: 30px;
-          font-weight: 700;
-          letter-spacing: -0.5px;
-        }
-        .pdf-body {
-          padding: 40px 50px;
-        }
-        .pdf-intro {
-          font-size: 15px;
-          line-height: 1.4;
-          color: #000000;
-          margin-bottom: 30px;
-          text-align: justify;
-        }
-        .pdf-card-box {
-          border: 1px solid #e0e0e0;
-          border-radius: 16px;
-          padding: 25px 30px;
-          margin-bottom: 30px;
-          box-shadow: 0 4px 12px rgba(0,0,0,0.05);
-          background: #ffffff;
-          display: flex;
-          gap: 25px;
-          align-items: flex-start;
-        }
-        .pdf-photo-col {
-          width: 140px;
-          display: flex;
-          flex-direction: column;
-        }
-        .pdf-photo {
-          width: 140px;
-          height: 180px;
-          object-fit: cover;
-          border-radius: 8px;
-          background: #eeeeee;
-        }
-        .pdf-cod-label {
-          color: #00BFA5;
-          font-weight: 700;
-          font-size: 13px;
-          margin-top: 15px;
-        }
-        .pdf-cod-val {
-          color: #000000;
-          font-weight: normal;
-          font-size: 16px;
-          margin-top: 2px;
-        }
-        .pdf-info-col {
-          flex: 1;
-          display: flex;
-          flex-direction: column;
-        }
-        .pdf-student-name {
-          font-size: 22px;
-          font-weight: normal;
-          color: #000000;
-          margin-bottom: 15px;
-        }
-        .pdf-field-group {
-          margin-bottom: 10px;
-        }
-        .pdf-field-label {
-          color: #00BFA5;
-          font-size: 12px;
-          font-weight: 700;
-        }
-        .pdf-field-value {
-          color: #000000;
-          font-size: 14px;
-          font-weight: normal;
-          margin-top: 1px;
-        }
-        .pdf-qr-col {
-          width: 110px;
-          display: flex;
-          justify-content: flex-end;
-        }
-        .pdf-qr-img {
-          width: 110px;
-          height: 110px;
-        }
-        .pdf-section-title {
-          color: #00BFA5;
-          font-size: 16px;
-          font-weight: 700;
-          margin-top: 20px;
-          margin-bottom: 10px;
-        }
-        .pdf-cert-key {
-          font-family: 'Courier New', Courier, monospace;
-          font-size: 10px;
-          color: #555555;
-          line-height: 1.2;
-          text-align: center;
-          word-break: break-all;
-          white-space: pre-wrap;
-          margin: 10px 0;
-        }
-        .pdf-download-link {
-          text-align: center;
-          margin-top: 10px;
-          margin-bottom: 20px;
-        }
-        .pdf-download-link a {
-          color: #0066cc;
-          text-decoration: underline;
-          font-size: 14px;
-          font-weight: 500;
-        }
-        .pdf-text {
-          font-size: 14px;
-          line-height: 1.6;
-          color: #000000;
-          text-align: justify;
-        }
-        .pdf-list {
-          margin-top: 8px;
-          margin-bottom: 20px;
-          padding-left: 20px;
-          font-size: 14px;
-          line-height: 1.8;
-          color: #000000;
-        }
-        .pdf-footer {
-          position: absolute;
-          bottom: 40px;
-          left: 50px;
-          right: 50px;
-          text-align: center;
-          font-size: 12px;
-          color: #666666;
-          line-height: 1.5;
-        }
-      </style>
+    try {
+      // Criar PDF A4 em formato retrato (210mm x 297mm)
+      const pdf = new jsPDF({
+        orientation: 'portrait',
+        unit: 'mm',
+        format: 'a4',
+        compress: true
+      });
 
-      <!-- PÁGINA 1 -->
-      <div class="pdf-page" id="pdf-page-1">
-        <div class="pdf-banner">
-          <h1>DOCUMENTO VÁLIDO</h1>
-        </div>
-        <div class="pdf-body">
-          <div class="pdf-intro">
-            ABAFE - Associação Brasileira de Aprendizado e Foco no Estudante atesta que 
-            ${data.nome || 'Emerson Vicosa de Lima'} 
-            é estudante e esta regularmente matriculado(a) em 
-            ${data.curso || 'Ciência da Computação'} 
-            na instituição 
-            ${data.instituicao || 'UNIRITTER'}, 
-            tendo direito à emissão da CIE conforme legislação vigente. O estudante será mantido no cadastro ativo enquanto permanecer vinculado à instituição e em dia com suas obrigações com a Associação.
-          </div>
+      // ==========================================
+      // PÁGINA 1 (VETORIAL NATIVA EDITÁVEL)
+      // ==========================================
 
-          <div class="pdf-card-box">
-            <div class="pdf-photo-col">
-              <img class="pdf-photo" src="${data.foto || 'assets/images/foto-padrao.png'}" alt="Foto" />
-              <div class="pdf-cod-label">Cód. Uso:</div>
-              <div class="pdf-cod-val">${(data.codigo || '6382b41f').toLowerCase()}</div>
-            </div>
+      // Banner superior verde (#00E6B8 = RGB 0, 230, 184)
+      pdf.setFillColor(0, 230, 184);
+      pdf.rect(0, 0, 210, 24, 'F');
 
-            <div class="pdf-info-col">
-              <div class="pdf-student-name">${data.nome || 'Emerson Vicosa de Lima'}</div>
+      // Título "DOCUMENTO VÁLIDO" em verde escuro (#00887A = RGB 0, 136, 122)
+      pdf.setFont('helvetica', 'bold');
+      pdf.setFontSize(22);
+      pdf.setTextColor(0, 136, 122);
+      pdf.text('DOCUMENTO VÁLIDO', 105, 15.5, { align: 'center' });
 
-              <div class="pdf-field-group">
-                <div class="pdf-field-label">Instituição:</div>
-                <div class="pdf-field-value">${(data.instituicao || 'UNIRITTER').toUpperCase()}</div>
-              </div>
+      // Texto de introdução em parágrafo (x = 15mm, y = 36mm, largura = 180mm)
+      const studentNome = data.nome || 'Emerson Vicosa de Lima';
+      const studentCurso = data.curso || 'Ciência da Computação';
+      const studentInst = data.instituicao || 'UNIRITTER';
 
-              <div class="pdf-field-group">
-                <div class="pdf-field-label">Curso:</div>
-                <div class="pdf-field-value">${(data.curso || 'Ciência da Computação').toUpperCase()}</div>
-              </div>
+      pdf.setFont('helvetica', 'normal');
+      pdf.setFontSize(10.5);
+      pdf.setTextColor(0, 0, 0);
 
-              <div class="pdf-field-group">
-                <div class="pdf-field-label">CPF:</div>
-                <div class="pdf-field-value">${data.cpf || '039.894.040-16'}</div>
-              </div>
+      const introText = `ABAFE - Associação Brasileira de Aprendizado e Foco no Estudante atesta que ${studentNome} é estudante e esta regularmente matriculado(a) em ${studentCurso} na instituição ${studentInst}, tendo direito à emissão da CIE conforme legislação vigente. O estudante será mantido no cadastro ativo enquanto permanecer vinculado à instituição e em dia com suas obrigações com a Associação.`;
+      
+      const introLines = pdf.splitTextToSize(introText, 180);
+      pdf.text(introLines, 15, 36);
 
-              <div class="pdf-field-group">
-                <div class="pdf-field-label">Data de Nascimento:</div>
-                <div class="pdf-field-value">${data.nascimento || '10/08/1998'}</div>
-              </div>
+      // Caixa do Cartão do Estudante (Fundo Branco, Borda Arredondada)
+      // Dimensões: x=15mm, y=65mm, w=180mm, h=78mm, r=4mm
+      pdf.setDrawColor(224, 224, 224);
+      pdf.setLineWidth(0.3);
+      pdf.setFillColor(255, 255, 255);
+      pdf.roundedRect(15, 65, 180, 78, 4, 4, 'FD');
 
-              <div class="pdf-field-group">
-                <div class="pdf-field-label">Emissor:</div>
-                <div class="pdf-field-value">ABAFE - Associação Brasileira de Aprendizado e Foco no Estudante</div>
-              </div>
-            </div>
+      // ------------------------------------------
+      // Coluna da Foto (Esquerda: x=22mm)
+      // ------------------------------------------
+      if (data.foto) {
+        try {
+          pdf.addImage(data.foto, 'JPEG', 22, 72, 36, 46);
+        } catch (e) {
+          pdf.setFillColor(238, 238, 238);
+          pdf.rect(22, 72, 36, 46, 'F');
+        }
+      } else {
+        pdf.setFillColor(238, 238, 238);
+        pdf.rect(22, 72, 36, 46, 'F');
+      }
 
-            <div class="pdf-qr-col">
-              <img class="pdf-qr-img" src="${qrDataUrl}" alt="QR Code" />
-            </div>
-          </div>
+      // Cód. Uso (Abaixo da foto: y=124mm)
+      pdf.setFont('helvetica', 'bold');
+      pdf.setFontSize(9);
+      pdf.setTextColor(0, 135, 133); // #008785
+      pdf.text('Cód. Uso:', 22, 124);
 
-          <div class="pdf-section-title">Chave do Certificado:</div>
-          <div class="pdf-cert-key">-----BEGIN CERTIFICATE-----
+      pdf.setFont('helvetica', 'normal');
+      pdf.setFontSize(10);
+      pdf.setTextColor(0, 0, 0);
+      pdf.text((data.codigo || '6382b41f').toLowerCase(), 22, 130);
+
+      // ------------------------------------------
+      // Coluna de Informações (Centro: x=65mm)
+      // ------------------------------------------
+      // Nome do Estudante
+      pdf.setFont('helvetica', 'normal');
+      pdf.setFontSize(15);
+      pdf.setTextColor(0, 0, 0);
+      pdf.text(studentNome, 65, 74);
+
+      // Campos com Rótulo Teal (#008785 = RGB 0, 135, 133) e Valor em Preto
+      const fields = [
+        { label: 'Instituição:', val: studentInst.toUpperCase() },
+        { label: 'Curso:', val: studentCurso.toUpperCase() },
+        { label: 'CPF:', val: data.cpf || '039.894.040-16' },
+        { label: 'Data de Nascimento:', val: data.nascimento || '10/08/1998' },
+        { label: 'Emissor:', val: 'ABAFE - Associação Brasileira de Aprendizado e Foco no Estudante' }
+      ];
+
+      let currentY = 82;
+      fields.forEach(f => {
+        // Rótulo
+        pdf.setFont('helvetica', 'bold');
+        pdf.setFontSize(8.5);
+        pdf.setTextColor(0, 135, 133);
+        pdf.text(f.label, 65, currentY);
+
+        // Valor
+        pdf.setFont('helvetica', 'normal');
+        pdf.setFontSize(9.5);
+        pdf.setTextColor(0, 0, 0);
+        currentY += 4.2;
+        pdf.text(f.val, 65, currentY);
+        currentY += 6.5;
+      });
+
+      // ------------------------------------------
+      // Coluna do QR Code (Direita: x=156mm, y=72mm)
+      // ------------------------------------------
+      if (qrDataUrl) {
+        pdf.addImage(qrDataUrl, 'PNG', 156, 72, 32, 32);
+      }
+
+      // ------------------------------------------
+      // Chave do Certificado
+      // ------------------------------------------
+      pdf.setFont('helvetica', 'bold');
+      pdf.setFontSize(11);
+      pdf.setTextColor(0, 135, 133); // #008785
+      pdf.text('Chave do Certificado:', 15, 154);
+
+      // Certificado Base64 (Texto nativo em Courier Monospace)
+      const certKey = `-----BEGIN CERTIFICATE-----
 MIIDujCCAqQCAQEwWaFXpFUwUzELMAkGA1UEBhMCQlIxEzARBgNVBAoTCklDUC1CcmFzaWwxDjAMBgNV
 BAsTBUFiYWZlMR8wHQYDVQQDExZFbWVyc29uIFZpY29zYSBkZSBMaW1hoIHYMIHVpIHSMIHPMQswCQYD
 VQQGEwJCUjETMBEGA1UECgwKSUNQLUJyYXNpbDEeMBwGA1UECwwVQUMgQ2VydGlzaWduIE11bHRpcGxh
@@ -290,92 +182,93 @@ T3DDmVvPsjBHp4mpPpz1HPJkXgTZI+TjvWor/bfbZkt7Qn5CbpOZYwelGgx5iBLYrVNr/+Qbo9WYqQhy
 GG7hehpwsKRA8IKD13Tzts4pwPTz1LnXTiguvkHWg9QHJ0b2L/ZUnVcOqWLKQyu8ZANJbRM1Th4LLxK6
 U2MwXN8rWjN+YnlIvPWmMqEMFvamc/evqGCiQGN4G45sFqr36sUB0+UsSGZU5ccwkFWf8MwK1aIqoqiF
 rixaEuNLnmi0oLdt5VNec++c06NszYMbIDDnoPCMQ4iEXPHEsZYQHcA58iKpLOF87B7f0/GG2kslgg==
------END CERTIFICATE-----</div>
+-----END CERTIFICATE-----`;
 
-          <div class="pdf-download-link">
-            <a href="#">Clique aqui para baixar o certificado</a>
-          </div>
+      pdf.setFont('courier', 'normal');
+      pdf.setFontSize(6);
+      pdf.setTextColor(85, 85, 85);
+      const keyLines = pdf.splitTextToSize(certKey, 180);
+      pdf.text(keyLines, 105, 160, { align: 'center' });
 
-          <div class="pdf-section-title">Conformidade com Legislação</div>
-          <div class="pdf-text">
-            A emissão da Carteira de Identidade Estudantil (CIE) segue os critérios e requisitos estabelecidos pela Lei nº 12.933, de 26 de dezembro de 2013, que regulamenta a meia-entrada para estudantes em eventos de cultura e lazer , bem como pelas normas de
-          </div>
-        </div>
-      </div>
+      // Link para baixar certificado
+      pdf.setFont('helvetica', 'normal');
+      pdf.setFontSize(10);
+      pdf.setTextColor(0, 102, 204);
+      pdf.text('Clique aqui para baixar o certificado', 105, 222, { align: 'center' });
 
-      <!-- PÁGINA 2 -->
-      <div class="pdf-page" id="pdf-page-2">
-        <div class="pdf-body" style="padding-top: 50px;">
-          <div class="pdf-text">
-            padronização nacional de identidade estudantil vigentes.
-          </div>
+      // Conformidade com Legislação
+      pdf.setFont('helvetica', 'bold');
+      pdf.setFontSize(11);
+      pdf.setTextColor(0, 135, 133); // #008785
+      pdf.text('Conformidade com Legislação', 15, 236);
 
-          <div class="pdf-section-title">Validade e Verificabilidade:</div>
-          <div class="pdf-text">
-            Esta declaração é parte integral e inseparável da Carteira de Identidade Estudantil emitida, podendo ser verificada:
-          </div>
-          <ul class="pdf-list">
-            <li>Por consulta ao QR Code presente na carteira física ou digital</li>
-            <li>Pelo acesso ao link/portal de validação da Associação</li>
-            <li>Por apresentação deste PDF assinado digitalmente</li>
-            <li>Pelo contato direto com a Associação nos dados informados.</li>
-          </ul>
+      pdf.setFont('helvetica', 'normal');
+      pdf.setFontSize(10);
+      pdf.setTextColor(0, 0, 0);
+      const legText1 = `A emissão da Carteira de Identidade Estudantil (CIE) segue os critérios e requisitos estabelecidos pela Lei nº 12.933, de 26 de dezembro de 2013, que regulamenta a meia-entrada para estudantes em eventos de cultura e lazer , bem como pelas normas de`;
+      const legLines1 = pdf.splitTextToSize(legText1, 180);
+      pdf.text(legLines1, 15, 243);
 
-          <div class="pdf-section-title">Observações Importantes:</div>
-          <div class="pdf-text">
-            Este documento foi assinado com certificado digital ICP-Brasil (Tipo A-1 ou A-3) para máxima validade jurídica. A alteração ou falsificação desta declaração é crime conforme legislação penal aplicável. A associação é responsável pela veracidade das informações aqui declaradas. Recomenda-se guarda deste arquivo em formato PDF protegido contra edições.
-          </div>
-
-          <div class="pdf-footer">
-            Assinado digitalmente por ABAFE - Associação Brasileira de Aprendizado e Foco no Estudante, conforme Lei 14.063/2020 e Medida Provisória nº 2.200-2/2001<br>
-            Cidade/Data/Hora: Brasília, ${formattedDate}
-          </div>
-        </div>
-      </div>
-    `;
-
-    try {
-      // Capturar Página 1 com otimização de imagem
-      const page1El = document.getElementById('pdf-page-1');
-      const canvas1 = await window.html2canvas(page1El, {
-        scale: 1.5,
-        useCORS: true,
-        logging: false
-      });
-
-      // Capturar Página 2
-      const page2El = document.getElementById('pdf-page-2');
-      const canvas2 = await window.html2canvas(page2El, {
-        scale: 1.5,
-        useCORS: true,
-        logging: false
-      });
-
-      // Criar PDF de 2 páginas A4 compactado (~150KB)
-      const pdf = new jsPDF({
-        orientation: 'portrait',
-        unit: 'mm',
-        format: 'a4',
-        compress: true
-      });
-
-      const img1Data = canvas1.toDataURL('image/jpeg', 0.85);
-      const img2Data = canvas2.toDataURL('image/jpeg', 0.85);
-
-      pdf.addImage(img1Data, 'JPEG', 0, 0, 210, 297, undefined, 'FAST');
+      // ==========================================
+      // PÁGINA 2 (VETORIAL NATIVA EDITÁVEL)
+      // ==========================================
       pdf.addPage();
-      pdf.addImage(img2Data, 'JPEG', 0, 0, 210, 297, undefined, 'FAST');
 
-      // Nome do arquivo gerado
+      pdf.setFont('helvetica', 'normal');
+      pdf.setFontSize(10);
+      pdf.setTextColor(0, 0, 0);
+      pdf.text('padronização nacional de identidade estudantil vigentes.', 15, 20);
+
+      // Validade e Verificabilidade
+      pdf.setFont('helvetica', 'bold');
+      pdf.setFontSize(11);
+      pdf.setTextColor(0, 135, 133); // #008785
+      pdf.text('Validade e Verificabilidade:', 15, 30);
+
+      pdf.setFont('helvetica', 'normal');
+      pdf.setFontSize(10);
+      pdf.setTextColor(0, 0, 0);
+      pdf.text('Esta declaração é parte integral e inseparável da Carteira de Identidade Estudantil emitida, podendo ser verificada:', 15, 37);
+
+      const bullets = [
+        'Por consulta ao QR Code presente na carteira física ou digital',
+        'Pelo acesso ao link/portal de validação da Associação',
+        'Por apresentação deste PDF assinado digitalmente',
+        'Pelo contato direto com a Associação nos dados informados.'
+      ];
+
+      let bulletY = 44;
+      bullets.forEach(b => {
+        pdf.text(`• ${b}`, 20, bulletY);
+        bulletY += 6;
+      });
+
+      // Observações Importantes
+      pdf.setFont('helvetica', 'bold');
+      pdf.setFontSize(11);
+      pdf.setTextColor(0, 135, 133); // #008785
+      pdf.text('Observações Importantes:', 15, bulletY + 6);
+
+      pdf.setFont('helvetica', 'normal');
+      pdf.setFontSize(10);
+      pdf.setTextColor(0, 0, 0);
+      const obsText = `Este documento foi assinado com certificado digital ICP-Brasil (Tipo A-1 ou A-3) para máxima validade jurídica. A alteração ou falsificação desta declaração é crime conforme legislação penal aplicável. A associação é responsável pela veracidade das informações aqui declaradas. Recomenda-se guarda deste arquivo em formato PDF protegido contra edições.`;
+      const obsLines = pdf.splitTextToSize(obsText, 180);
+      pdf.text(obsLines, 15, bulletY + 13);
+
+      // Rodapé
+      pdf.setFont('helvetica', 'normal');
+      pdf.setFontSize(8.5);
+      pdf.setTextColor(100, 100, 100);
+      pdf.text('Assinado digitalmente por ABAFE - Associação Brasileira de Aprendizado e Foco no Estudante, conforme Lei 14.063/2020 e Medida Provisória nº 2.200-2/2001', 105, 275, { align: 'center' });
+      pdf.text(`Cidade/Data/Hora: Brasília, ${formattedDate}`, 105, 280, { align: 'center' });
+
+      // Salvar PDF gerado
       const safeName = data.nome ? data.nome.toLowerCase().replace(/[^a-z0-9]/g, '_') : 'estudante';
       pdf.save(`declaracao_estudantil_${safeName}.pdf`);
-
-      // Limpar container
-      container.innerHTML = '';
       return true;
     } catch (err) {
       console.error('Erro ao gerar PDF do certificado:', err);
-      container.innerHTML = '';
       return false;
     }
   }
