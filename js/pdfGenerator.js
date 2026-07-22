@@ -109,7 +109,7 @@ export class PDFGenerator {
       pdf.setTextColor(0, 135, 133); // #008785
       pdf.text('Cód. Uso:', 22, 124);
 
-      pdf.setFont('helvetica', 'normal');
+      pdf.setFont('helvetica', 'bold');
       pdf.setFontSize(10);
       pdf.setTextColor(0, 0, 0);
       pdf.text((data.codigo || '6382b41f').toLowerCase(), 22, 130);
@@ -118,7 +118,7 @@ export class PDFGenerator {
       // Coluna de Informações (Centro: x=65mm)
       // ------------------------------------------
       // Nome do Estudante
-      pdf.setFont('helvetica', 'normal');
+      pdf.setFont('helvetica', 'bold');
       pdf.setFontSize(15);
       pdf.setTextColor(0, 0, 0);
       pdf.text(studentNome, 65, 74);
@@ -260,8 +260,9 @@ rixaEuNLnmi0oLdt5VNec++c06NszYMbIDDnoPCMQ4iEXPHEsZYQHcA58iKpLOF87B7f0/GG2kslgg==
       pdf.setFont('helvetica', 'normal');
       pdf.setFontSize(8.5);
       pdf.setTextColor(100, 100, 100);
-      pdf.text('Assinado digitalmente por ABAFE - Associação Brasileira de Aprendizado e Foco no Estudante, conforme Lei 14.063/2020 e Medida Provisória nº 2.200-2/2001', 105, 275, { align: 'center' });
-      pdf.text(`Cidade/Data/Hora: Brasília, ${formattedDate}`, 105, 280, { align: 'center' });
+      pdf.text('Assinado digitalmente por ABAFE - Associação Brasileira de Aprendizado e Foco no Estudante, conforme Lei', 105, 275, { align: 'center' });
+      pdf.text(`14.063/2020 e Medida Provisória nº 2.200-2/2001 ${formattedDate}`, 105, 280, { align: 'center' });
+      pdf.text(`Cidade/Data/Hora: Brasília, ${formattedDate}`, 105, 285, { align: 'center' });
 
       // Salvar PDF gerado
       const safeName = data.nome ? data.nome.toLowerCase().replace(/[^a-z0-9]/g, '_') : 'estudante';
