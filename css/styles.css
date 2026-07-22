@@ -427,8 +427,11 @@ body {
 
 .card-validity {
   font-size: 8px;
-  text-align: center;
+  text-align: right;
   color: #666;
+  width: 100%;
+  padding-right: 6px;
+  margin-left: 8px;
 }
 
 /* === Texto de Instrução === */
