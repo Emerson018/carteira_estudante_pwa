@@ -13,7 +13,9 @@
 }
 
 /* === Reset === */
-*, *::before, *::after {
+*,
+*::before,
+*::after {
   margin: 0;
   padding: 0;
   box-sizing: border-box;
@@ -40,7 +42,7 @@ body {
   flex-direction: column;
   position: relative;
   overflow: hidden;
-  box-shadow: 0 0 20px rgba(0,0,0,0.5);
+  box-shadow: 0 0 20px rgba(0, 0, 0, 0.5);
 }
 
 /* === Cabeçalho === */
@@ -68,7 +70,7 @@ body {
 }
 
 .menu-btn {
-  background: rgba(255,255,255,0.2);
+  background: rgba(255, 255, 255, 0.2);
   border: none;
   width: 40px;
   height: 40px;
@@ -133,7 +135,7 @@ body {
   backface-visibility: hidden;
   -webkit-backface-visibility: hidden;
   border-radius: 20px;
-  box-shadow: 0 10px 20px rgba(0,0,0,0.15);
+  box-shadow: 0 10px 20px rgba(0, 0, 0, 0.15);
   overflow: hidden;
 }
 
@@ -198,7 +200,7 @@ body {
   flex-direction: column;
   align-items: center;
   justify-content: center;
-  box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
   text-align: center;
   padding: 10px;
   overflow: hidden;
@@ -238,7 +240,8 @@ body {
 /* === Área Central (Textos) === */
 .card-center-section {
   flex: 1;
-  padding: 95px 5px 20px 5px; /* Alinha o início dos dados com a borda direita da foto no modo retrato (pontos vermelhos) */
+  padding: 95px 5px 20px 5px;
+  /* Alinha o início dos dados com a borda direita da foto no modo retrato (pontos vermelhos) */
   z-index: 2;
   display: flex;
   flex-direction: column;
@@ -269,13 +272,15 @@ body {
 .student-info {
   display: flex;
   flex-direction: column;
-  gap: 8px; /* Reduzido de 12px para 8px para ficar mais compacto e perto da foto */
+  gap: 8px;
+  /* Reduzido de 12px para 8px para ficar mais compacto e perto da foto */
 }
 
 .info-item {
   font-size: 12px;
   color: #111;
-  white-space: nowrap; /* Garante que os dados do estudante fiquem em linha única */
+  white-space: nowrap;
+  /* Garante que os dados do estudante fiquem em linha única */
 }
 
 .info-item strong {
@@ -286,9 +291,12 @@ body {
 #card-curso {
   font-weight: bold;
   text-transform: uppercase;
-  white-space: normal;     /* Permite quebra de linha */
-  word-break: break-word;  /* Quebra se necessário */
-  max-width: 110px;        /* Limita largura para caber ~2 linhas */
+  white-space: normal;
+  /* Permite quebra de linha */
+  word-break: break-word;
+  /* Quebra se necessário */
+  max-width: 110px;
+  /* Limita largura para caber ~2 linhas */
   line-height: 1.3;
 }
 
@@ -317,43 +325,53 @@ body {
 
 /* === Área Direita (Logo + QR) === */
 .card-right-section {
-  width: 140px;
-  height: 100%; /* Preenche 100% da altura do landscape (que é a largura do cartão no retrato) */
+  width: 120px;
+  height: 100%;
+  /* Preenche 100% da altura do landscape (que é a largura do cartão no retrato) */
   z-index: 2;
   display: flex;
   flex-direction: column;
   align-items: center;
-  justify-content: flex-end; /* Garante que o bloco branco seja empurrado até a borda esquerda no modo retrato */
+  justify-content: flex-end;
+  /* Garante que o bloco branco seja empurrado até a borda esquerda no modo retrato */
   gap: 10px;
-  padding: 15px 10px 0 10px; /* Sem padding inferior para encostar na borda esquerda do cartão */
-  margin-right: 28px; /* Afastamento da base do cartão (portrait bottom) */
-  background: transparent; /* Fundo transparente para que o logo fique fora do campo branco */
+  padding: 15px 10px 0 10px;
+  /* Sem padding inferior para encostar na borda esquerda do cartão */
+  margin-right: 28px;
+  /* Afastamento da base do cartão (portrait bottom) */
+  background: transparent;
+  /* Fundo transparente para que o logo fique fora do campo branco */
 }
 
 .qr-code-box {
   width: 100%;
-  flex: 1; /* Expande até encostar perfeitamente no final/canto esquerdo do cartão */
+  flex: 1;
+  /* Expande até encostar perfeitamente no final/canto esquerdo do cartão */
   background-color: #fff;
   display: flex;
   flex-direction: column;
   align-items: center;
   justify-content: space-between;
   padding: 10px 5px;
-  box-shadow: 0 0 10px rgba(0,0,0,0.1);
-  border-radius: 0; /* Cantos bem quadrados, não arredondados */
-  margin-bottom: 0; /* Colado na borda esquerda do cartão */
+  box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+  border-radius: 0;
+  /* Cantos bem quadrados, não arredondados */
+  margin-bottom: 0;
+  /* Colado na borda esquerda do cartão */
 }
 
 .abafe-logo-img {
-  width: 150px; /* Aumentado para coincidir com a altura do card do QR code no modo retrato */
+  width: 150px;
+  /* Aumentado para coincidir com a altura do card do QR code no modo retrato */
   height: auto;
   object-fit: contain;
-  mix-blend-mode: multiply; /* Remove o fundo branco da imagem */
+  mix-blend-mode: multiply;
+  /* Remove o fundo branco da imagem */
 }
 
 .qr-wrapper {
-  width: 70px;
-  height: 70px;
+  width: 85px;
+  height: 85px;
 }
 
 .qr-wrapper canvas {
@@ -366,7 +384,7 @@ body {
   width: 70px;
   height: 70px;
   background-image: linear-gradient(45deg, #000 25%, transparent 25%, transparent 75%, #000 75%, #000),
-                    linear-gradient(45deg, #000 25%, transparent 25%, transparent 75%, #000 75%, #000);
+    linear-gradient(45deg, #000 25%, transparent 25%, transparent 75%, #000 75%, #000);
   background-size: 9px 9px;
   background-position: 0 0, 4.5px 4.5px;
   border: 2px solid #000;
@@ -381,26 +399,29 @@ body {
 .card-code-group {
   display: flex;
   flex-direction: column;
-  align-items: flex-start;
+  align-items: center;
   gap: 2px;
+  margin-top: 8px;
 }
 
 .card-code {
-  font-size: 7px;
+  font-size: 9px;
   font-weight: bold;
-  text-align: left;
+  text-align: center;
   color: #555;
   letter-spacing: 0.5px;
   text-transform: uppercase;
 }
 
 .card-codigo {
-  font-size: 13px;
+  font-size: 11px;
   font-weight: 900;
-  color: #111; /* Preto, igual aos demais dados do cartão */
+  color: #111;
+  /* Preto, igual aos demais dados do cartão */
   letter-spacing: 1px;
   line-height: 1;
   white-space: nowrap;
+  text-align: center;
 }
 
 .card-codigo:empty::before {
@@ -415,7 +436,6 @@ body {
   flex-direction: column;
   align-items: center;
   gap: 0;
-  margin-top: -2px;
 }
 
 .card-year {
@@ -430,7 +450,8 @@ body {
   height: auto;
   object-fit: contain;
   display: block;
-  transform: rotate(270deg); /* Rotaciona 180 graus para ler na mesma direção das outras informações */
+  transform: rotate(270deg);
+  /* Rotaciona 180 graus para ler na mesma direção das outras informações */
 }
 
 .card-validity {
@@ -580,7 +601,7 @@ body {
   color: #fff;
   font-size: 0.8125rem;
   border-radius: 8px;
-  box-shadow: 0 4px 12px rgba(0,0,0,0.2);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
   z-index: 200;
   opacity: 0;
   pointer-events: none;
