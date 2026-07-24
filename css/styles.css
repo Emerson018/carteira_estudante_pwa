@@ -191,10 +191,11 @@ body {
 
 .card-back-header {
   display: flex;
-  justify-content: space-between;
+  justify-content: center;
   align-items: center;
-  margin-bottom: 8px;
-  padding-right: 5px;
+  gap: 30px;
+  margin-bottom: 6px;
+  width: 100%;
 }
 
 .card-back-logo-cie {
@@ -204,7 +205,7 @@ body {
 }
 
 .cie-title {
-  font-size: 32px;
+  font-size: 34px;
   font-weight: 900;
   color: #008785;
   line-height: 0.85;
@@ -212,12 +213,13 @@ body {
 }
 
 .cie-subtitle {
-  font-size: 6.5px;
+  font-size: 7.5px;
   font-weight: 800;
   color: #008785;
   line-height: 1.15;
   letter-spacing: 0.2px;
   margin-top: 3px;
+  text-transform: uppercase;
 }
 
 .card-back-logo-abafe {
@@ -226,7 +228,7 @@ body {
 }
 
 .abafe-back-img {
-  height: 42px;
+  height: 48px;
   width: auto;
   object-fit: contain;
   mix-blend-mode: multiply;
