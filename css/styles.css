@@ -200,8 +200,9 @@ body {
 
 .card-back-logo-cie {
   display: flex;
-  flex-direction: column;
-  align-items: flex-start;
+  flex-direction: row;
+  align-items: center;
+  gap: 5px;
 }
 
 .cie-title {
@@ -213,12 +214,11 @@ body {
 }
 
 .cie-subtitle {
-  font-size: 7px;
+  font-size: 6.5px;
   font-weight: 800;
   color: #008785;
   line-height: 1.1;
-  letter-spacing: 0.3px;
-  margin-top: 2px;
+  letter-spacing: 0.2px;
   text-transform: uppercase;
 }
 
