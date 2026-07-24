@@ -264,49 +264,16 @@ body {
 
 .card-back-validator {
   display: flex;
-  flex-direction: column;
-  align-items: center;
-  gap: 3px;
-}
-
-.validator-label {
-  font-size: 6.5px;
-  font-weight: 800;
-  color: #111;
-  letter-spacing: 0.5px;
-}
-
-.validator-badge-icon {
-  display: flex;
   align-items: center;
   justify-content: center;
 }
 
-.validator-id-svg {
-  width: 26px;
-  height: 31px;
-}
-
-.validator-text {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  line-height: 1;
-}
-
-.validator-text strong {
-  font-size: 10px;
-  font-weight: 900;
-  color: #111;
-  letter-spacing: 0.5px;
-}
-
-.validator-text span {
-  font-size: 7.5px;
-  font-weight: 900;
-  color: #111;
-  letter-spacing: 0.3px;
-  margin-top: 1px;
+.validador-img {
+  height: 54px;
+  width: auto;
+  transform: rotate(-90deg);
+  mix-blend-mode: multiply;
+  object-fit: contain;
 }
 
 .card-back-sac {
