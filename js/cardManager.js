@@ -118,10 +118,10 @@ export class CardManager {
       }
     }
 
-    // Match CSS transition duration (0.6s = 600ms)
+    // Match CSS transition duration (0.2s = 200ms)
     setTimeout(() => {
       this._animating = false;
-    }, 600);
+    }, 200);
   }
 
   /**

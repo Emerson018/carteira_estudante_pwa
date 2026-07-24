@@ -108,11 +108,10 @@ body {
   padding: 20px;
 }
 
-/* === Carteirinha — Cena 3D === */
+/* === Carteirinha — Cena & Fade Transition === */
 .card-scene {
   width: 320px;
   height: 500px;
-  perspective: 1000px;
   cursor: pointer;
 }
 
@@ -120,36 +119,34 @@ body {
   width: 100%;
   height: 100%;
   position: relative;
-  transition: transform 0.6s ease-in-out;
-  transform-style: preserve-3d;
-}
-
-.card-inner.is-flipped {
-  transform: rotateY(180deg);
 }
 
 .card-face {
   position: absolute;
+  top: 0;
+  left: 0;
   width: 100%;
   height: 100%;
-  backface-visibility: hidden;
-  -webkit-backface-visibility: hidden;
   border-radius: 20px;
   box-shadow: 0 10px 20px rgba(0, 0, 0, 0.15);
   overflow: hidden;
+  transition: opacity 0.2s ease-in-out;
 }
 
-/* === Frente do Cartão === */
+/* Frente do Cartão */
 .card-front {
   background-color: var(--cor-fundo-carteira);
   background-image: url('../assets/images/card-bg.png');
   background-size: cover;
   background-position: center;
   background-repeat: no-repeat;
+  opacity: 1;
+  pointer-events: auto;
+  z-index: 2;
 }
 
+/* Verso do Cartão */
 .card-back {
-  transform: rotateY(180deg);
   background-color: var(--cor-fundo-carteira);
   background-image: url('../assets/images/card-bg.png');
   background-size: cover;
@@ -157,6 +154,21 @@ body {
   background-repeat: no-repeat;
   position: relative;
   overflow: hidden;
+  opacity: 0;
+  pointer-events: none;
+  z-index: 1;
+}
+
+.card-inner.is-flipped .card-front {
+  opacity: 0;
+  pointer-events: none;
+  z-index: 1;
+}
+
+.card-inner.is-flipped .card-back {
+  opacity: 1;
+  pointer-events: auto;
+  z-index: 2;
 }
 
 .card-back-landscape {
