@@ -148,7 +148,7 @@ body {
 /* Verso do Cartão */
 .card-back {
   background-color: var(--cor-fundo-carteira);
-  background-image: url('../assets/images/card-bg.png');
+  background-image: url('../assets/images/card-back-bg.png');
   background-size: cover;
   background-position: center;
   background-repeat: no-repeat;
@@ -183,7 +183,7 @@ body {
 .card-back-law {
   font-size: 7.5px;
   line-height: 1.25;
-  color: #222;
+  color: #008785;
   text-align: justify;
   font-weight: 600;
   margin-bottom: 8px;
