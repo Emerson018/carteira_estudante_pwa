@@ -159,13 +159,13 @@ body {
   z-index: 1;
 }
 
-.card-inner.is-flipped .card-front {
+.is-flipped .card-front {
   opacity: 0;
   pointer-events: none;
   z-index: 1;
 }
 
-.card-inner.is-flipped .card-back {
+.is-flipped .card-back {
   opacity: 1;
   pointer-events: auto;
   z-index: 2;

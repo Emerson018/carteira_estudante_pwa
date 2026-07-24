@@ -110,12 +110,12 @@ export class CardManager {
     this._animating = true;
     this._flipped = !this._flipped;
 
-    if (this._flipCard) {
-      if (this._flipped) {
-        this._flipCard.classList.add('is-flipped');
-      } else {
-        this._flipCard.classList.remove('is-flipped');
-      }
+    if (this._flipped) {
+      if (this._flipCard) this._flipCard.classList.add('is-flipped');
+      if (this._flipInner) this._flipInner.classList.add('is-flipped');
+    } else {
+      if (this._flipCard) this._flipCard.classList.remove('is-flipped');
+      if (this._flipInner) this._flipInner.classList.remove('is-flipped');
     }
 
     // Match CSS transition duration (0.2s = 200ms)
