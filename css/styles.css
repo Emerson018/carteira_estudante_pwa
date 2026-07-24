@@ -183,7 +183,7 @@ body {
 .card-back-law {
   font-size: 7.5px;
   line-height: 1.25;
-  color: #008785;
+  color: #465755;
   text-align: justify;
   font-weight: 600;
   margin-bottom: 8px;
@@ -266,40 +266,36 @@ body {
   display: flex;
   flex-direction: column;
   align-items: center;
-  gap: 2px;
+  gap: 3px;
 }
 
 .validator-label {
-  font-size: 6px;
+  font-size: 6.5px;
   font-weight: 800;
-  color: #333;
+  color: #111;
   letter-spacing: 0.5px;
 }
 
-.validator-box {
-  border: 1.5px solid #222;
-  border-radius: 5px;
-  padding: 2px 7px;
+.validator-badge-icon {
   display: flex;
   align-items: center;
-  gap: 6px;
-  background: rgba(255, 255, 255, 0.4);
+  justify-content: center;
 }
 
-.validator-icon {
-  width: 18px;
-  height: 18px;
-  fill: #111;
+.validator-id-svg {
+  width: 26px;
+  height: 31px;
 }
 
 .validator-text {
   display: flex;
   flex-direction: column;
+  align-items: center;
   line-height: 1;
 }
 
 .validator-text strong {
-  font-size: 9.5px;
+  font-size: 10px;
   font-weight: 900;
   color: #111;
   letter-spacing: 0.5px;
@@ -307,8 +303,10 @@ body {
 
 .validator-text span {
   font-size: 7.5px;
-  font-weight: 800;
+  font-weight: 900;
   color: #111;
+  letter-spacing: 0.3px;
+  margin-top: 1px;
 }
 
 .card-back-sac {
