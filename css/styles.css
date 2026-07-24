@@ -193,11 +193,12 @@ body {
   display: flex;
   justify-content: center;
   align-items: center;
-  gap: 12px;
+  gap: 8px;
   margin-bottom: 6px;
   width: 100%;
 }
 
+.cie-header,
 .card-back-logo-cie {
   display: flex;
   flex-direction: row;
@@ -229,7 +230,7 @@ body {
 }
 
 .abafe-back-img {
-  height: 68px;
+  height: 72px;
   width: auto;
   object-fit: contain;
   mix-blend-mode: multiply;
