@@ -126,18 +126,18 @@
         <h2 class="edit-form__title">Editar Carteirinha</h2>
         <form class="edit-form" id="edit-form" novalidate>
           <div class="edit-form__group">
-            <label class="edit-form__label" for="input-nome">Nome completo</label>
-            <input class="edit-form__input" type="text" id="input-nome" name="nome" maxlength="80" placeholder="Nome do estudante" autocomplete="name" aria-describedby="error-nome">
+            <label class="edit-form__label" for="input-nome">Nome completo (máx. 30 caracteres)</label>
+            <input class="edit-form__input" type="text" id="input-nome" name="nome" maxlength="30" placeholder="Nome do estudante" autocomplete="name" aria-describedby="error-nome">
             <span class="edit-form__error" id="error-nome" role="alert" aria-live="assertive"></span>
           </div>
           <div class="edit-form__group">
-            <label class="edit-form__label" for="input-curso">Curso / Série</label>
-            <input class="edit-form__input" type="text" id="input-curso" name="curso" maxlength="100" placeholder="Ex: GRADUAÇÃO - CIÊNCIA DA COMPUTAÇÃO" aria-describedby="error-curso">
+            <label class="edit-form__label" for="input-curso">Curso / Série (máx. 50 caracteres)</label>
+            <input class="edit-form__input" type="text" id="input-curso" name="curso" maxlength="50" placeholder="Ex: GRADUAÇÃO - CIÊNCIA DA COMPUTAÇÃO" aria-describedby="error-curso">
             <span class="edit-form__error" id="error-curso" role="alert" aria-live="assertive"></span>
           </div>
           <div class="edit-form__group">
-            <label class="edit-form__label" for="input-instituicao">Instituição</label>
-            <input class="edit-form__input" type="text" id="input-instituicao" name="instituicao" maxlength="100" placeholder="Nome da Instituição" aria-describedby="error-instituicao">
+            <label class="edit-form__label" for="input-instituicao">Instituição (máx. 30 caracteres)</label>
+            <input class="edit-form__input" type="text" id="input-instituicao" name="instituicao" maxlength="30" placeholder="Nome da Instituição" aria-describedby="error-instituicao">
             <span class="edit-form__error" id="error-instituicao" role="alert" aria-live="assertive"></span>
           </div>
           <div class="edit-form__group">
@@ -147,7 +147,7 @@
           </div>
           <div class="edit-form__group">
             <label class="edit-form__label" for="input-cpf">CPF</label>
-            <input class="edit-form__input" type="text" id="input-cpf" name="cpf" placeholder="Somente números (11 dígitos)" maxlength="11" inputmode="numeric" aria-describedby="error-cpf">
+            <input class="edit-form__input" type="text" id="input-cpf" name="cpf" placeholder="000.000.000-00" maxlength="14" inputmode="numeric" aria-describedby="error-cpf">
             <span class="edit-form__error" id="error-cpf" role="alert" aria-live="assertive"></span>
           </div>
           <div class="edit-form__group">
@@ -156,8 +156,11 @@
             <span class="edit-form__error" id="error-validade" role="alert" aria-live="assertive"></span>
           </div>
           <div class="edit-form__group">
-            <label class="edit-form__label" for="input-codigo">Código de uso (CÓD. USO / CIE)</label>
-            <input class="edit-form__input" type="text" id="input-codigo" name="codigo" maxlength="20" placeholder="Ex: 6382B41F" aria-describedby="error-codigo">
+            <label class="edit-form__label" for="input-codigo">Código de uso (Gerado automaticamente)</label>
+            <div style="display: flex; gap: 8px;">
+              <input class="edit-form__input" type="text" id="input-codigo" name="codigo" maxlength="8" placeholder="Ex: 6382b41f" readonly aria-describedby="error-codigo" style="flex: 1;">
+              <button type="button" id="btn-generate-code" class="edit-form__btn-code" style="padding: 0 12px; background: var(--cor-primaria); color: #fff; border: none; border-radius: 8px; font-weight: 600; cursor: pointer; font-size: 13px; white-space: nowrap;">Gerar Novo</button>
+            </div>
             <span class="edit-form__error" id="error-codigo" role="alert" aria-live="assertive"></span>
           </div>
           <div class="edit-form__group">

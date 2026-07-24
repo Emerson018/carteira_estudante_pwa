@@ -187,12 +187,31 @@ export class App {
     // c. Criar QRManager
     this.qrManager = new QRManager();
 
+    // h. Criar FormManager com callbacks
+    this.formManager = new FormManager({
+      onFieldChange: (field, value) => this.onFieldChange(field, value),
+      onPhotoChange: (dataUrl) => this.onPhotoChange(dataUrl),
+      onSave: () => this.onSave()
+    });
+
     // d. Carregar dados do storage
     const savedData = this.storageManager.load();
 
     if (savedData) {
       // e. Dados existem: atualizar estado, cartão, QR e saudação
       this.studentData = { ...DEFAULT_STUDENT_DATA, ...savedData };
+    } else {
+      // f. Sem dados: saudação padrão e placeholders
+      this.studentData = { ...DEFAULT_STUDENT_DATA };
+    }
+
+    // Auto-gerar código de uso de 8 caracteres se estiver ausente ou inválido
+    if (!this.studentData.codigo || !this.formManager.validateCode(this.studentData.codigo)) {
+      this.studentData.codigo = this.formManager.generateCode();
+      this.storageManager.save(this.studentData);
+    }
+
+    if (savedData) {
       this.cardManager.updateCard(this.studentData);
       this.qrManager.generate({
         nome: this.studentData.nome,
@@ -202,7 +221,6 @@ export class App {
       });
       this.updateGreeting(this.studentData.nome);
     } else {
-      // f. Sem dados: saudação padrão e placeholders
       this.updateGreeting('');
       this.cardManager.updateCard(this.studentData);
       this.qrManager.generate(this.studentData);
@@ -210,13 +228,6 @@ export class App {
 
     // g. Criar PDFGenerator
     this.pdfGenerator = new PDFGenerator();
-
-    // h. Criar FormManager com callbacks
-    this.formManager = new FormManager({
-      onFieldChange: (field, value) => this.onFieldChange(field, value),
-      onPhotoChange: (dataUrl) => this.onPhotoChange(dataUrl),
-      onSave: () => this.onSave()
-    });
 
     // i. Preencher formulário e bind form events
     this.formManager.populateForm(this.studentData);
