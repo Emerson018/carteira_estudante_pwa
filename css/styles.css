@@ -213,12 +213,12 @@ body {
 }
 
 .cie-subtitle {
-  font-size: 7.5px;
+  font-size: 7px;
   font-weight: 800;
   color: #008785;
-  line-height: 1.15;
-  letter-spacing: 0.2px;
-  margin-top: 3px;
+  line-height: 1.1;
+  letter-spacing: 0.3px;
+  margin-top: 2px;
   text-transform: uppercase;
 }
 
