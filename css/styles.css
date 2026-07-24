@@ -193,7 +193,7 @@ body {
   display: flex;
   justify-content: center;
   align-items: center;
-  gap: 30px;
+  gap: 12px;
   margin-bottom: 6px;
   width: 100%;
 }
@@ -214,12 +214,13 @@ body {
 }
 
 .cie-subtitle {
-  font-size: 6.5px;
-  font-weight: 800;
+  font-size: 7px;
+  font-weight: 900;
   color: #008785;
   line-height: 1.1;
   letter-spacing: 0.2px;
   text-transform: uppercase;
+  text-shadow: 0 0 0.3px #008785;
 }
 
 .card-back-logo-abafe {
@@ -228,7 +229,7 @@ body {
 }
 
 .abafe-back-img {
-  height: 48px;
+  height: 68px;
   width: auto;
   object-fit: contain;
   mix-blend-mode: multiply;
