@@ -158,8 +158,13 @@ export class App {
 
     if (editSection.hasAttribute('hidden')) {
       editSection.removeAttribute('hidden');
+      editSection.style.display = 'block';
+      if (typeof editSection.scrollIntoView === 'function') {
+        editSection.scrollIntoView({ behavior: 'smooth' });
+      }
     } else {
       editSection.setAttribute('hidden', '');
+      editSection.style.display = 'none';
     }
   }
 
