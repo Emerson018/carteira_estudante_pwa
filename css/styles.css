@@ -243,15 +243,15 @@ body {
   color: #111;
   line-height: 1.35;
   padding: 0 10px;
-  margin: 12px 0;
+  margin: 10px 0 0 0;
   letter-spacing: 0.1px;
 }
 
 .card-back-footer {
   display: flex;
   justify-content: space-between;
-  align-items: flex-end;
-  margin-top: auto;
+  align-items: center;
+  margin-top: 14px;
 }
 
 .card-back-legal-info {
