@@ -108,6 +108,31 @@ body {
   padding: 20px;
 }
 
+.section--indique {
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: flex-start;
+  overflow-y: auto;
+  width: 100%;
+}
+
+.indique-container {
+  width: 100%;
+  max-width: 450px;
+  display: flex;
+  justify-content: center;
+  align-items: flex-start;
+}
+
+.indique-img {
+  width: 100%;
+  height: auto;
+  display: block;
+  object-fit: contain;
+}
+
 /* === Carteirinha — Cena & Fade Transition === */
 .card-scene {
   width: 320px;
