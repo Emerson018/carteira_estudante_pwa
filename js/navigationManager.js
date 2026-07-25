@@ -42,6 +42,35 @@ export class NavigationManager {
 
     // Atualiza visibilidade das seções
     this.#updateSections(tabIndex);
+
+    // Atualiza o cabeçalho superior
+    this.#updateHeader(tabIndex);
+  }
+
+  /**
+   * Atualiza os títulos do cabeçalho superior de acordo com a aba ativa.
+   * @param {number} activeIndex
+   */
+  #updateHeader(activeIndex) {
+    const greeting = document.getElementById('greeting');
+    const subtitle = document.getElementById('header-subtitle');
+    if (!greeting || !subtitle) return;
+
+    if (activeIndex === 2) {
+      greeting.textContent = 'Minhas Carteiras';
+      subtitle.textContent = 'Histórico de carteiras estudantis';
+    } else if (activeIndex === 0) {
+      const cardNomeEl = document.getElementById('card-nome');
+      const studentName = cardNomeEl && cardNomeEl.textContent ? cardNomeEl.textContent.trim() : '';
+      greeting.textContent = studentName ? `Olá, ${studentName.split(' ')[0]}!` : 'Olá, Estudante!';
+      subtitle.textContent = 'Sua carteira estudantil';
+    } else if (activeIndex === 1) {
+      greeting.textContent = 'Indique e Ganhe';
+      subtitle.textContent = 'Compartilhe com seus amigos';
+    } else if (activeIndex === 3) {
+      greeting.textContent = 'Avisos';
+      subtitle.textContent = 'Central de notificações';
+    }
   }
 
   /**

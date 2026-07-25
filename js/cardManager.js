@@ -65,6 +65,13 @@ export class CardManager {
     if (this._sealYearEl) {
       this._sealYearEl.innerHTML = '<img src="assets/images/selo-2026.png" alt="2026" class="selo-2026-img">';
     }
+
+    // Update Carteiras tab details if elements exist
+    const cartInst = document.querySelector('#carteiras-instituicao');
+    if (cartInst) cartInst.textContent = data.instituicao ? data.instituicao.toUpperCase() : 'UNIRITTER';
+
+    const cartCurso = document.querySelector('#carteiras-curso');
+    if (cartCurso) cartCurso.textContent = data.curso ? `Curso: ${data.curso}` : 'Curso: Ciência da Computação';
   }
 
   /**
