@@ -53,8 +53,9 @@ export class App {
     const greetingEl = document.getElementById('greeting');
     if (!greetingEl) return;
 
-    if (nome && nome.trim().length > 0) {
-      greetingEl.textContent = `Olá, ${nome.trim()}!`;
+    if (nome && typeof nome === 'string' && nome.trim().length > 0) {
+      const firstName = nome.trim().split(/\s+/)[0];
+      greetingEl.textContent = `Olá, ${firstName}!`;
     } else {
       greetingEl.textContent = 'Olá, Estudante!';
     }

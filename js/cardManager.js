@@ -68,10 +68,13 @@ export class CardManager {
 
     // Update Carteiras tab details if elements exist
     const cartInst = document.querySelector('#carteiras-instituicao');
-    if (cartInst) cartInst.textContent = data.instituicao ? data.instituicao.toUpperCase() : 'UNIRITTER';
+    if (cartInst) cartInst.textContent = data.instituicao && data.instituicao.trim() ? data.instituicao.trim().toUpperCase() : 'UNIRITTER';
 
     const cartCurso = document.querySelector('#carteiras-curso');
-    if (cartCurso) cartCurso.textContent = data.curso ? `Curso: ${data.curso}` : 'Curso: Ciência da Computação';
+    if (cartCurso) cartCurso.textContent = data.curso && data.curso.trim() ? `Curso: ${data.curso.trim()}` : 'Curso: Ciência da Computação';
+
+    const cartValidade = document.querySelector('#carteiras-validade');
+    if (cartValidade) cartValidade.textContent = data.validade ? `31/03/${data.validade}` : '31/03/2027';
   }
 
   /**

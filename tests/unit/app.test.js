@@ -96,8 +96,8 @@ describe('App Module', () => {
       expect(document.getElementById('greeting').textContent).toBe('Olá, Estudante!');
     });
 
-    it('should trim the name in greeting', () => {
-      app.updateGreeting('  João  ');
+    it('should trim the name in greeting and extract only first name', () => {
+      app.updateGreeting('  João Silva Santos  ');
       expect(document.getElementById('greeting').textContent).toBe('Olá, João!');
     });
   });
