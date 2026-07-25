@@ -115,8 +115,10 @@ export class NavigationManager {
       if (section) {
         if (index === activeIndex) {
           section.removeAttribute('hidden');
+          section.style.display = 'flex';
         } else {
           section.setAttribute('hidden', '');
+          section.style.display = 'none';
         }
       }
     });
@@ -125,6 +127,7 @@ export class NavigationManager {
     const editSection = document.getElementById('edit-form-section');
     if (editSection) {
       editSection.setAttribute('hidden', '');
+      editSection.style.display = 'none';
     }
   }
 

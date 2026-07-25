@@ -282,6 +282,70 @@ body {
   line-height: 1.4;
 }
 
+/* === Seção Avisos === */
+.section--avisos {
+  padding: 20px 16px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: flex-start;
+  overflow-y: auto;
+  width: 100%;
+  flex: 1;
+  box-sizing: border-box;
+  background-color: var(--cor-fundo);
+}
+
+.avisos-container {
+  width: 100%;
+  max-width: 450px;
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+.aviso-card {
+  background-color: #ffffff;
+  border-radius: 20px;
+  padding: 36px 24px;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.04);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  gap: 14px;
+}
+
+.aviso-icon {
+  width: 56px;
+  height: 56px;
+  background-color: #E0F2FE;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.aviso-icon svg {
+  width: 28px;
+  height: 28px;
+  fill: var(--cor-primaria);
+}
+
+.aviso-card h3 {
+  font-size: 18px;
+  font-weight: 700;
+  color: #111827;
+  margin: 0;
+}
+
+.aviso-card p {
+  font-size: 14px;
+  color: #6B7280;
+  margin: 0;
+  line-height: 1.5;
+}
+
 /* === Carteirinha — Cena & Fade Transition === */
 .card-scene {
   width: 320px;
