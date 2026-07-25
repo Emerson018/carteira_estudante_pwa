@@ -8,7 +8,6 @@ function setupDOM() {
   document.body.innerHTML = `
     <section id="section-inicio"></section>
     <section id="section-indique" hidden></section>
-    <section id="section-central" hidden></section>
     <section id="section-carteiras" hidden></section>
     <section id="section-avisos" hidden></section>
     <section id="edit-form-section" hidden></section>
@@ -20,13 +19,10 @@ function setupDOM() {
       <button class="nav-item" data-tab="1" data-section="section-indique" type="button">
         <span class="bottom-nav__label">Indique</span>
       </button>
-      <button class="nav-item" data-tab="2" data-section="section-central" type="button">
-        <span class="bottom-nav__label">Central</span>
-      </button>
-      <button class="nav-item" data-tab="3" data-section="section-carteiras" type="button">
+      <button class="nav-item" data-tab="2" data-section="section-carteiras" type="button">
         <span class="bottom-nav__label">Carteiras</span>
       </button>
-      <button class="nav-item" data-tab="4" data-section="section-avisos" type="button">
+      <button class="nav-item" data-tab="3" data-section="section-avisos" type="button">
         <span class="bottom-nav__label">Avisos</span>
       </button>
     </nav>
@@ -59,7 +55,6 @@ describe('NavigationManager', () => {
     it('deve exibir a seção inicio e esconder as demais', () => {
       expect(document.getElementById('section-inicio').hasAttribute('hidden')).toBe(false);
       expect(document.getElementById('section-indique').hasAttribute('hidden')).toBe(true);
-      expect(document.getElementById('section-central').hasAttribute('hidden')).toBe(true);
       expect(document.getElementById('section-carteiras').hasAttribute('hidden')).toBe(true);
       expect(document.getElementById('section-avisos').hasAttribute('hidden')).toBe(true);
     });
@@ -84,10 +79,10 @@ describe('NavigationManager', () => {
     });
 
     it('deve mover aria-current="page" para a aba ativa', () => {
-      navManager.activateTab(4);
+      navManager.activateTab(3);
       const tabs = document.querySelectorAll('.nav-item');
       tabs.forEach((tab, index) => {
-        if (index === 4) {
+        if (index === 3) {
           expect(tab.getAttribute('aria-current')).toBe('page');
         } else {
           expect(tab.hasAttribute('aria-current')).toBe(false);
@@ -99,7 +94,6 @@ describe('NavigationManager', () => {
       navManager.activateTab(1);
       expect(document.getElementById('section-inicio').hasAttribute('hidden')).toBe(true);
       expect(document.getElementById('section-indique').hasAttribute('hidden')).toBe(false);
-      expect(document.getElementById('section-central').hasAttribute('hidden')).toBe(true);
       expect(document.getElementById('section-carteiras').hasAttribute('hidden')).toBe(true);
       expect(document.getElementById('section-avisos').hasAttribute('hidden')).toBe(true);
     });
@@ -117,9 +111,9 @@ describe('NavigationManager', () => {
       expect(navManager.getActiveTab()).toBe(2);
     });
 
-    it('deve ignorar índices inválidos (maiores que 4)', () => {
+    it('deve ignorar índices inválidos (maiores ou iguais ao limite)', () => {
       navManager.activateTab(1);
-      navManager.activateTab(5);
+      navManager.activateTab(4);
       expect(navManager.getActiveTab()).toBe(1);
     });
 
@@ -144,8 +138,8 @@ describe('NavigationManager', () => {
     });
 
     it('deve refletir a última aba ativada', () => {
-      navManager.activateTab(4);
-      expect(navManager.getActiveTab()).toBe(4);
+      navManager.activateTab(3);
+      expect(navManager.getActiveTab()).toBe(3);
       navManager.activateTab(0);
       expect(navManager.getActiveTab()).toBe(0);
     });
@@ -168,7 +162,7 @@ describe('NavigationManager', () => {
 
     it('deve trocar a seção visível ao clicar', () => {
       const tabs = document.querySelectorAll('.nav-item');
-      tabs[4].click();
+      tabs[3].click();
       expect(document.getElementById('section-avisos').hasAttribute('hidden')).toBe(false);
       expect(document.getElementById('section-inicio').hasAttribute('hidden')).toBe(true);
     });

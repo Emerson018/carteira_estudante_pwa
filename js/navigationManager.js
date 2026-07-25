@@ -11,7 +11,6 @@ export class NavigationManager {
   #sectionIds = [
     'section-inicio',
     'section-indique',
-    'section-central',
     'section-carteiras',
     'section-avisos'
   ];
@@ -32,7 +31,7 @@ export class NavigationManager {
    * @param {number} tabIndex - Índice da aba (0-4)
    */
   activateTab(tabIndex) {
-    if (typeof tabIndex !== 'number' || tabIndex < 0 || tabIndex > 4) {
+    if (typeof tabIndex !== 'number' || tabIndex < 0 || tabIndex >= this.#sectionIds.length) {
       return;
     }
 

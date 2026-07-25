@@ -99,6 +99,13 @@ body {
   padding-bottom: var(--nav-height);
 }
 
+/* === Seções e Ocultação [hidden] === */
+.section[hidden],
+.edit-form-section[hidden],
+[hidden] {
+  display: none !important;
+}
+
 .section--inicio {
   flex: 1;
   display: flex;
