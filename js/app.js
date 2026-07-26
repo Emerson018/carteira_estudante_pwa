@@ -219,23 +219,40 @@ export class App {
     const isHidden = editSection.hasAttribute('hidden') || editSection.style.display === 'none';
 
     if (isHidden) {
-      if (this.navigationManager && typeof this.navigationManager.activateTab === 'function') {
-        this.navigationManager.activateTab(0);
-      }
+      // 1. Ocultar o visualizador PDF se estiver aberto
       const pdfSec = document.getElementById('section-pdf-viewer');
       if (pdfSec) {
         pdfSec.setAttribute('hidden', '');
         pdfSec.style.display = 'none';
       }
+
+      // 2. Garantir que a seção de início está visível
       const inicioSec = document.getElementById('section-inicio');
       if (inicioSec) {
         inicioSec.removeAttribute('hidden');
         inicioSec.style.display = 'block';
       }
 
+      // 3. Atualizar barra de navegação para a aba 0 (Início)
+      const nav = document.getElementById('bottom-nav');
+      if (nav) {
+        const tabs = nav.querySelectorAll('.nav-item');
+        tabs.forEach((tab, index) => {
+          if (index === 0) {
+            tab.classList.add('active');
+            tab.setAttribute('aria-current', 'page');
+          } else {
+            tab.classList.remove('active');
+            tab.removeAttribute('aria-current');
+          }
+        });
+      }
+
+      // 4. Exibir a seção do formulário de edição
       editSection.removeAttribute('hidden');
       editSection.style.display = 'block';
 
+      // 5. Rolar suavemente até o formulário
       setTimeout(() => {
         if (typeof editSection.scrollIntoView === 'function') {
           editSection.scrollIntoView({ behavior: 'smooth', block: 'start' });
