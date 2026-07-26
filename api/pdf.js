@@ -47,9 +47,10 @@ module.exports = async function handler(req, res) {
       if (pdfStore.has(code)) {
         const storedPdfBuffer = pdfStore.get(code);
         res.setHeader('Content-Type', 'application/pdf');
+        res.setHeader('Content-Length', storedPdfBuffer.length);
         res.setHeader('Content-Disposition', `inline; filename="declaracao_estudantil_${code}.pdf"`);
         res.setHeader('Cache-Control', 'public, max-age=3600, s-maxage=86400');
-        return res.send(storedPdfBuffer);
+        return res.end(storedPdfBuffer, 'binary');
       }
 
       // 2. Se existem dados de estudante salvos em memória para este código, utiliza-os
@@ -264,9 +265,10 @@ rixaEuNLnmi0oLdt5VNec++c06NszYMbIDDnoPCMQ4iEXPHEsZYQHcA58iKpLOF87B7f0/GG2kslgg==
 
       // Enviar resposta HTTP com Content-Type application/pdf
       res.setHeader('Content-Type', 'application/pdf');
+      res.setHeader('Content-Length', pdfBuffer.length);
       res.setHeader('Content-Disposition', `inline; filename="declaracao_estudantil_${code}.pdf"`);
       res.setHeader('Cache-Control', 'public, max-age=3600, s-maxage=86400');
-      return res.send(pdfBuffer);
+      return res.end(pdfBuffer, 'binary');
     } catch (error) {
       console.error('Erro na API Serverless do PDF:', error);
       return res.status(500).json({ error: 'Erro ao gerar arquivo PDF.' });
