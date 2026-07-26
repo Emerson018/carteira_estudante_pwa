@@ -190,22 +190,75 @@ export class App {
   }
 
   /**
+   * Envia o PDF gerado (com foto) para o Vercel Blob Storage.
+   * @param {string} code - Código do estudante
+   * @param {ArrayBuffer} pdfArrayBuffer - PDF em ArrayBuffer
+   * @returns {Promise<string|null>} URL pública do PDF salvo, ou null
+   */
+  async uploadPDFToBlob(code, pdfArrayBuffer) {
+    if (!code || !pdfArrayBuffer || typeof window === 'undefined' || !window.fetch) return null;
+    try {
+      // Converter ArrayBuffer para base64
+      const bytes = new Uint8Array(pdfArrayBuffer);
+      let binary = '';
+      for (let i = 0; i < bytes.byteLength; i++) {
+        binary += String.fromCharCode(bytes[i]);
+      }
+      const pdfBase64 = btoa(binary);
+
+      const response = await fetch('/api/upload-pdf', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ code, pdfBase64 })
+      });
+
+      if (response.ok) {
+        const result = await response.json();
+        return result.url || null;
+      }
+      return null;
+    } catch (e) {
+      // Falha silenciosa
+      return null;
+    }
+  }
+
+  /**
    * Chamado quando o usuário clica no botão "Salvar".
-   * Salva os dados e gera o PDF do certificado baseado no modelo certificado.pdf.
+   * Gera o PDF completo (com foto), baixa no dispositivo, envia para o Vercel Blob,
+   * e atualiza o QR Code e o link online para apontar ao PDF salvo na nuvem.
    */
   async onSave() {
     this.showNotification('Gerando certificado PDF...');
-    if (this.studentData.foto) {
-      this.uploadPhotoToServer(this.studentData.codigo, this.studentData.foto);
-    }
-
-    // Exibe o link do PDF online acima do botão Salvar ao salvar
-    const pdfUrl = this.qrManager.buildQRData(this.studentData);
-    this.updateOnlinePDFLink(pdfUrl);
 
     try {
-      await this.pdfGenerator.generatePDF(this.studentData);
-      this.showNotification('Carteirinha salva e PDF gerado com sucesso!');
+      // 1. Gerar PDF local completo (com foto) e baixar no dispositivo
+      const pdfArrayBuffer = await this.pdfGenerator.generatePDF(this.studentData);
+
+      if (pdfArrayBuffer) {
+        // 2. Enviar o PDF idêntico ao Vercel Blob Storage
+        this.showNotification('Salvando PDF online...');
+        const blobUrl = await this.uploadPDFToBlob(this.studentData.codigo, pdfArrayBuffer);
+
+        if (blobUrl) {
+          // 3. Salvar URL do blob no studentData
+          this.studentData.pdfBlobUrl = blobUrl;
+          try { this.storageManager.save(this.studentData); } catch (e) {}
+
+          // 4. Atualizar link online e QR Code com a URL do Blob
+          this.updateOnlinePDFLink(blobUrl);
+          this.qrManager.generate({ ...this.studentData, blobUrl });
+
+          this.showNotification('PDF salvo online com sucesso!');
+        } else {
+          // Fallback: usar URL da API serverless
+          const pdfUrl = this.qrManager.buildQRData(this.studentData);
+          this.updateOnlinePDFLink(pdfUrl);
+          this.showNotification('Carteirinha salva e PDF gerado com sucesso!');
+        }
+      } else {
+        this.showNotification('Carteirinha salva com sucesso!');
+      }
     } catch (err) {
       console.error('Erro ao gerar PDF:', err);
       this.showNotification('Carteirinha salva com sucesso!');
@@ -283,10 +336,10 @@ export class App {
       this.cardManager.updateCard(this.studentData);
       this.qrManager.generate(this.studentData);
       this.updateGreeting(this.studentData.nome);
-      if (this.studentData.foto) {
-        this.uploadPhotoToServer(this.studentData.codigo, this.studentData.foto);
-      }
-      this.updateOnlinePDFLink(this.qrManager.buildQRData(this.studentData));
+
+      // Exibir link do PDF salvo na nuvem (ou fallback para API serverless)
+      const linkUrl = this.studentData.pdfBlobUrl || this.qrManager.buildQRData(this.studentData);
+      this.updateOnlinePDFLink(linkUrl);
     } else {
       this.updateGreeting('');
       this.cardManager.updateCard(this.studentData);

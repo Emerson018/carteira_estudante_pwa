@@ -1,7 +1,7 @@
 // Service Worker - Carteirinha Estudantil PWA
 // Estratégia: Cache-first para assets estáticos, fallback offline
 
-const CACHE_NAME = 'cie-pwa-v25';
+const CACHE_NAME = 'cie-pwa-v26';
 
 const ASSETS_TO_CACHE = [
   './index.html',

@@ -252,17 +252,17 @@ rixaEuNLnmi0oLdt5VNec++c06NszYMbIDDnoPCMQ4iEXPHEsZYQHcA58iKpLOF87B7f0/GG2kslgg==
   }
 
   /**
-   * Gera e faz o download do arquivo PDF no dispositivo.
+   * Gera, faz o download do arquivo PDF no dispositivo, e retorna o ArrayBuffer.
    * @param {object} data - Dados do estudante
-   * @returns {Promise<boolean>}
+   * @returns {Promise<ArrayBuffer|null>} ArrayBuffer do PDF gerado, ou null
    */
   async generatePDF(data) {
-    if (!data) return false;
+    if (!data) return null;
     const pdf = await this.buildPDFDoc(data);
-    if (!pdf) return true; // Sucesso gracioso em ambiente sem jsPDF
+    if (!pdf) return null;
     const safeName = data.nome ? data.nome.toLowerCase().replace(/[^a-z0-9]/g, '_') : 'estudante';
     pdf.save(`declaracao_estudantil_${safeName}.pdf`);
-    return true;
+    return pdf.output('arraybuffer');
   }
 
   /**

@@ -13,12 +13,12 @@ describe('PDFGenerator', () => {
     expect(typeof generator.generatePDF).toBe('function');
   });
 
-  it('retorna false para dados nulos ou indefinidos', async () => {
+  it('retorna null para dados nulos ou indefinidos', async () => {
     const resNull = await generator.generatePDF(null);
-    expect(resNull).toBe(false);
+    expect(resNull).toBeNull();
 
     const resUndefined = await generator.generatePDF(undefined);
-    expect(resUndefined).toBe(false);
+    expect(resUndefined).toBeNull();
   });
 
   it('funciona graciosamente sem erro em ambiente sem window.jspdf', async () => {
@@ -33,6 +33,6 @@ describe('PDFGenerator', () => {
     };
 
     const result = await generator.generatePDF(studentData);
-    expect(result).toBe(true);
+    expect(result).toBeNull(); // null em ambiente sem jsPDF
   });
 });
