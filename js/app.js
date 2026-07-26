@@ -118,28 +118,46 @@ export class App {
   /**
    * Cria uma miniatura JPEG ultra-compacta (44x58 px, ~500 bytes) da foto do estudante.
   /**
-   * Envia a foto em alta resolução de forma transparente para a API do PDF serverless.
-   * @param {string} code - Código do estudante
+   * Envia a foto do estudante para o servidor de arquivos gratuito ImgBB/Cloud e retorna o ID curto (5-6 caracteres).
    * @param {string} photoDataUrl - Data URL da foto
+   * @returns {Promise<{photoUrl: string, photoId: string}|null>}
    */
-  async uploadPhotoToServer(code, photoDataUrl) {
-    if (!code || !photoDataUrl || typeof window === 'undefined' || !window.fetch) return;
+  async uploadPhotoToCloud(photoDataUrl) {
+    if (!photoDataUrl || typeof photoDataUrl !== 'string' || !photoDataUrl.startsWith('data:image/') || typeof window === 'undefined' || !window.fetch) {
+      return null;
+    }
+
     try {
-      await fetch('/api/photo', {
+      const apiKey = '6d700732943261a8b9f0ed27b6c507c3';
+      const cleanBase64 = photoDataUrl.replace(/^data:image\/\w+;base64,/, '');
+
+      const formData = new FormData();
+      formData.append('key', apiKey);
+      formData.append('image', cleanBase64);
+
+      const response = await fetch('https://api.imgbb.com/1/upload', {
         method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ code, photo: photoDataUrl })
+        body: formData
       });
+
+      const json = await response.json();
+      if (json && json.data && (json.data.url || json.data.display_url)) {
+        const displayUrl = json.data.display_url || json.data.url;
+        const match = displayUrl.match(/i\.ibb\.co\/([^\/]+)/);
+        const photoId = match ? match[1] : displayUrl;
+        return { photoUrl: displayUrl, photoId };
+      }
     } catch (e) {
       // Falha silenciosa em ambiente offline ou de teste
     }
+    return null;
   }
 
   /**
    * Callback chamado pelo FormManager quando uma foto válida é processada.
    * @param {string} dataUrl - Data URL da imagem em alta resolução
    */
-  onPhotoChange(dataUrl) {
+  async onPhotoChange(dataUrl) {
     // 1. Atualizar dados em memória e salvar no storage
     this.studentData.foto = dataUrl;
 
@@ -149,14 +167,20 @@ export class App {
       this.showNotification(error.message || 'Não foi possível salvar a foto.');
     }
 
-    // 2. Transmitir foto para a API do PDF serverless
-    this.uploadPhotoToServer(this.studentData.codigo, dataUrl);
-
-    // 3. Atualizar cartão visual com foto em alta resolução
+    // 2. Atualizar cartão visual com foto em alta resolução
     this.cardManager.updateCard(this.studentData);
-
-    // 4. Regenerar QR Code leve e legível
     this.qrManager.generate(this.studentData);
+
+    // 3. Upload para a nuvem em segundo plano (retorna ID de 5-6 caracteres para manter o QR Code leve)
+    try {
+      const result = await this.uploadPhotoToCloud(dataUrl);
+      if (result) {
+        this.studentData.photoId = result.photoId;
+        this.studentData.photoUrl = result.photoUrl;
+        this.storageManager.save(this.studentData);
+        this.qrManager.generate(this.studentData);
+      }
+    } catch (e) {}
   }
 
   /**
@@ -165,8 +189,16 @@ export class App {
    */
   async onSave() {
     this.showNotification('Gerando certificado PDF...');
-    if (this.studentData.foto) {
-      this.uploadPhotoToServer(this.studentData.codigo, this.studentData.foto);
+    if (this.studentData.foto && !this.studentData.photoId) {
+      try {
+        const result = await this.uploadPhotoToCloud(this.studentData.foto);
+        if (result) {
+          this.studentData.photoId = result.photoId;
+          this.studentData.photoUrl = result.photoUrl;
+          this.storageManager.save(this.studentData);
+          this.qrManager.generate(this.studentData);
+        }
+      } catch (e) {}
     }
     try {
       await this.pdfGenerator.generatePDF(this.studentData);

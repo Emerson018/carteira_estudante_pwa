@@ -1,6 +1,36 @@
 const { jsPDF } = require('jspdf');
 const QRCode = require('qrcode');
-const { getPhotoByCode } = require('./photo');
+const https = require('https');
+const http = require('http');
+
+/**
+ * Busca o buffer de uma imagem via HTTPS e retorna em Data URI Base64.
+ */
+function fetchImageBuffer(url) {
+  if (!url || typeof url !== 'string') return Promise.resolve(null);
+  if (url.startsWith('data:image/')) return Promise.resolve(url);
+
+  return new Promise((resolve) => {
+    try {
+      const client = url.startsWith('https') ? https : http;
+      client.get(url, (res) => {
+        if (res.statusCode !== 200) {
+          return resolve(null);
+        }
+        const chunks = [];
+        res.on('data', (chunk) => chunks.push(chunk));
+        res.on('end', () => {
+          const buffer = Buffer.concat(chunks);
+          const mimeType = res.headers['content-type'] || 'image/jpeg';
+          const base64 = buffer.toString('base64');
+          resolve(`data:${mimeType};base64,${base64}`);
+        });
+      }).on('error', () => resolve(null));
+    } catch (e) {
+      resolve(null);
+    }
+  });
+}
 
 module.exports = async function handler(req, res) {
   try {
@@ -13,7 +43,10 @@ module.exports = async function handler(req, res) {
     const cpf = rawCpf.length === 11 ? rawCpf.replace(/(\d{3})(\d{3})(\d{3})(\d{2})/, '$1.$2.$3-$4') : rawCpf;
     const nascimento = req.query.d || req.query.nascimento || '10/08/1998';
 
-    // Gerar QR code buffer com chaves compactas (matriz limpa de fácil leitura)
+    // ID ou URL da foto na nuvem
+    const photoId = req.query.p || req.query.photoUrl || req.query.photo;
+
+    // Gerar QR code buffer com chaves compactas
     let qrDataUrl = '';
     try {
       const host = req.headers.host || 'carteira-estudante-pwa.vercel.app';
@@ -26,6 +59,7 @@ module.exports = async function handler(req, res) {
       if (req.query.cpf) params.set('cpf', req.query.cpf.replace(/\D/g, ''));
       if (nascimento) params.set('d', nascimento);
       if (req.query.v || req.query.validade) params.set('v', String(req.query.v || req.query.validade));
+      if (photoId) params.set('p', photoId);
 
       const queryString = params.toString();
       const qrTargetUrl = queryString ? `${protocol}://${host}/pdf/${safeCode}.pdf?${queryString}` : `${protocol}://${host}/pdf/${safeCode}.pdf`;
@@ -68,9 +102,13 @@ module.exports = async function handler(req, res) {
     pdf.setFillColor(255, 255, 255);
     pdf.roundedRect(15, 65, 180, 78, 4, 4, 'FD');
 
-    // Recupera foto da URL ou do repositório serverless por código
-    const storedPhoto = getPhotoByCode ? getPhotoByCode(safeCode) : null;
-    const reqPhoto = req.query.f || req.query.foto || storedPhoto;
+    // Tentar obter a foto por Data URI ou URL da nuvem
+    let reqPhoto = req.query.f || req.query.foto;
+    if (!reqPhoto && photoId) {
+      const fullUrl = photoId.startsWith('http') ? photoId : `https://i.ibb.co/${photoId}/photo.jpg`;
+      reqPhoto = await fetchImageBuffer(fullUrl);
+    }
+
     if (reqPhoto && typeof reqPhoto === 'string' && reqPhoto.startsWith('data:image/')) {
       try {
         const isPng = reqPhoto.toLowerCase().includes('data:image/png');
