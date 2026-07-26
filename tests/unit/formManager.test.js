@@ -152,11 +152,11 @@ describe('FormManager', () => {
       expect(result.errors.curso).toBeDefined();
     });
 
-    it('retorna erro se a instituição exceder 30 caracteres', () => {
+    it('retorna erro se a instituição exceder 50 caracteres', () => {
       const result = fm.validate({
         nome: 'Maria',
         curso: 'Computação',
-        instituicao: 'Nome De Instituição Com Mais De Trinta Caracteres'
+        instituicao: 'Este Nome De Instituição É Muito Longo E Excede O Limite De Cinquenta Caracteres'
       });
       expect(result.isValid).toBe(false);
       expect(result.errors.instituicao).toBeDefined();

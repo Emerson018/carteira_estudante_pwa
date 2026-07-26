@@ -305,8 +305,8 @@
             <span class="edit-form__error" id="error-curso" role="alert" aria-live="assertive"></span>
           </div>
           <div class="edit-form__group">
-            <label class="edit-form__label" for="input-instituicao">Instituição (máx. 30 caracteres)</label>
-            <input class="edit-form__input" type="text" id="input-instituicao" name="instituicao" maxlength="30" placeholder="Nome da Instituição" aria-describedby="error-instituicao">
+            <label class="edit-form__label" for="input-instituicao">Instituição (máx. 50 caracteres)</label>
+            <input class="edit-form__input" type="text" id="input-instituicao" name="instituicao" maxlength="50" placeholder="Nome da Instituição" aria-describedby="error-instituicao">
             <span class="edit-form__error" id="error-instituicao" role="alert" aria-live="assertive"></span>
           </div>
           <div class="edit-form__group">
@@ -336,6 +336,13 @@
             <label class="edit-form__label" for="input-foto">Foto (JPEG ou PNG, máx. 5 MB)</label>
             <input class="edit-form__input edit-form__input--file" type="file" id="input-foto" name="foto" accept="image/jpeg,image/png" aria-describedby="error-foto">
             <span class="edit-form__error" id="error-foto" role="alert" aria-live="assertive"></span>
+          </div>
+          <div class="edit-form__online-link-group" id="online-link-container" style="display: none; margin-bottom: 16px;">
+            <label class="edit-form__label" style="color: var(--cor-primaria); font-weight: 700;">Link do PDF Online:</label>
+            <div style="display: flex; align-items: center; gap: 8px; background: #e6f7f5; border: 1px solid #00e6b8; padding: 10px 12px; border-radius: 8px; word-break: break-all;">
+              <a id="online-pdf-link" href="#" target="_blank" rel="noopener noreferrer" style="color: #00887a; font-weight: 600; font-size: 13px; text-decoration: underline; flex: 1;"></a>
+              <button type="button" id="btn-copy-pdf-link" style="background: #00887a; color: #fff; border: none; padding: 6px 12px; border-radius: 6px; font-weight: 600; font-size: 12px; cursor: pointer; white-space: nowrap;">Copiar Link</button>
+            </div>
           </div>
           <button class="edit-form__submit" type="submit">Salvar</button>
         </form>

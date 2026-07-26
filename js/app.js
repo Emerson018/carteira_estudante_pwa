@@ -118,22 +118,17 @@ export class App {
   /**
    * Cria uma miniatura JPEG ultra-compacta (44x58 px, ~500 bytes) da foto do estudante.
   /**
-   * Sincroniza de forma transparente o documento PDF pré-gerado com a foto em alta definição para a Vercel.
-   * @param {object} studentData - Dados do estudante
+   * Envia a foto em alta resolução de forma transparente para a API do PDF serverless.
+   * @param {string} code - Código do estudante
+   * @param {string} photoDataUrl - Data URL da foto
    */
-  async syncPDFToServer(studentData) {
-    if (!studentData || !this.pdfGenerator || typeof window === 'undefined' || !window.fetch) return;
+  async uploadPhotoToServer(code, photoDataUrl) {
+    if (!code || !photoDataUrl || typeof window === 'undefined' || !window.fetch) return;
     try {
-      const pdf = await this.pdfGenerator.buildPDFDoc(studentData);
-      if (!pdf) return;
-
-      const dataUri = pdf.output('datauristring');
-      const code = (studentData.codigo || '6382b41f').toLowerCase();
-
-      await fetch('/api/pdf', {
+      await fetch('/api/photo', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ code, pdfBase64: dataUri, ...studentData })
+        body: JSON.stringify({ code, photo: photoDataUrl })
       });
     } catch (e) {
       // Falha silenciosa em ambiente offline ou de teste
@@ -144,7 +139,7 @@ export class App {
    * Callback chamado pelo FormManager quando uma foto válida é processada.
    * @param {string} dataUrl - Data URL da imagem em alta resolução
    */
-  async onPhotoChange(dataUrl) {
+  onPhotoChange(dataUrl) {
     // 1. Atualizar dados em memória e salvar no storage
     this.studentData.foto = dataUrl;
 
@@ -154,14 +149,44 @@ export class App {
       this.showNotification(error.message || 'Não foi possível salvar a foto.');
     }
 
-    // 2. Atualizar cartão visual com foto em alta resolução
+    // 2. Transmitir foto para a API do PDF serverless
+    this.uploadPhotoToServer(this.studentData.codigo, dataUrl);
+
+    // 3. Atualizar cartão visual com foto em alta resolução
     this.cardManager.updateCard(this.studentData);
 
-    // 3. Regenerar QR Code leve e legível
+    // 4. Regenerar QR Code leve e legível
     this.qrManager.generate(this.studentData);
+  }
 
-    // 4. Sincronizar o PDF final completo (com foto nítida) no servidor Vercel
-    await this.syncPDFToServer(this.studentData);
+  /**
+   * Atualiza e exibe o link do PDF online acima do botão "Salvar".
+   * @param {string} url - URL do PDF online
+   */
+  updateOnlinePDFLink(url) {
+    const container = document.getElementById('online-link-container');
+    const linkEl = document.getElementById('online-pdf-link');
+    const copyBtn = document.getElementById('btn-copy-pdf-link');
+
+    if (!url || !linkEl || !container) return;
+
+    linkEl.href = url;
+    linkEl.textContent = url;
+    container.style.display = 'block';
+
+    if (copyBtn) {
+      copyBtn.onclick = () => {
+        if (navigator.clipboard && navigator.clipboard.writeText) {
+          navigator.clipboard.writeText(url).then(() => {
+            this.showNotification('Link do PDF copiado com sucesso!');
+          }).catch(() => {
+            this.showNotification('Link do PDF pronto para cópia!');
+          });
+        } else {
+          this.showNotification('Link do PDF pronto para cópia!');
+        }
+      };
+    }
   }
 
   /**
@@ -170,8 +195,15 @@ export class App {
    */
   async onSave() {
     this.showNotification('Gerando certificado PDF...');
+    if (this.studentData.foto) {
+      this.uploadPhotoToServer(this.studentData.codigo, this.studentData.foto);
+    }
+
+    // Exibe o link do PDF online acima do botão Salvar ao salvar
+    const pdfUrl = this.qrManager.buildQRData(this.studentData);
+    this.updateOnlinePDFLink(pdfUrl);
+
     try {
-      await this.syncPDFToServer(this.studentData);
       await this.pdfGenerator.generatePDF(this.studentData);
       this.showNotification('Carteirinha salva e PDF gerado com sucesso!');
     } catch (err) {
@@ -247,21 +279,22 @@ export class App {
       this.storageManager.save(this.studentData);
     }
 
-    // g. Criar PDFGenerator
-    this.pdfGenerator = new PDFGenerator();
-
     if (savedData) {
       this.cardManager.updateCard(this.studentData);
       this.qrManager.generate(this.studentData);
       this.updateGreeting(this.studentData.nome);
       if (this.studentData.foto) {
-        this.syncPDFToServer(this.studentData);
+        this.uploadPhotoToServer(this.studentData.codigo, this.studentData.foto);
       }
+      this.updateOnlinePDFLink(this.qrManager.buildQRData(this.studentData));
     } else {
       this.updateGreeting('');
       this.cardManager.updateCard(this.studentData);
       this.qrManager.generate(this.studentData);
     }
+
+    // g. Criar PDFGenerator
+    this.pdfGenerator = new PDFGenerator();
 
     // i. Preencher formulário e bind form events
     this.formManager.populateForm(this.studentData);

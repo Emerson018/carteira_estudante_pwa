@@ -20,7 +20,7 @@ export class FormManager {
   static ERRORS = {
     nome: 'Nome é obrigatório (máximo 30 caracteres).',
     curso: 'Curso é obrigatório (máximo 50 caracteres).',
-    instituicao: 'Instituição é obrigatória (máximo 30 caracteres).',
+    instituicao: 'Instituição é obrigatória (máximo 50 caracteres).',
     nascimento: 'Data inválida. Use o formato DD/MM/AAAA.',
     cpf: 'CPF deve conter 11 dígitos no formato 000.000.000-00.',
     codigo: 'Código de uso deve ter 8 caracteres (ex: 6382b41f).',
@@ -158,8 +158,8 @@ export class FormManager {
       errors.curso = FormManager.ERRORS.curso;
     }
 
-    // Instituição: obrigatório, máx. 30 chars
-    if (!data.instituicao || typeof data.instituicao !== 'string' || data.instituicao.trim().length === 0 || data.instituicao.length > 30) {
+    // Instituição: obrigatório, máx. 50 chars
+    if (!data.instituicao || typeof data.instituicao !== 'string' || data.instituicao.trim().length === 0 || data.instituicao.length > 50) {
       errors.instituicao = FormManager.ERRORS.instituicao;
     }
 
