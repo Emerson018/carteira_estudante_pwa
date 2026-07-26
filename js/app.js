@@ -217,12 +217,7 @@ export class App {
 
     if (savedData) {
       this.cardManager.updateCard(this.studentData);
-      this.qrManager.generate({
-        nome: this.studentData.nome,
-        cpf: this.studentData.cpf,
-        validade: this.studentData.validade,
-        codigo: this.studentData.codigo
-      });
+      this.qrManager.generate(this.studentData);
       this.updateGreeting(this.studentData.nome);
     } else {
       this.updateGreeting('');
