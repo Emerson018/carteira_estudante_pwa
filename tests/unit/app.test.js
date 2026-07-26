@@ -310,8 +310,7 @@ describe('App Module', () => {
   });
 
   describe('checkQRScanValidation', () => {
-    it('should show notification and trigger showPDFViewer when pathname contains pdf code', () => {
-      vi.useFakeTimers();
+    it('should trigger showPDFViewer directly when pathname contains pdf code', () => {
       const pdfViewerSpy = vi.spyOn(app, 'showPDFViewer').mockImplementation(() => Promise.resolve());
 
       // Mock window.location.pathname
@@ -321,12 +320,8 @@ describe('App Module', () => {
       });
 
       app.init();
-      vi.advanceTimersByTime(600);
 
-      expect(document.getElementById('notification-message').textContent).toContain('Carteirinha Válida');
       expect(pdfViewerSpy).toHaveBeenCalled();
-
-      vi.useRealTimers();
     });
   });
 

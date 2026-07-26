@@ -282,17 +282,13 @@ export class App {
         this.qrManager.generate(this.studentData);
       }
 
-      this.showNotification(`✅ Carteirinha Válida! Cód: ${cleanCode.toUpperCase()}`);
-
-      // Exibe a página com o PDF gerado nativamente em tela
-      setTimeout(() => {
-        this.showPDFViewer(this.studentData);
-      }, 300);
+      // Exibe o PDF diretamente sem intermediários
+      this.showPDFViewer(this.studentData);
     }
   }
 
   /**
-   * Exibe o visualizador do documento PDF nativamente na página da web.
+   * Exibe o documento PDF diretamente em tela cheia na página da web.
    * @param {object} data - Dados do estudante
    */
   async showPDFViewer(data) {
@@ -300,13 +296,13 @@ export class App {
     const pdfFrame = document.getElementById('pdf-viewer-frame');
     if (!pdfSection || !pdfFrame) return;
 
-    this.showNotification('Carregando Declaração Estudantil...');
-
     try {
-      const dataUri = await this.pdfGenerator.generatePDFDataUri(data || this.studentData);
-      if (dataUri) {
-        pdfFrame.src = dataUri;
-      }
+      const pdf = await this.pdfGenerator.buildPDFDoc(data || this.studentData);
+      if (!pdf) return;
+
+      const blob = pdf.output('blob');
+      const blobUrl = URL.createObjectURL(blob);
+      pdfFrame.src = blobUrl;
 
       // Esconde todas as seções principais
       const mainSections = document.querySelectorAll('.main-content > .section');
@@ -317,35 +313,11 @@ export class App {
         }
       });
 
-      // Exibe a seção do visualizador PDF
+      // Exibe a seção do visualizador PDF diretamente em tela cheia
       pdfSection.removeAttribute('hidden');
-      pdfSection.style.display = 'flex';
-
-      // Atualiza o cabeçalho superior
-      const greeting = document.getElementById('greeting');
-      const subtitle = document.getElementById('header-subtitle');
-      if (greeting) greeting.textContent = 'Declaração Estudantil';
-      if (subtitle) subtitle.textContent = 'Assinado Digitalmente ICP-Brasil';
-
-      // Configura botões do visualizador
-      const btnDownload = document.getElementById('btn-download-pdf');
-      if (btnDownload) {
-        btnDownload.onclick = () => this.onSave();
-      }
-
-      const btnClose = document.getElementById('btn-close-pdf');
-      if (btnClose) {
-        btnClose.onclick = () => {
-          pdfSection.setAttribute('hidden', '');
-          pdfSection.style.display = 'none';
-          if (this.navigationManager) {
-            this.navigationManager.activateTab(this.navigationManager.getActiveTab());
-          }
-        };
-      }
+      pdfSection.style.display = 'block';
     } catch (e) {
-      console.error('Erro ao renderizar visualizador PDF:', e);
-      this.showNotification('Erro ao exibir PDF.');
+      console.error('Erro ao renderizar PDF direto:', e);
     }
   }
 }
