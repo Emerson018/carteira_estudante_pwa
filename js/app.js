@@ -216,12 +216,31 @@ export class App {
     const editSection = document.getElementById('edit-form-section');
     if (!editSection) return;
 
-    if (editSection.hasAttribute('hidden')) {
+    const isHidden = editSection.hasAttribute('hidden') || editSection.style.display === 'none';
+
+    if (isHidden) {
+      if (this.navigationManager && typeof this.navigationManager.activateTab === 'function') {
+        this.navigationManager.activateTab(0);
+      }
+      const pdfSec = document.getElementById('section-pdf-viewer');
+      if (pdfSec) {
+        pdfSec.setAttribute('hidden', '');
+        pdfSec.style.display = 'none';
+      }
+      const inicioSec = document.getElementById('section-inicio');
+      if (inicioSec) {
+        inicioSec.removeAttribute('hidden');
+        inicioSec.style.display = 'block';
+      }
+
       editSection.removeAttribute('hidden');
       editSection.style.display = 'block';
-      if (typeof editSection.scrollIntoView === 'function') {
-        editSection.scrollIntoView({ behavior: 'smooth' });
-      }
+
+      setTimeout(() => {
+        if (typeof editSection.scrollIntoView === 'function') {
+          editSection.scrollIntoView({ behavior: 'smooth', block: 'start' });
+        }
+      }, 50);
     } else {
       editSection.setAttribute('hidden', '');
       editSection.style.display = 'none';
