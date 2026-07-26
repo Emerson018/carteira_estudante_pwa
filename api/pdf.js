@@ -124,9 +124,25 @@ module.exports = async function handler(req, res) {
     pdf.setTextColor(0, 0, 0);
     pdf.text(studentNome, 65, 74);
 
+    function format25LineBreaks(text) {
+      if (!text || typeof text !== 'string') return '';
+      const trimmed = text.trim().slice(0, 50);
+      if (trimmed.length <= 25) return trimmed;
+
+      let breakIdx = trimmed.lastIndexOf(' ', 25);
+      if (breakIdx <= 0) {
+        breakIdx = trimmed.indexOf(' ', 25);
+      }
+      if (breakIdx <= 0) {
+        return trimmed.slice(0, 25) + '\n' + trimmed.slice(25);
+      }
+
+      return trimmed.slice(0, breakIdx) + '\n' + trimmed.slice(breakIdx + 1);
+    }
+
     const fields = [
-      { label: 'Instituição:', val: studentInst.toUpperCase() },
-      { label: 'Curso:', val: studentCurso.toUpperCase() },
+      { label: 'Instituição:', val: format25LineBreaks(studentInst.toUpperCase()) },
+      { label: 'Curso:', val: format25LineBreaks(studentCurso.toUpperCase()) },
       { label: 'CPF:', val: cpf },
       { label: 'Data de Nascimento:', val: nascimento },
       { label: 'Emissor:', val: 'ABAFE - Associação Brasileira de Aprendizado e Foco no Estudante' }
@@ -143,8 +159,10 @@ module.exports = async function handler(req, res) {
       pdf.setFontSize(9.5);
       pdf.setTextColor(0, 0, 0);
       currentY += 4.2;
-      pdf.text(f.val, 65, currentY);
-      currentY += 6.5;
+
+      const valLines = pdf.splitTextToSize(f.val, 125);
+      pdf.text(valLines, 65, currentY);
+      currentY += (Array.isArray(valLines) ? valLines.length * 4.2 : 4.2) + 2.3;
     });
 
     if (qrDataUrl) {

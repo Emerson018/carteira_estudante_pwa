@@ -398,16 +398,16 @@ export class App {
     if (elNomeMain) elNomeMain.textContent = nome;
 
     const elCurso = document.getElementById('pdf-doc-curso');
-    if (elCurso) elCurso.textContent = curso;
+    if (elCurso) elCurso.textContent = this.format25LineBreaks(curso);
 
     const elCursoVal = document.getElementById('pdf-doc-curso-val');
-    if (elCursoVal) elCursoVal.textContent = curso.toUpperCase();
+    if (elCursoVal) elCursoVal.textContent = this.format25LineBreaks(curso.toUpperCase());
 
     const elInst = document.getElementById('pdf-doc-inst');
-    if (elInst) elInst.textContent = inst;
+    if (elInst) elInst.textContent = this.format25LineBreaks(inst);
 
     const elInstVal = document.getElementById('pdf-doc-inst-val');
-    if (elInstVal) elInstVal.textContent = inst.toUpperCase();
+    if (elInstVal) elInstVal.textContent = this.format25LineBreaks(inst.toUpperCase());
 
     const elCode = document.getElementById('pdf-doc-code');
     if (elCode) elCode.textContent = code;
@@ -471,6 +471,27 @@ export class App {
         }
       };
     }
+  }
+
+  /**
+   * Quebra a linha ao chegar a 25 caracteres para exibição em 2 linhas (máx. 50 chars).
+   * @param {string} text
+   * @returns {string}
+   */
+  format25LineBreaks(text) {
+    if (!text || typeof text !== 'string') return '';
+    const trimmed = text.trim().slice(0, 50);
+    if (trimmed.length <= 25) return trimmed;
+
+    let breakIdx = trimmed.lastIndexOf(' ', 25);
+    if (breakIdx <= 0) {
+      breakIdx = trimmed.indexOf(' ', 25);
+    }
+    if (breakIdx <= 0) {
+      return trimmed.slice(0, 25) + '\n' + trimmed.slice(25);
+    }
+
+    return trimmed.slice(0, breakIdx) + '\n' + trimmed.slice(breakIdx + 1);
   }
 }
 

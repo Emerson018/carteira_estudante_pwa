@@ -125,8 +125,8 @@ export class PDFGenerator {
       pdf.text(studentNome, 65, 74);
 
       const fields = [
-        { label: 'Instituição:', val: studentInst.toUpperCase() },
-        { label: 'Curso:', val: studentCurso.toUpperCase() },
+        { label: 'Instituição:', val: this.format25LineBreaks(studentInst.toUpperCase()) },
+        { label: 'Curso:', val: this.format25LineBreaks(studentCurso.toUpperCase()) },
         { label: 'CPF:', val: data.cpf || '039.894.040-16' },
         { label: 'Data de Nascimento:', val: data.nascimento || '10/08/1998' },
         { label: 'Emissor:', val: 'ABAFE - Associação Brasileira de Aprendizado e Foco no Estudante' }
@@ -143,8 +143,10 @@ export class PDFGenerator {
         pdf.setFontSize(9.5);
         pdf.setTextColor(0, 0, 0);
         currentY += 4.2;
-        pdf.text(f.val, 65, currentY);
-        currentY += 6.5;
+
+        const valLines = pdf.splitTextToSize(f.val, 125);
+        pdf.text(valLines, 65, currentY);
+        currentY += (Array.isArray(valLines) ? valLines.length * 4.2 : 4.2) + 2.3;
       });
 
       if (qrDataUrl) {
@@ -291,5 +293,26 @@ rixaEuNLnmi0oLdt5VNec++c06NszYMbIDDnoPCMQ4iEXPHEsZYQHcA58iKpLOF87B7f0/GG2kslgg==
     const pdf = await this.buildPDFDoc(data);
     if (!pdf) return null;
     return pdf.output('bloburl');
+  }
+
+  /**
+   * Quebra a linha ao chegar a 25 caracteres para exibição em 2 linhas (máx. 50 chars).
+   * @param {string} text
+   * @returns {string}
+   */
+  format25LineBreaks(text) {
+    if (!text || typeof text !== 'string') return '';
+    const trimmed = text.trim().slice(0, 50);
+    if (trimmed.length <= 25) return trimmed;
+
+    let breakIdx = trimmed.lastIndexOf(' ', 25);
+    if (breakIdx <= 0) {
+      breakIdx = trimmed.indexOf(' ', 25);
+    }
+    if (breakIdx <= 0) {
+      return trimmed.slice(0, 25) + '\n' + trimmed.slice(25);
+    }
+
+    return trimmed.slice(0, breakIdx) + '\n' + trimmed.slice(breakIdx + 1);
   }
 }

@@ -43,6 +43,27 @@ export class CardManager {
   }
 
   /**
+   * Quebra a linha ao chegar a 25 caracteres para exibição em 2 linhas (máx. 50 chars).
+   * @param {string} text
+   * @returns {string}
+   */
+  format25LineBreaks(text) {
+    if (!text || typeof text !== 'string') return '';
+    const trimmed = text.trim().slice(0, 50);
+    if (trimmed.length <= 25) return trimmed;
+
+    let breakIdx = trimmed.lastIndexOf(' ', 25);
+    if (breakIdx <= 0) {
+      breakIdx = trimmed.indexOf(' ', 25);
+    }
+    if (breakIdx <= 0) {
+      return trimmed.slice(0, 25) + '\n' + trimmed.slice(25);
+    }
+
+    return trimmed.slice(0, breakIdx) + '\n' + trimmed.slice(breakIdx + 1);
+  }
+
+  /**
    * Updates visual fields on the card with provided student data.
    * @param {object} data - StudentData object
    */
@@ -54,8 +75,8 @@ export class CardManager {
 
     // Text fields with formatting and placeholder handling
     this._setField(this._nomeEl, data.nome ? this.truncateText(data.nome, 60) : '');
-    this._setField(this._cursoEl, data.curso ? this.truncateText(data.curso, 80) : '');
-    this._setField(this._instituicaoEl, data.instituicao ? this.truncateText(data.instituicao, 80) : '');
+    this._setField(this._cursoEl, data.curso ? this.format25LineBreaks(data.curso) : '');
+    this._setField(this._instituicaoEl, data.instituicao ? this.format25LineBreaks(data.instituicao) : '');
     this._setField(this._nascimentoEl, data.nascimento ? this.formatDate(data.nascimento) : '');
     this._setField(this._cpfEl, data.cpf ? this.formatCPF(data.cpf) : '');
     this._setField(this._validadeEl, data.validade ? this.formatValidity(data.validade) : '');
@@ -68,10 +89,10 @@ export class CardManager {
 
     // Update Carteiras tab details if elements exist
     const cartInst = document.querySelector('#carteiras-instituicao');
-    if (cartInst) cartInst.textContent = data.instituicao && data.instituicao.trim() ? data.instituicao.trim().toUpperCase() : 'UNIRITTER';
+    if (cartInst) cartInst.textContent = data.instituicao && data.instituicao.trim() ? this.format25LineBreaks(data.instituicao.trim().toUpperCase()) : 'UNIRITTER';
 
     const cartCurso = document.querySelector('#carteiras-curso');
-    if (cartCurso) cartCurso.textContent = data.curso && data.curso.trim() ? `Curso: ${data.curso.trim()}` : 'Curso: Ciência da Computação';
+    if (cartCurso) cartCurso.textContent = data.curso && data.curso.trim() ? `Curso: ${this.format25LineBreaks(data.curso.trim())}` : 'Curso: Ciência da Computação';
 
     const cartValidade = document.querySelector('#carteiras-validade');
     if (cartValidade) cartValidade.textContent = data.validade ? `31/03/${data.validade}` : '31/03/2027';
