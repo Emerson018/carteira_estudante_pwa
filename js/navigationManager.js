@@ -105,7 +105,7 @@ export class NavigationManager {
   /**
    * Atualiza visibilidade das seções de conteúdo.
    * Esconde todas as seções e mostra apenas a correspondente à aba ativa.
-   * Também esconde o formulário de edição e o visualizador PDF ao trocar de aba.
+   * Também esconde o formulário de edição ao trocar de aba.
    * @param {number} activeIndex - Índice da aba ativa
    */
   #updateSections(activeIndex) {
@@ -115,7 +115,7 @@ export class NavigationManager {
       if (section) {
         if (index === activeIndex) {
           section.removeAttribute('hidden');
-          section.style.display = 'block';
+          section.style.display = 'flex';
         } else {
           section.setAttribute('hidden', '');
           section.style.display = 'none';
@@ -148,8 +148,7 @@ export class NavigationManager {
     const tabs = nav.querySelectorAll('.nav-item');
 
     tabs.forEach((tab) => {
-      tab.addEventListener('click', (e) => {
-        e.preventDefault();
+      tab.addEventListener('click', () => {
         const tabIndex = parseInt(tab.getAttribute('data-tab'), 10);
         if (!isNaN(tabIndex)) {
           this.activateTab(tabIndex);
