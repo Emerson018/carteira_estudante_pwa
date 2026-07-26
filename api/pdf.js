@@ -62,9 +62,19 @@ module.exports = async function handler(req, res) {
     pdf.setFillColor(255, 255, 255);
     pdf.roundedRect(15, 65, 180, 78, 4, 4, 'FD');
 
-    // Placeholder de Foto (Caixa neutra em PDF Serverless)
-    pdf.setFillColor(238, 238, 238);
-    pdf.rect(22, 72, 36, 46, 'F');
+    if (req.query.foto && typeof req.query.foto === 'string' && req.query.foto.startsWith('data:image/')) {
+      try {
+        const isPng = req.query.foto.toLowerCase().includes('data:image/png');
+        const format = isPng ? 'PNG' : 'JPEG';
+        pdf.addImage(req.query.foto, format, 22, 72, 36, 46);
+      } catch (e) {
+        pdf.setFillColor(238, 238, 238);
+        pdf.rect(22, 72, 36, 46, 'F');
+      }
+    } else {
+      pdf.setFillColor(238, 238, 238);
+      pdf.rect(22, 72, 36, 46, 'F');
+    }
 
     pdf.setFont('helvetica', 'bold');
     pdf.setFontSize(9);

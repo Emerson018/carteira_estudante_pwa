@@ -78,12 +78,19 @@ export class PDFGenerator {
       pdf.setFillColor(255, 255, 255);
       pdf.roundedRect(15, 65, 180, 78, 4, 4, 'FD');
 
-      if (data.foto) {
+      if (data.foto && typeof data.foto === 'string') {
         try {
-          pdf.addImage(data.foto, 'JPEG', 22, 72, 36, 46);
+          const isPng = data.foto.toLowerCase().includes('data:image/png');
+          const format = isPng ? 'PNG' : 'JPEG';
+          pdf.addImage(data.foto, format, 22, 72, 36, 46);
         } catch (e) {
-          pdf.setFillColor(238, 238, 238);
-          pdf.rect(22, 72, 36, 46, 'F');
+          try {
+            pdf.addImage(data.foto, 22, 72, 36, 46);
+          } catch (e2) {
+            console.warn('Erro ao inserir foto no PDF:', e2);
+            pdf.setFillColor(238, 238, 238);
+            pdf.rect(22, 72, 36, 46, 'F');
+          }
         }
       } else {
         pdf.setFillColor(238, 238, 238);

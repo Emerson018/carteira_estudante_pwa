@@ -6,42 +6,44 @@
 
 export class QRManager {
   /**
-   * Monta string de dados para codificação no QR.
-   * Formato: CIE|Nome:{nome}|CPF:{cpf}|Validade:{validade}
-   * @param {object} params
-   * @param {string} params.nome - Nome completo do estudante
-   * @param {string} params.cpf - CPF (11 dígitos numéricos)
-   * @param {number|string} params.validade - Ano de validade
-   * @returns {string} String formatada para QR
+   * Monta a URL para codificação no QR incluindo todos os parâmetros do estudante.
+   * @param {object} params - Dados do estudante
+   * @returns {string} URL formatada para o QR code
    */
-  buildQRData({ nome, cpf, codigo } = {}) {
+  buildQRData({ nome, curso, instituicao, nascimento, cpf, validade, codigo } = {}) {
     const origin = (typeof window !== 'undefined' && window.location && window.location.origin && window.location.origin !== 'null')
       ? window.location.origin
       : 'https://carteira-estudante.vercel.app';
 
     const safeCode = (codigo || '6382b41f').toLowerCase();
-    return `${origin}/pdf/${safeCode}.pdf`;
+
+    const params = new URLSearchParams();
+    if (nome) params.set('nome', nome);
+    if (curso) params.set('curso', curso);
+    if (instituicao) params.set('instituicao', instituicao);
+    if (cpf) params.set('cpf', cpf);
+    if (nascimento) params.set('nascimento', nascimento);
+    if (validade) params.set('validade', String(validade));
+
+    const queryString = params.toString();
+    return queryString ? `${origin}/pdf/${safeCode}.pdf?${queryString}` : `${origin}/pdf/${safeCode}.pdf`;
   }
 
   /**
-   * Gera QR code com dados do estudante no canvas.
-   * @param {object} params
-   * @param {string} params.nome - Nome completo
-   * @param {string} params.cpf - CPF (11 dígitos)
-   * @param {number|string} params.validade - Ano de validade
+   * Gera QR code com dados completos do estudante no canvas.
+   * @param {object} params - Dados completos do estudante
    * @returns {boolean} true se gerado com sucesso, false se falhou
    */
-  generate({ nome, cpf, validade, codigo } = {}) {
+  generate(params = {}) {
     const canvas = document.getElementById('qr-canvas');
     const placeholder = document.getElementById('qr-placeholder');
 
-    // Verifica se a biblioteca QRCode está disponível globalmente
     if (typeof QRCode === 'undefined') {
       this._showPlaceholder(canvas, placeholder);
       return false;
     }
 
-    const data = this.buildQRData({ nome, cpf, validade, codigo });
+    const data = this.buildQRData(params);
 
     try {
       QRCode.toCanvas(canvas, data, {
@@ -50,11 +52,9 @@ export class QRManager {
         errorCorrectionLevel: 'M'
       });
 
-      // Geração bem-sucedida: mostra canvas, esconde placeholder
       this._showCanvas(canvas, placeholder);
       return true;
     } catch {
-      // Falha na geração: mostra placeholder, esconde canvas
       this._showPlaceholder(canvas, placeholder);
       return false;
     }
