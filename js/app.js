@@ -288,36 +288,107 @@ export class App {
   }
 
   /**
-   * Exibe o documento PDF diretamente em tela cheia na página da web.
+   * Exibe a declaração do documento PDF diretamente na tela da web em layout A4 nativo.
    * @param {object} data - Dados do estudante
    */
-  async showPDFViewer(data) {
+  showPDFViewer(data) {
     const pdfSection = document.getElementById('section-pdf-viewer');
-    const pdfFrame = document.getElementById('pdf-viewer-frame');
-    if (!pdfSection || !pdfFrame) return;
+    if (!pdfSection) return;
 
-    try {
-      const pdf = await this.pdfGenerator.buildPDFDoc(data || this.studentData);
-      if (!pdf) return;
+    const student = data || this.studentData;
 
-      const blob = pdf.output('blob');
-      const blobUrl = URL.createObjectURL(blob);
-      pdfFrame.src = blobUrl;
+    const nome = student.nome || 'Emerson Vicosa de Lima';
+    const curso = student.curso || 'Ciência da Computação';
+    const inst = student.instituicao || 'UNIRITTER';
+    const code = (student.codigo || '6382b41f').toLowerCase();
+    const cpf = student.cpf || '039.894.040-16';
+    const nasc = student.nascimento || '10/08/1998';
 
-      // Esconde todas as seções principais
-      const mainSections = document.querySelectorAll('.main-content > .section');
-      mainSections.forEach((sec) => {
-        if (sec.id !== 'section-pdf-viewer') {
-          sec.setAttribute('hidden', '');
-          sec.style.display = 'none';
+    const elNome = document.getElementById('pdf-doc-nome');
+    if (elNome) elNome.textContent = nome;
+
+    const elNomeMain = document.getElementById('pdf-doc-nome-main');
+    if (elNomeMain) elNomeMain.textContent = nome;
+
+    const elCurso = document.getElementById('pdf-doc-curso');
+    if (elCurso) elCurso.textContent = curso;
+
+    const elCursoVal = document.getElementById('pdf-doc-curso-val');
+    if (elCursoVal) elCursoVal.textContent = curso.toUpperCase();
+
+    const elInst = document.getElementById('pdf-doc-inst');
+    if (elInst) elInst.textContent = inst;
+
+    const elInstVal = document.getElementById('pdf-doc-inst-val');
+    if (elInstVal) elInstVal.textContent = inst.toUpperCase();
+
+    const elCode = document.getElementById('pdf-doc-code');
+    if (elCode) elCode.textContent = code;
+
+    const elCpf = document.getElementById('pdf-doc-cpf-val');
+    if (elCpf) elCpf.textContent = cpf;
+
+    const elNasc = document.getElementById('pdf-doc-nasc-val');
+    if (elNasc) elNasc.textContent = nasc;
+
+    // Carimbo de data/hora
+    const now = new Date();
+    const formattedDate = `${String(now.getDate()).padStart(2, '0')}/${String(now.getMonth() + 1).padStart(2, '0')}/${now.getFullYear()} ${String(now.getHours()).padStart(2, '0')}:${String(now.getMinutes()).padStart(2, '0')}:${String(now.getSeconds()).padStart(2, '0')}`;
+    const elStamp = document.getElementById('pdf-doc-date-stamp');
+    if (elStamp) elStamp.textContent = `Brasília, ${formattedDate}`;
+
+    // Foto
+    const photoImg = document.getElementById('pdf-doc-photo');
+    const photoPlaceholder = document.getElementById('pdf-doc-photo-placeholder');
+    if (photoImg && photoPlaceholder) {
+      if (student.foto) {
+        photoImg.src = student.foto;
+        photoImg.style.display = 'block';
+        photoPlaceholder.style.display = 'none';
+      } else {
+        photoImg.style.display = 'none';
+        photoPlaceholder.style.display = 'flex';
+      }
+    }
+
+    // QR Code no documento A4
+    const qrCanvas = document.getElementById('pdf-doc-qr-canvas');
+    if (qrCanvas && window.QRCode) {
+      const origin = (window.location && window.location.origin) ? window.location.origin : 'https://carteira-estudante.vercel.app';
+      const qrData = `${origin}/pdf/${code}.pdf`;
+      try {
+        window.QRCode.toCanvas(qrCanvas, qrData, { margin: 1, width: 100 });
+      } catch (e) {}
+    }
+
+    // Esconde todas as seções principais
+    const mainSections = document.querySelectorAll('.main-content > .section');
+    mainSections.forEach((sec) => {
+      if (sec.id !== 'section-pdf-viewer') {
+        sec.setAttribute('hidden', '');
+        sec.style.display = 'none';
+      }
+    });
+
+    // Exibe a seção do documento PDF nativo
+    pdfSection.removeAttribute('hidden');
+    pdfSection.style.display = 'flex';
+
+    // Configura botões de ação do documento
+    const btnDownload = document.getElementById('btn-download-pdf-doc');
+    if (btnDownload) {
+      btnDownload.onclick = () => this.onSave();
+    }
+
+    const btnClose = document.getElementById('btn-close-pdf-doc');
+    if (btnClose) {
+      btnClose.onclick = () => {
+        pdfSection.setAttribute('hidden', '');
+        pdfSection.style.display = 'none';
+        if (this.navigationManager) {
+          this.navigationManager.activateTab(this.navigationManager.getActiveTab());
         }
-      });
-
-      // Exibe a seção do visualizador PDF diretamente em tela cheia
-      pdfSection.removeAttribute('hidden');
-      pdfSection.style.display = 'block';
-    } catch (e) {
-      console.error('Erro ao renderizar PDF direto:', e);
+      };
     }
   }
 }

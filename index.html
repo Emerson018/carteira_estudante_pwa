@@ -165,10 +165,128 @@
         </div>
       </section>
 
-      <!-- Seção Visualizador PDF Direto -->
+      <!-- Seção Visualizador PDF Direto (Documento A4 Nativo) -->
       <section class="section section--pdf-viewer" id="section-pdf-viewer" hidden style="display:none;">
-        <div class="pdf-viewer-container">
-          <iframe id="pdf-viewer-frame" src="" title="Declaração Estudantil PDF" class="pdf-viewer-frame"></iframe>
+        <div class="pdf-document-viewer">
+          
+          <!-- Barra de Ações Superior -->
+          <div class="pdf-viewer-topbar">
+            <span class="pdf-verified-badge">✅ Declaração Válida — ABAFE</span>
+            <div class="pdf-topbar-actions">
+              <button type="button" id="btn-download-pdf-doc" class="btn-pdf-download">📥 Baixar PDF</button>
+              <button type="button" id="btn-close-pdf-doc" class="btn-pdf-close">🏠 Voltar</button>
+            </div>
+          </div>
+
+          <!-- Folha A4 - Página 1 do Documento PDF -->
+          <div class="a4-page-sheet">
+            <div class="a4-header-banner">
+              <h1>DOCUMENTO VÁLIDO</h1>
+            </div>
+
+            <div class="a4-body-content">
+              <p class="a4-intro-text">
+                ABAFE - Associação Brasileira de Aprendizado e Foco no Estudante atesta que <strong id="pdf-doc-nome">Emerson Vicosa de Lima</strong> é estudante e esta regularmente matriculado(a) em <span id="pdf-doc-curso">Ciência da Computação</span> na instituição <span id="pdf-doc-inst">UNIRITTER</span>, tendo direito à emissão da CIE conforme legislação vigente. O estudante será mantido no cadastro ativo enquanto permanecer vinculado à instituição e em dia com suas obrigações com a Associação.
+              </p>
+
+              <!-- Box do Cartão no PDF -->
+              <div class="a4-card-box">
+                <div class="a4-card-photo-col">
+                  <div class="a4-photo-wrapper">
+                    <img id="pdf-doc-photo" src="" alt="Foto" style="display:none;">
+                    <div id="pdf-doc-photo-placeholder" class="a4-photo-default">
+                      <svg viewBox="0 0 24 24"><path d="M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z"/></svg>
+                    </div>
+                  </div>
+                  <div class="a4-code-label">Cód. Uso:</div>
+                  <div class="a4-code-value" id="pdf-doc-code">6382b41f</div>
+                </div>
+
+                <div class="a4-card-info-col">
+                  <h2 class="a4-student-name" id="pdf-doc-nome-main">Emerson Vicosa de Lima</h2>
+                  
+                  <div class="a4-info-group">
+                    <span class="a4-info-label">Instituição:</span>
+                    <span class="a4-info-val" id="pdf-doc-inst-val">UNIRITTER</span>
+                  </div>
+                  <div class="a4-info-group">
+                    <span class="a4-info-label">Curso:</span>
+                    <span class="a4-info-val" id="pdf-doc-curso-val">GRADUAÇÃO - CIÊNCIA DA COMPUTAÇÃO</span>
+                  </div>
+                  <div class="a4-info-group">
+                    <span class="a4-info-label">CPF:</span>
+                    <span class="a4-info-val" id="pdf-doc-cpf-val">039.894.040-16</span>
+                  </div>
+                  <div class="a4-info-group">
+                    <span class="a4-info-label">Data de Nascimento:</span>
+                    <span class="a4-info-val" id="pdf-doc-nasc-val">10/08/1998</span>
+                  </div>
+                  <div class="a4-info-group">
+                    <span class="a4-info-label">Emissor:</span>
+                    <span class="a4-info-val">ABAFE - Associação Brasileira de Aprendizado e Foco no Estudante</span>
+                  </div>
+                </div>
+
+                <div class="a4-card-qr-col">
+                  <canvas id="pdf-doc-qr-canvas" width="100" height="100"></canvas>
+                </div>
+              </div>
+
+              <!-- Chave do Certificado -->
+              <div class="a4-section-title">Chave do Certificado:</div>
+              <div class="a4-cert-key-box">
+                -----BEGIN CERTIFICATE-----<br>
+                MIIDujCCAqQCAQEwWaFXpFUwUzELMAkGA1UEBhMCQlIxEzARBgNVBAoTCklDUC1CcmFzaWwxDjAMBgNV<br>
+                BAsTBUFiYWZlMR8wHQYDVQQDExZFbWVyc29uIFZpY29zYSBkZSBMaW1hoIHYMIHVpIHSMIHPMQswCQYD<br>
+                VQQGEwJCUjETMBEGA1UECgwKSUNQLUJyYXNpbDEeMBwGA1UECwwVQUMgQ2VydGlzaWduIE11bHRpcGxh<br>
+                MRcwFQYDVQQLDA4wMTU1NDI4NTAwMDE3NTEZMBcGA1UECwwQVmlkZW9Db25mZXJlbmNpYTEbMBkGA1UE<br>
+                CwwSQXNzaW5hdHVyYSBUaXBvIEEzMTowOAYDVQQDDDFBU1NPQ0lBQ0FPIEJSQVNJTEVJUkEgREUgQVBS<br>
+                RU5ESVpBRE8gRSBGT0NPIE5PIEVTMAsGCSqGSIb3DQEBCwIRAJOSKHXKzNSaRj0S9xVgKlAwIhgPMjAy<br>
+                NjA2MDMyMTAxMjJaGA8yMDI4MDYwMzIxMDEyMVowgagwPAYFYEwBCgExMxMxMDAwMDAwMDAwMzk4OTQw<br>
+                NDAxNjAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDBoBgVgTAEKAjFfE11VTklSSVRURVIgICAg<br>
+                ICAgICAgICAgICAgICAgICAgICAgICAgICAgR3JhZHVhY2FvICAgICAgQ2llbmNpYSBkYSBDb21wdXRh<br>
+                Y2FvICAgICAgICAgQ2lkYWRlVUFwejBMBggrBgEFBQcBAQRAMD4wPAYIKwYBBQUHMAKGMGh0dHA6Ly9j<br>
+                YS5sYWN1bmFzb2Z0d2FyZS5jb20vY2VydHMvZWVhLWFiYWZlLnA3YjAJBgNVHTgEAgUAMB8GA1UdIwQY<br>
+                MBaAFD26nb6PLB9kkpzqZ85SsnJQAc2dMAsGCSqGSIb3DQEBCwOCAQEAN8IuH86LL9RyyK/V671sbxom<br>
+                T3DDmVvPsjBHp4mpPpz1HPJkXgTZI+TjvWor/bfbZkt7Qn5CbpOZYwelGgx5iBLYrVNr/+Qbo9WYqQhy<br>
+                GG7hehpwsKRA8IKD13Tzts4pwPTz1LnXTiguvkHWg9QHJ0b2L/ZUnVcOqWLKQyu8ZANJbRM1Th4LLxK6<br>
+                U2MwXN8rWjN+YnlIvPWmMqEMFvamc/evqGCiQGN4G45sFqr36sUB0+UsSGZU5ccwkFWf8MwK1aIqoqiF<br>
+                rixaEuNLnmi0oLdt5VNec++c06NszYMbIDDnoPCMQ4iEXPHEsZYQHcA58iKpLOF87B7f0/GG2kslgg==<br>
+                -----END CERTIFICATE-----
+              </div>
+
+              <!-- Conformidade com Legislação -->
+              <div class="a4-section-title" style="margin-top: 15px;">Conformidade com Legislação</div>
+              <p class="a4-leg-text">
+                A emissão da Carteira de Identidade Estudantil (CIE) segue os critérios e requisitos estabelecidos pela Lei nº 12.933, de 26 de dezembro de 2013, que regulamenta a meia-entrada para estudantes em eventos de cultura e lazer, bem como pelas normas de padronização nacional de identidade estudantil vigentes.
+              </p>
+            </div>
+          </div>
+
+          <!-- Folha A4 - Página 2 do Documento PDF -->
+          <div class="a4-page-sheet" style="margin-top: 20px;">
+            <div class="a4-body-content" style="padding-top: 24px;">
+              <div class="a4-section-title">Validade e Verificabilidade:</div>
+              <p class="a4-leg-text">Esta declaração é parte integral e inseparável da Carteira de Identidade Estudantil emitida, podendo ser verificada:</p>
+              <ul class="a4-bullet-list">
+                <li>• Por consulta ao QR Code presente na carteira física ou digital</li>
+                <li>• Pelo acesso ao link/portal de validação da Associação</li>
+                <li>• Por apresentação deste PDF assinado digitalmente</li>
+                <li>• Pelo contato direto com a Associação nos dados informados.</li>
+              </ul>
+
+              <div class="a4-section-title" style="margin-top: 15px;">Observações Importantes:</div>
+              <p class="a4-leg-text">
+                Este documento foi assinado com certificado digital ICP-Brasil (Tipo A-1 ou A-3) para máxima validade jurídica. A alteração ou falsificação desta declaração é crime conforme legislação penal aplicável. A associação é responsável pela veracidade das informações aqui declaradas. Recomenda-se guarda deste arquivo em formato PDF protegido contra edições.
+              </p>
+
+              <div class="a4-footer-stamp">
+                <p>Assinado digitalmente por ABAFE - Associação Brasileira de Aprendizado e Foco no Estudante, conforme Lei 14.063/2020 e Medida Provisória nº 2.200-2/2001</p>
+                <p id="pdf-doc-date-stamp">Brasília, 26/07/2026 12:45:00</p>
+              </div>
+            </div>
+          </div>
+
         </div>
       </section>
 
