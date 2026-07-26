@@ -310,10 +310,10 @@ describe('App Module', () => {
   });
 
   describe('checkQRScanValidation', () => {
-    it('should show notification and trigger save when pathname contains pdf code', () => {
+    it('should show notification and trigger showPDFViewer when pathname contains pdf code', () => {
       vi.useFakeTimers();
-      const saveSpy = vi.spyOn(app, 'onSave').mockImplementation(() => Promise.resolve());
-      
+      const pdfViewerSpy = vi.spyOn(app, 'showPDFViewer').mockImplementation(() => Promise.resolve());
+
       // Mock window.location.pathname
       Object.defineProperty(window, 'location', {
         value: { pathname: '/pdf/6382b41f.pdf', search: '', origin: 'https://test.com' },
@@ -324,7 +324,7 @@ describe('App Module', () => {
       vi.advanceTimersByTime(600);
 
       expect(document.getElementById('notification-message').textContent).toContain('Carteirinha Válida');
-      expect(saveSpy).toHaveBeenCalled();
+      expect(pdfViewerSpy).toHaveBeenCalled();
 
       vi.useRealTimers();
     });

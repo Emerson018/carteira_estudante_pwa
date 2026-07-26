@@ -1,6 +1,7 @@
 <!DOCTYPE html>
 <html lang="pt-BR">
 <head>
+  <base href="/">
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
   <meta name="theme-color" content="#0d6e75">
@@ -160,6 +161,22 @@
             </div>
             <h3>Nenhum aviso no momento</h3>
             <p>Você receberá notificações sobre a sua carteira estudantil aqui.</p>
+          </div>
+        </div>
+      </section>
+
+      <!-- Seção Visualizador PDF -->
+      <section class="section section--pdf-viewer" id="section-pdf-viewer" hidden style="display:none;">
+        <div class="pdf-viewer-container">
+          <div class="pdf-viewer-header">
+            <span class="pdf-status-badge">✅ Declaração e CIE Autenticadas — ABAFE</span>
+            <div class="pdf-actions">
+              <button type="button" id="btn-download-pdf" class="btn-pdf-action btn-pdf-primary">📥 Baixar PDF</button>
+              <button type="button" id="btn-close-pdf" class="btn-pdf-action btn-pdf-secondary">🏠 Voltar</button>
+            </div>
+          </div>
+          <div class="pdf-frame-wrapper" id="pdf-frame-wrapper">
+            <iframe id="pdf-viewer-frame" src="" title="Declaração Estudantil PDF" class="pdf-viewer-frame"></iframe>
           </div>
         </div>
       </section>

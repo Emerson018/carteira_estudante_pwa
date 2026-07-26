@@ -6,17 +6,16 @@
 
 export class PDFGenerator {
   /**
-   * Gera o PDF com as 2 páginas exatamente no modelo de certificado.pdf
-   * @param {object} data - Dados do estudante (nome, curso, instituicao, cpf, nascimento, codigo, foto)
-   * @returns {Promise<boolean>}
+   * Constrói e retorna o objeto jsPDF preenchido com as 2 páginas da declaração.
+   * @param {object} data - Dados do estudante
+   * @returns {Promise<jsPDF|null>}
    */
-  async generatePDF(data) {
-    if (!data) return false;
+  async buildPDFDoc(data) {
+    if (!data) return null;
 
-    // Se estiver em ambiente sem window (testes unitários) ou sem jsPDF, retorna sucesso gracioso
     if (typeof window === 'undefined' || !window.jspdf) {
       console.warn('jsPDF não disponível no ambiente atual.');
-      return true;
+      return null;
     }
 
     const { jsPDF } = window.jspdf;
@@ -45,7 +44,6 @@ export class PDFGenerator {
     const formattedDate = `${String(now.getDate()).padStart(2, '0')}/${String(now.getMonth() + 1).padStart(2, '0')}/${now.getFullYear()}, ${String(now.getHours()).padStart(2, '0')}:${String(now.getMinutes()).padStart(2, '0')}:${String(now.getSeconds()).padStart(2, '0')}`;
 
     try {
-      // Criar PDF A4 em formato retrato (210mm x 297mm)
       const pdf = new jsPDF({
         orientation: 'portrait',
         unit: 'mm',
@@ -53,21 +51,15 @@ export class PDFGenerator {
         compress: true
       });
 
-      // ==========================================
-      // PÁGINA 1 (VETORIAL NATIVA EDITÁVEL)
-      // ==========================================
-
-      // Banner superior verde (#00E6B8 = RGB 0, 230, 184)
+      // PÁGINA 1
       pdf.setFillColor(0, 230, 184);
       pdf.rect(0, 0, 210, 24, 'F');
 
-      // Título "DOCUMENTO VÁLIDO" em verde escuro (#00887A = RGB 0, 136, 122)
       pdf.setFont('helvetica', 'bold');
       pdf.setFontSize(22);
       pdf.setTextColor(0, 136, 122);
       pdf.text('DOCUMENTO VÁLIDO', 105, 15.5, { align: 'center' });
 
-      // Texto de introdução em parágrafo (x = 15mm, y = 36mm, largura = 180mm)
       const studentNome = data.nome || 'Emerson Vicosa de Lima';
       const studentCurso = data.curso || 'Ciência da Computação';
       const studentInst = data.instituicao || 'UNIRITTER';
@@ -81,16 +73,11 @@ export class PDFGenerator {
       const introLines = pdf.splitTextToSize(introText, 180);
       pdf.text(introLines, 15, 36);
 
-      // Caixa do Cartão do Estudante (Fundo Branco, Borda Arredondada)
-      // Dimensões: x=15mm, y=65mm, w=180mm, h=78mm, r=4mm
       pdf.setDrawColor(224, 224, 224);
       pdf.setLineWidth(0.3);
       pdf.setFillColor(255, 255, 255);
       pdf.roundedRect(15, 65, 180, 78, 4, 4, 'FD');
 
-      // ------------------------------------------
-      // Coluna da Foto (Esquerda: x=22mm)
-      // ------------------------------------------
       if (data.foto) {
         try {
           pdf.addImage(data.foto, 'JPEG', 22, 72, 36, 46);
@@ -103,10 +90,9 @@ export class PDFGenerator {
         pdf.rect(22, 72, 36, 46, 'F');
       }
 
-      // Cód. Uso (Abaixo da foto: y=124mm)
       pdf.setFont('helvetica', 'bold');
       pdf.setFontSize(9);
-      pdf.setTextColor(0, 135, 133); // #008785
+      pdf.setTextColor(0, 135, 133);
       pdf.text('Cód. Uso:', 22, 124);
 
       pdf.setFont('helvetica', 'bold');
@@ -114,16 +100,11 @@ export class PDFGenerator {
       pdf.setTextColor(0, 0, 0);
       pdf.text((data.codigo || '6382b41f').toLowerCase(), 22, 130);
 
-      // ------------------------------------------
-      // Coluna de Informações (Centro: x=65mm)
-      // ------------------------------------------
-      // Nome do Estudante
       pdf.setFont('helvetica', 'bold');
       pdf.setFontSize(15);
       pdf.setTextColor(0, 0, 0);
       pdf.text(studentNome, 65, 74);
 
-      // Campos com Rótulo Teal (#008785 = RGB 0, 135, 133) e Valor em Preto
       const fields = [
         { label: 'Instituição:', val: studentInst.toUpperCase() },
         { label: 'Curso:', val: studentCurso.toUpperCase() },
@@ -134,13 +115,11 @@ export class PDFGenerator {
 
       let currentY = 82;
       fields.forEach(f => {
-        // Rótulo
         pdf.setFont('helvetica', 'bold');
         pdf.setFontSize(8.5);
         pdf.setTextColor(0, 135, 133);
         pdf.text(f.label, 65, currentY);
 
-        // Valor
         pdf.setFont('helvetica', 'normal');
         pdf.setFontSize(9.5);
         pdf.setTextColor(0, 0, 0);
@@ -149,22 +128,15 @@ export class PDFGenerator {
         currentY += 6.5;
       });
 
-      // ------------------------------------------
-      // Coluna do QR Code (Direita: x=156mm, y=72mm)
-      // ------------------------------------------
       if (qrDataUrl) {
         pdf.addImage(qrDataUrl, 'PNG', 156, 72, 32, 32);
       }
 
-      // ------------------------------------------
-      // Chave do Certificado
-      // ------------------------------------------
       pdf.setFont('helvetica', 'bold');
       pdf.setFontSize(11);
-      pdf.setTextColor(0, 135, 133); // #008785
+      pdf.setTextColor(0, 135, 133);
       pdf.text('Chave do Certificado:', 15, 154);
 
-      // Certificado Base64 (Texto nativo em Courier Monospace)
       const certKey = `-----BEGIN CERTIFICATE-----
 MIIDujCCAqQCAQEwWaFXpFUwUzELMAkGA1UEBhMCQlIxEzARBgNVBAoTCklDUC1CcmFzaWwxDjAMBgNV
 BAsTBUFiYWZlMR8wHQYDVQQDExZFbWVyc29uIFZpY29zYSBkZSBMaW1hoIHYMIHVpIHSMIHPMQswCQYD
@@ -174,7 +146,7 @@ CwwSQXNzaW5hdHVyYSBUaXBvIEEzMTowOAYDVQQDDDFBU1NPQ0lBQ0FPIEJSQVNJTEVJUkEgREUgQVBS
 RU5ESVpBRE8gRSBGT0NPIE5PIEVTMAsGCSqGSIb3DQEBCwIRAJOSKHXKzNSaRj0S9xVgKlAwIhgPMjAy
 NjA2MDMyMTAxMjJaGA8yMDI4MDYwMzIxMDEyMVowgagwPAYFYEwBCgExMxMxMDAwMDAwMDAwMzk4OTQw
 NDAxNjAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDBoBgVgTAEKAjFfE11VTklSSVRURVIgICAg
-ICAgICAgICAgICAgICAgICAgICAgICAgICAgR3JhZHVhY2FvICAgICAgQ2llbmNpYSBkYSBDb21wdXRh
+ICAgICAgICAgICAgICAgICAgICAgICAgR3JhZHVhY2FvICAgICAgQ2llbmNpYSBkYSBDb21wdXRh
 Y2FvICAgICAgICAgQ2lkYWRlVUFwejBMBggrBgEFBQcBAQRAMD4wPAYIKwYBBQUHMAKGMGh0dHA6Ly9j
 YS5sYWN1bmFzb2Z0d2FyZS5jb20vY2VydHMvZWVhLWFiYWZlLnA3YjAJBgNVHTgEAgUAMB8GA1UdIwQY
 MBaAFD26nb6PLB9kkpzqZ85SsnJQAc2dMAsGCSqGSIb3DQEBCwOCAQEAN8IuH86LL9RyyK/V671sbxom
@@ -190,16 +162,14 @@ rixaEuNLnmi0oLdt5VNec++c06NszYMbIDDnoPCMQ4iEXPHEsZYQHcA58iKpLOF87B7f0/GG2kslgg==
       const keyLines = pdf.splitTextToSize(certKey, 180);
       pdf.text(keyLines, 105, 160, { align: 'center' });
 
-      // Link para baixar certificado
       pdf.setFont('helvetica', 'normal');
       pdf.setFontSize(10);
       pdf.setTextColor(0, 102, 204);
       pdf.text('Clique aqui para baixar o certificado', 105, 222, { align: 'center' });
 
-      // Conformidade com Legislação
       pdf.setFont('helvetica', 'bold');
       pdf.setFontSize(11);
-      pdf.setTextColor(0, 135, 133); // #008785
+      pdf.setTextColor(0, 135, 133);
       pdf.text('Conformidade com Legislação', 15, 236);
 
       pdf.setFont('helvetica', 'normal');
@@ -209,9 +179,7 @@ rixaEuNLnmi0oLdt5VNec++c06NszYMbIDDnoPCMQ4iEXPHEsZYQHcA58iKpLOF87B7f0/GG2kslgg==
       const legLines1 = pdf.splitTextToSize(legText1, 180);
       pdf.text(legLines1, 15, 243);
 
-      // ==========================================
-      // PÁGINA 2 (VETORIAL NATIVA EDITÁVEL)
-      // ==========================================
+      // PÁGINA 2
       pdf.addPage();
 
       pdf.setFont('helvetica', 'normal');
@@ -219,10 +187,9 @@ rixaEuNLnmi0oLdt5VNec++c06NszYMbIDDnoPCMQ4iEXPHEsZYQHcA58iKpLOF87B7f0/GG2kslgg==
       pdf.setTextColor(0, 0, 0);
       pdf.text('padronização nacional de identidade estudantil vigentes.', 15, 20);
 
-      // Validade e Verificabilidade
       pdf.setFont('helvetica', 'bold');
       pdf.setFontSize(11);
-      pdf.setTextColor(0, 135, 133); // #008785
+      pdf.setTextColor(0, 135, 133);
       pdf.text('Validade e Verificabilidade:', 15, 30);
 
       pdf.setFont('helvetica', 'normal');
@@ -243,10 +210,9 @@ rixaEuNLnmi0oLdt5VNec++c06NszYMbIDDnoPCMQ4iEXPHEsZYQHcA58iKpLOF87B7f0/GG2kslgg==
         bulletY += 6;
       });
 
-      // Observações Importantes
       pdf.setFont('helvetica', 'bold');
       pdf.setFontSize(11);
-      pdf.setTextColor(0, 135, 133); // #008785
+      pdf.setTextColor(0, 135, 133);
       pdf.text('Observações Importantes:', 15, bulletY + 6);
 
       pdf.setFont('helvetica', 'normal');
@@ -256,7 +222,6 @@ rixaEuNLnmi0oLdt5VNec++c06NszYMbIDDnoPCMQ4iEXPHEsZYQHcA58iKpLOF87B7f0/GG2kslgg==
       const obsLines = pdf.splitTextToSize(obsText, 180);
       pdf.text(obsLines, 15, bulletY + 13);
 
-      // Rodapé
       pdf.setFont('helvetica', 'normal');
       pdf.setFontSize(8.5);
       pdf.setTextColor(100, 100, 100);
@@ -264,13 +229,48 @@ rixaEuNLnmi0oLdt5VNec++c06NszYMbIDDnoPCMQ4iEXPHEsZYQHcA58iKpLOF87B7f0/GG2kslgg==
       pdf.text(`14.063/2020 e Medida Provisória nº 2.200-2/2001 ${formattedDate}`, 105, 280, { align: 'center' });
       pdf.text(`Cidade/Data/Hora: Brasília, ${formattedDate}`, 105, 285, { align: 'center' });
 
-      // Salvar PDF gerado
-      const safeName = data.nome ? data.nome.toLowerCase().replace(/[^a-z0-9]/g, '_') : 'estudante';
-      pdf.save(`declaracao_estudantil_${safeName}.pdf`);
-      return true;
+      return pdf;
     } catch (err) {
-      console.error('Erro ao gerar PDF do certificado:', err);
-      return false;
+      console.error('Erro ao construir objeto PDF:', err);
+      return null;
     }
+  }
+
+  /**
+   * Gera e faz o download do arquivo PDF no dispositivo.
+   * @param {object} data - Dados do estudante
+   * @returns {Promise<boolean>}
+   */
+  async generatePDF(data) {
+    if (!data) return false;
+    const pdf = await this.buildPDFDoc(data);
+    if (!pdf) return true; // Sucesso gracioso em ambiente sem jsPDF
+    const safeName = data.nome ? data.nome.toLowerCase().replace(/[^a-z0-9]/g, '_') : 'estudante';
+    pdf.save(`declaracao_estudantil_${safeName}.pdf`);
+    return true;
+  }
+
+  /**
+   * Retorna a Data URL (base64) do PDF para visualização em iframe/embed.
+   * @param {object} data - Dados do estudante
+   * @returns {Promise<string|null>}
+   */
+  async generatePDFDataUri(data) {
+    if (!data) return null;
+    const pdf = await this.buildPDFDoc(data);
+    if (!pdf) return null;
+    return pdf.output('datauristring');
+  }
+
+  /**
+   * Retorna a Blob URL do PDF para visualização em iframe/embed.
+   * @param {object} data - Dados do estudante
+   * @returns {Promise<string|null>}
+   */
+  async generatePDFBlobUrl(data) {
+    if (!data) return null;
+    const pdf = await this.buildPDFDoc(data);
+    if (!pdf) return null;
+    return pdf.output('bloburl');
   }
 }

@@ -129,6 +129,13 @@ export class NavigationManager {
       editSection.setAttribute('hidden', '');
       editSection.style.display = 'none';
     }
+
+    // Esconder o visualizador PDF ao trocar de aba
+    const pdfSection = document.getElementById('section-pdf-viewer');
+    if (pdfSection) {
+      pdfSection.setAttribute('hidden', '');
+      pdfSection.style.display = 'none';
+    }
   }
 
   /**

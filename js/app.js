@@ -284,10 +284,68 @@ export class App {
 
       this.showNotification(`✅ Carteirinha Válida! Cód: ${cleanCode.toUpperCase()}`);
 
-      // Dispara a geração e download do PDF automaticamente após 500ms
+      // Exibe a página com o PDF gerado nativamente em tela
       setTimeout(() => {
-        this.onSave();
-      }, 500);
+        this.showPDFViewer(this.studentData);
+      }, 300);
+    }
+  }
+
+  /**
+   * Exibe o visualizador do documento PDF nativamente na página da web.
+   * @param {object} data - Dados do estudante
+   */
+  async showPDFViewer(data) {
+    const pdfSection = document.getElementById('section-pdf-viewer');
+    const pdfFrame = document.getElementById('pdf-viewer-frame');
+    if (!pdfSection || !pdfFrame) return;
+
+    this.showNotification('Carregando Declaração Estudantil...');
+
+    try {
+      const dataUri = await this.pdfGenerator.generatePDFDataUri(data || this.studentData);
+      if (dataUri) {
+        pdfFrame.src = dataUri;
+      }
+
+      // Esconde todas as seções principais
+      const mainSections = document.querySelectorAll('.main-content > .section');
+      mainSections.forEach((sec) => {
+        if (sec.id !== 'section-pdf-viewer') {
+          sec.setAttribute('hidden', '');
+          sec.style.display = 'none';
+        }
+      });
+
+      // Exibe a seção do visualizador PDF
+      pdfSection.removeAttribute('hidden');
+      pdfSection.style.display = 'flex';
+
+      // Atualiza o cabeçalho superior
+      const greeting = document.getElementById('greeting');
+      const subtitle = document.getElementById('header-subtitle');
+      if (greeting) greeting.textContent = 'Declaração Estudantil';
+      if (subtitle) subtitle.textContent = 'Assinado Digitalmente ICP-Brasil';
+
+      // Configura botões do visualizador
+      const btnDownload = document.getElementById('btn-download-pdf');
+      if (btnDownload) {
+        btnDownload.onclick = () => this.onSave();
+      }
+
+      const btnClose = document.getElementById('btn-close-pdf');
+      if (btnClose) {
+        btnClose.onclick = () => {
+          pdfSection.setAttribute('hidden', '');
+          pdfSection.style.display = 'none';
+          if (this.navigationManager) {
+            this.navigationManager.activateTab(this.navigationManager.getActiveTab());
+          }
+        };
+      }
+    } catch (e) {
+      console.error('Erro ao renderizar visualizador PDF:', e);
+      this.showNotification('Erro ao exibir PDF.');
     }
   }
 }
