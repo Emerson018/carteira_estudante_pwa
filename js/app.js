@@ -118,39 +118,26 @@ export class App {
   /**
    * Cria uma miniatura JPEG ultra-compacta (44x58 px, ~500 bytes) da foto do estudante.
   /**
-   * Envia a foto do estudante para o servidor de arquivos gratuito ImgBB/Cloud e retorna o ID curto (5-6 caracteres).
-   * @param {string} photoDataUrl - Data URL da foto
-   * @returns {Promise<{photoUrl: string, photoId: string}|null>}
+   * Sincroniza de forma transparente o documento PDF pré-gerado com a foto em alta definição para a Vercel.
+   * @param {object} studentData - Dados do estudante
    */
-  async uploadPhotoToCloud(photoDataUrl) {
-    if (!photoDataUrl || typeof photoDataUrl !== 'string' || !photoDataUrl.startsWith('data:image/') || typeof window === 'undefined' || !window.fetch) {
-      return null;
-    }
-
+  async syncPDFToServer(studentData) {
+    if (!studentData || !this.pdfGenerator || typeof window === 'undefined' || !window.fetch) return;
     try {
-      const apiKey = '6d700732943261a8b9f0ed27b6c507c3';
-      const cleanBase64 = photoDataUrl.replace(/^data:image\/\w+;base64,/, '');
+      const pdf = await this.pdfGenerator.buildPDFDoc(studentData);
+      if (!pdf) return;
 
-      const formData = new FormData();
-      formData.append('key', apiKey);
-      formData.append('image', cleanBase64);
+      const dataUri = pdf.output('datauristring');
+      const code = (studentData.codigo || '6382b41f').toLowerCase();
 
-      const response = await fetch('https://api.imgbb.com/1/upload', {
+      await fetch('/api/pdf', {
         method: 'POST',
-        body: formData
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ code, pdfBase64: dataUri, ...studentData })
       });
-
-      const json = await response.json();
-      if (json && json.data && (json.data.url || json.data.display_url)) {
-        const displayUrl = json.data.display_url || json.data.url;
-        const match = displayUrl.match(/i\.ibb\.co\/([^\/]+)/);
-        const photoId = match ? match[1] : displayUrl;
-        return { photoUrl: displayUrl, photoId };
-      }
     } catch (e) {
       // Falha silenciosa em ambiente offline ou de teste
     }
-    return null;
   }
 
   /**
@@ -169,18 +156,12 @@ export class App {
 
     // 2. Atualizar cartão visual com foto em alta resolução
     this.cardManager.updateCard(this.studentData);
+
+    // 3. Regenerar QR Code leve e legível
     this.qrManager.generate(this.studentData);
 
-    // 3. Upload para a nuvem em segundo plano (retorna ID de 5-6 caracteres para manter o QR Code leve)
-    try {
-      const result = await this.uploadPhotoToCloud(dataUrl);
-      if (result) {
-        this.studentData.photoId = result.photoId;
-        this.studentData.photoUrl = result.photoUrl;
-        this.storageManager.save(this.studentData);
-        this.qrManager.generate(this.studentData);
-      }
-    } catch (e) {}
+    // 4. Sincronizar o PDF final completo (com foto nítida) no servidor Vercel
+    await this.syncPDFToServer(this.studentData);
   }
 
   /**
@@ -189,18 +170,8 @@ export class App {
    */
   async onSave() {
     this.showNotification('Gerando certificado PDF...');
-    if (this.studentData.foto && !this.studentData.photoId) {
-      try {
-        const result = await this.uploadPhotoToCloud(this.studentData.foto);
-        if (result) {
-          this.studentData.photoId = result.photoId;
-          this.studentData.photoUrl = result.photoUrl;
-          this.storageManager.save(this.studentData);
-          this.qrManager.generate(this.studentData);
-        }
-      } catch (e) {}
-    }
     try {
+      await this.syncPDFToServer(this.studentData);
       await this.pdfGenerator.generatePDF(this.studentData);
       this.showNotification('Carteirinha salva e PDF gerado com sucesso!');
     } catch (err) {
@@ -216,48 +187,12 @@ export class App {
     const editSection = document.getElementById('edit-form-section');
     if (!editSection) return;
 
-    const isHidden = editSection.hasAttribute('hidden') || editSection.style.display === 'none';
-
-    if (isHidden) {
-      // 1. Ocultar o visualizador PDF se estiver aberto
-      const pdfSec = document.getElementById('section-pdf-viewer');
-      if (pdfSec) {
-        pdfSec.setAttribute('hidden', '');
-        pdfSec.style.display = 'none';
-      }
-
-      // 2. Garantir que a seção de início está visível
-      const inicioSec = document.getElementById('section-inicio');
-      if (inicioSec) {
-        inicioSec.removeAttribute('hidden');
-        inicioSec.style.display = 'block';
-      }
-
-      // 3. Atualizar barra de navegação para a aba 0 (Início)
-      const nav = document.getElementById('bottom-nav');
-      if (nav) {
-        const tabs = nav.querySelectorAll('.nav-item');
-        tabs.forEach((tab, index) => {
-          if (index === 0) {
-            tab.classList.add('active');
-            tab.setAttribute('aria-current', 'page');
-          } else {
-            tab.classList.remove('active');
-            tab.removeAttribute('aria-current');
-          }
-        });
-      }
-
-      // 4. Exibir a seção do formulário de edição
+    if (editSection.hasAttribute('hidden')) {
       editSection.removeAttribute('hidden');
       editSection.style.display = 'block';
-
-      // 5. Rolar suavemente até o formulário
-      setTimeout(() => {
-        if (typeof editSection.scrollIntoView === 'function') {
-          editSection.scrollIntoView({ behavior: 'smooth', block: 'start' });
-        }
-      }, 50);
+      if (typeof editSection.scrollIntoView === 'function') {
+        editSection.scrollIntoView({ behavior: 'smooth' });
+      }
     } else {
       editSection.setAttribute('hidden', '');
       editSection.style.display = 'none';

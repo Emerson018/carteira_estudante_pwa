@@ -6,31 +6,21 @@
 
 export class QRManager {
   /**
-   * Monta a URL ultraleve para codificação no QR com chaves compactas de 1 caractere.
+   * Monta a URL direta e ultraleve do PDF (sem parâmetros longos de URL).
    * @param {object} params - Dados do estudante
-   * @returns {string} URL formatada para o QR code
+   * @returns {string} URL limpa do arquivo PDF
    */
-  buildQRData({ nome, curso, instituicao, nascimento, cpf, validade, codigo } = {}) {
+  buildQRData({ codigo } = {}) {
     const origin = (typeof window !== 'undefined' && window.location && window.location.origin && window.location.origin !== 'null')
       ? window.location.origin
       : 'https://carteira-estudante.vercel.app';
 
     const safeCode = (codigo || '6382b41f').toLowerCase();
-
-    const params = new URLSearchParams();
-    if (nome && nome.trim().length > 0) params.set('n', nome.trim());
-    if (curso && curso.trim().length > 0) params.set('c', curso.trim());
-    if (instituicao && instituicao.trim().length > 0) params.set('i', instituicao.trim());
-    if (cpf && cpf.trim().length > 0) params.set('cpf', cpf.replace(/\D/g, ''));
-    if (nascimento && nascimento.trim().length > 0) params.set('d', nascimento.trim());
-    if (validade) params.set('v', String(validade));
-
-    const queryString = params.toString();
-    return queryString ? `${origin}/pdf/${safeCode}.pdf?${queryString}` : `${origin}/pdf/${safeCode}.pdf`;
+    return `${origin}/pdf/${safeCode}.pdf`;
   }
 
   /**
-   * Gera QR code com dados do estudante no canvas (matriz ultraleve, quadrados grandes).
+   * Gera QR code ultraleve e de fácil leitura para o link direto do PDF.
    * @param {object} params - Dados do estudante
    * @returns {boolean} true se gerado com sucesso, false se falhou
    */
