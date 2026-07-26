@@ -3,14 +3,37 @@ const QRCode = require('qrcode');
 
 module.exports = async function handler(req, res) {
   try {
-    // Parâmetros recebidos da URL ou valores padrão
     const safeCode = (req.query.code || '6382b41f').toLowerCase();
-    const studentNome = req.query.n || req.query.nome || 'Emerson Vicosa de Lima';
-    const studentCurso = req.query.c || req.query.curso || 'Ciência da Computação';
-    const studentInst = req.query.i || req.query.instituicao || 'UNIRITTER';
-    const rawCpf = req.query.cpf || '039.894.040-16';
+    const objectId = req.query.id;
+
+    let studentNome = req.query.n || req.query.nome || 'Emerson Vicosa de Lima';
+    let studentCurso = req.query.c || req.query.curso || 'Ciência da Computação';
+    let studentInst = req.query.i || req.query.instituicao || 'UNIRITTER';
+    let rawCpf = req.query.cpf || '039.894.040-16';
+    let nascimento = req.query.d || req.query.nascimento || '10/08/1998';
+    let reqPhoto = req.query.f || req.query.foto || null;
+
+    // Se temos um ID de armazenamento remoto, recupera os dados completos incluindo a foto em alta resolução
+    if (objectId && typeof objectId === 'string') {
+      try {
+        const cloudRes = await fetch(`https://api.restful-api.dev/objects/${objectId}`);
+        if (cloudRes.ok) {
+          const cloudData = await cloudRes.json();
+          if (cloudData && cloudData.data) {
+            if (cloudData.data.nome) studentNome = cloudData.data.nome;
+            if (cloudData.data.curso) studentCurso = cloudData.data.curso;
+            if (cloudData.data.instituicao) studentInst = cloudData.data.instituicao;
+            if (cloudData.data.cpf) rawCpf = cloudData.data.cpf;
+            if (cloudData.data.nascimento) nascimento = cloudData.data.nascimento;
+            if (cloudData.data.foto) reqPhoto = cloudData.data.foto;
+          }
+        }
+      } catch (e) {
+        console.warn('Erro ao buscar dados do PDF no servidor:', e);
+      }
+    }
+
     const cpf = rawCpf.length === 11 ? rawCpf.replace(/(\d{3})(\d{3})(\d{3})(\d{2})/, '$1.$2.$3-$4') : rawCpf;
-    const nascimento = req.query.d || req.query.nascimento || '10/08/1998';
 
     // Gerar QR code buffer com chaves compactas (matriz limpa de fácil leitura)
     let qrDataUrl = '';
@@ -18,16 +41,9 @@ module.exports = async function handler(req, res) {
       const host = req.headers.host || 'carteira-estudante-pwa.vercel.app';
       const protocol = req.headers['x-forwarded-proto'] || 'https';
       
-      const params = new URLSearchParams();
-      if (studentNome) params.set('n', studentNome);
-      if (studentCurso) params.set('c', studentCurso);
-      if (studentInst) params.set('i', studentInst);
-      if (req.query.cpf) params.set('cpf', req.query.cpf.replace(/\D/g, ''));
-      if (nascimento) params.set('d', nascimento);
-      if (req.query.v || req.query.validade) params.set('v', String(req.query.v || req.query.validade));
-
-      const queryString = params.toString();
-      const qrTargetUrl = queryString ? `${protocol}://${host}/pdf/${safeCode}.pdf?${queryString}` : `${protocol}://${host}/pdf/${safeCode}.pdf`;
+      const qrTargetUrl = objectId
+        ? `${protocol}://${host}/pdf/${safeCode}.pdf?id=${objectId}`
+        : `${protocol}://${host}/pdf/${safeCode}.pdf`;
 
       qrDataUrl = await QRCode.toDataURL(qrTargetUrl, { margin: 1, width: 300, errorCorrectionLevel: 'L' });
     } catch (e) {
@@ -67,7 +83,6 @@ module.exports = async function handler(req, res) {
     pdf.setFillColor(255, 255, 255);
     pdf.roundedRect(15, 65, 180, 78, 4, 4, 'FD');
 
-    const reqPhoto = req.query.f || req.query.foto;
     if (reqPhoto && typeof reqPhoto === 'string' && reqPhoto.startsWith('data:image/')) {
       try {
         const isPng = reqPhoto.toLowerCase().includes('data:image/png');
@@ -134,7 +149,7 @@ MIIDujCCAqQCAQEwWaFXpFUwUzELMAkGA1UEBhMCQlIxEzARBgNVBAoTCklDUC1CcmFzaWwxDjAMBgNV
 BAsTBUFiYWZlMR8wHQYDVQQDExZFbWVyc29uIFZpY29zYSBkZSBMaW1hoIHYMIHVpIHSMIHPMQswCQYD
 VQQGEwJCUjETMBEGA1UECgwKSUNQLUJyYXNpbDEeMBwGA1UECwwVQUMgQ2VydGlzaWduIE11bHRpcGxh
 MRcwFQYDVQQLDA4wMTU1NDI4NTAwMDE3NTEZMBcGA1UECwwQVmlkZW9Db25mZXJlbmNpYTEbMBkGA1UE
-CwwSQXNzaW5hdHVyYSBUaXBvIEEzMTowOAYDVQQDDDFBU1NPQ0lBQ0FPIEJSQVNJTEVJUkEgREUgQVBS
+CwwSQXNzaW5hdHVyYSBUaXBvIEEzMTowOAYDVQQDDDFBU1NPQ0lBQ0FPIEJSQVNJTEVJUkUgREUgQVBS
 RU5ESVpBRE8gRSBGT0NPIE5PIEVTMAsGCSqGSIb3DQEBCwIRAJOSKHXKzNSaRj0S9xVgKlAwIhgPMjAy
 NjA6MDMyMTAxMjJaGA8yMDI4MDYwMzIxMDEyMVowgagwPAYFYEwBCgExMxMxMDAwMDAwMDAwMzk4OTQw
 NDAxNjAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDBoBgVgTAEKAjFfE11VTklSSVRURVIgICAg

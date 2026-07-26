@@ -190,75 +190,53 @@ export class App {
   }
 
   /**
-   * Envia o PDF gerado (com foto) para o Vercel Blob Storage.
-   * @param {string} code - Código do estudante
-   * @param {ArrayBuffer} pdfArrayBuffer - PDF em ArrayBuffer
-   * @returns {Promise<string|null>} URL pública do PDF salvo, ou null
+   * Envia os dados do estudante + foto para o endpoint serverless /api/save.
+   * @param {object} studentData - Objeto do estudante
+   * @returns {Promise<string|null>} Retorna o ID de armazenamento ou null
    */
-  async uploadPDFToBlob(code, pdfArrayBuffer) {
-    if (!code || !pdfArrayBuffer || typeof window === 'undefined' || !window.fetch) return null;
+  async saveStudentDataToServer(studentData) {
+    if (!studentData || typeof window === 'undefined' || !window.fetch) return null;
     try {
-      // Converter ArrayBuffer para base64
-      const bytes = new Uint8Array(pdfArrayBuffer);
-      let binary = '';
-      for (let i = 0; i < bytes.byteLength; i++) {
-        binary += String.fromCharCode(bytes[i]);
-      }
-      const pdfBase64 = btoa(binary);
-
-      const response = await fetch('/api/upload-pdf', {
+      const response = await fetch('/api/save', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ code, pdfBase64 })
+        body: JSON.stringify(studentData)
       });
-
       if (response.ok) {
         const result = await response.json();
-        return result.url || null;
+        return result.id || null;
       }
       return null;
     } catch (e) {
-      // Falha silenciosa
+      console.warn('Erro ao salvar dados no servidor:', e);
       return null;
     }
   }
 
   /**
    * Chamado quando o usuário clica no botão "Salvar".
-   * Gera o PDF completo (com foto), baixa no dispositivo, envia para o Vercel Blob,
-   * e atualiza o QR Code e o link online para apontar ao PDF salvo na nuvem.
+   * Salva os dados + foto no servidor serverless, baixa o PDF no dispositivo,
+   * e atualiza o QR Code e o link online com a foto em alta resolução.
    */
   async onSave() {
-    this.showNotification('Gerando certificado PDF...');
+    this.showNotification('Salvando carteirinha e gerando PDF...');
 
     try {
-      // 1. Gerar PDF local completo (com foto) e baixar no dispositivo
-      const pdfArrayBuffer = await this.pdfGenerator.generatePDF(this.studentData);
-
-      if (pdfArrayBuffer) {
-        // 2. Enviar o PDF idêntico ao Vercel Blob Storage
-        this.showNotification('Salvando PDF online...');
-        const blobUrl = await this.uploadPDFToBlob(this.studentData.codigo, pdfArrayBuffer);
-
-        if (blobUrl) {
-          // 3. Salvar URL do blob no studentData
-          this.studentData.pdfBlobUrl = blobUrl;
-          try { this.storageManager.save(this.studentData); } catch (e) {}
-
-          // 4. Atualizar link online e QR Code com a URL do Blob
-          this.updateOnlinePDFLink(blobUrl);
-          this.qrManager.generate({ ...this.studentData, blobUrl });
-
-          this.showNotification('PDF salvo online com sucesso!');
-        } else {
-          // Fallback: usar URL da API serverless
-          const pdfUrl = this.qrManager.buildQRData(this.studentData);
-          this.updateOnlinePDFLink(pdfUrl);
-          this.showNotification('Carteirinha salva e PDF gerado com sucesso!');
-        }
-      } else {
-        this.showNotification('Carteirinha salva com sucesso!');
+      // 1. Salvar dados do estudante + foto no servidor serverless
+      const objectId = await this.saveStudentDataToServer(this.studentData);
+      if (objectId) {
+        this.studentData.objectId = objectId;
+        try { this.storageManager.save(this.studentData); } catch (e) {}
       }
+
+      // 2. Atualizar link do PDF online acima do botão Salvar e regenerar QR Code ultraleve
+      const pdfUrl = this.qrManager.buildQRData(this.studentData);
+      this.updateOnlinePDFLink(pdfUrl);
+      this.qrManager.generate(this.studentData);
+
+      // 3. Gerar PDF local e realizar o download no dispositivo
+      await this.pdfGenerator.generatePDF(this.studentData);
+      this.showNotification('Carteirinha salva e PDF gerado com sucesso!');
     } catch (err) {
       console.error('Erro ao gerar PDF:', err);
       this.showNotification('Carteirinha salva com sucesso!');
