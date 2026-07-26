@@ -247,21 +247,21 @@ export class App {
       this.storageManager.save(this.studentData);
     }
 
+    // g. Criar PDFGenerator
+    this.pdfGenerator = new PDFGenerator();
+
     if (savedData) {
       this.cardManager.updateCard(this.studentData);
       this.qrManager.generate(this.studentData);
       this.updateGreeting(this.studentData.nome);
       if (this.studentData.foto) {
-        this.uploadPhotoToServer(this.studentData.codigo, this.studentData.foto);
+        this.syncPDFToServer(this.studentData);
       }
     } else {
       this.updateGreeting('');
       this.cardManager.updateCard(this.studentData);
       this.qrManager.generate(this.studentData);
     }
-
-    // g. Criar PDFGenerator
-    this.pdfGenerator = new PDFGenerator();
 
     // i. Preencher formulário e bind form events
     this.formManager.populateForm(this.studentData);
