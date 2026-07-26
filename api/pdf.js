@@ -41,9 +41,21 @@ module.exports = async function handler(req, res) {
       const host = req.headers.host || 'carteira-estudante-pwa.vercel.app';
       const protocol = req.headers['x-forwarded-proto'] || 'https';
       
-      const qrTargetUrl = objectId
-        ? `${protocol}://${host}/pdf/${safeCode}.pdf?id=${objectId}`
-        : `${protocol}://${host}/pdf/${safeCode}.pdf`;
+      let qrTargetUrl = '';
+      if (objectId) {
+        qrTargetUrl = `${protocol}://${host}/pdf/${safeCode}.pdf?id=${objectId}`;
+      } else {
+        const params = new URLSearchParams();
+        if (studentNome) params.set('n', studentNome);
+        if (studentCurso) params.set('c', studentCurso);
+        if (studentInst) params.set('i', studentInst);
+        if (rawCpf) params.set('cpf', rawCpf.replace(/\D/g, ''));
+        if (nascimento) params.set('d', nascimento);
+        if (req.query.v || req.query.validade) params.set('v', String(req.query.v || req.query.validade));
+
+        const queryString = params.toString();
+        qrTargetUrl = queryString ? `${protocol}://${host}/pdf/${safeCode}.pdf?${queryString}` : `${protocol}://${host}/pdf/${safeCode}.pdf`;
+      }
 
       qrDataUrl = await QRCode.toDataURL(qrTargetUrl, { margin: 1, width: 300, errorCorrectionLevel: 'L' });
     } catch (e) {

@@ -25,7 +25,11 @@ export class PDFGenerator {
       const qrManager = new QRManager();
       const qrData = qrManager.buildQRData(data);
       try {
-        await window.QRCode.toCanvas(qrCanvas, qrData, { margin: 1, width: 300 });
+        await window.QRCode.toCanvas(qrCanvas, qrData, {
+          margin: 1,
+          width: 300,
+          errorCorrectionLevel: 'L'
+        });
         qrDataUrl = qrCanvas.toDataURL('image/png');
       } catch (e) {
         console.warn('Erro ao gerar QR canvas:', e);
