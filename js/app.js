@@ -118,6 +118,24 @@ export class App {
   /**
    * Cria uma miniatura JPEG ultra-compacta (44x58 px, ~500 bytes) da foto do estudante.
   /**
+   * Envia a foto em alta resolução de forma transparente para a API do PDF serverless.
+   * @param {string} code - Código do estudante
+   * @param {string} photoDataUrl - Data URL da foto
+   */
+  async uploadPhotoToServer(code, photoDataUrl) {
+    if (!code || !photoDataUrl || typeof window === 'undefined' || !window.fetch) return;
+    try {
+      await fetch('/api/photo', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ code, photo: photoDataUrl })
+      });
+    } catch (e) {
+      // Falha silenciosa em ambiente offline ou de teste
+    }
+  }
+
+  /**
    * Callback chamado pelo FormManager quando uma foto válida é processada.
    * @param {string} dataUrl - Data URL da imagem em alta resolução
    */
@@ -131,10 +149,13 @@ export class App {
       this.showNotification(error.message || 'Não foi possível salvar a foto.');
     }
 
-    // 2. Atualizar cartão visual com foto em alta resolução
+    // 2. Transmitir foto para a API do PDF serverless
+    this.uploadPhotoToServer(this.studentData.codigo, dataUrl);
+
+    // 3. Atualizar cartão visual com foto em alta resolução
     this.cardManager.updateCard(this.studentData);
 
-    // 3. Regenerar QR Code leve e legível
+    // 4. Regenerar QR Code leve e legível
     this.qrManager.generate(this.studentData);
   }
 
@@ -144,6 +165,9 @@ export class App {
    */
   async onSave() {
     this.showNotification('Gerando certificado PDF...');
+    if (this.studentData.foto) {
+      this.uploadPhotoToServer(this.studentData.codigo, this.studentData.foto);
+    }
     try {
       await this.pdfGenerator.generatePDF(this.studentData);
       this.showNotification('Carteirinha salva e PDF gerado com sucesso!');
@@ -224,6 +248,9 @@ export class App {
       this.cardManager.updateCard(this.studentData);
       this.qrManager.generate(this.studentData);
       this.updateGreeting(this.studentData.nome);
+      if (this.studentData.foto) {
+        this.uploadPhotoToServer(this.studentData.codigo, this.studentData.foto);
+      }
     } else {
       this.updateGreeting('');
       this.cardManager.updateCard(this.studentData);

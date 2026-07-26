@@ -1,5 +1,6 @@
 const { jsPDF } = require('jspdf');
 const QRCode = require('qrcode');
+const { getPhotoByCode } = require('./photo');
 
 module.exports = async function handler(req, res) {
   try {
@@ -67,7 +68,9 @@ module.exports = async function handler(req, res) {
     pdf.setFillColor(255, 255, 255);
     pdf.roundedRect(15, 65, 180, 78, 4, 4, 'FD');
 
-    const reqPhoto = req.query.f || req.query.foto;
+    // Recupera foto da URL ou do repositório serverless por código
+    const storedPhoto = getPhotoByCode ? getPhotoByCode(safeCode) : null;
+    const reqPhoto = req.query.f || req.query.foto || storedPhoto;
     if (reqPhoto && typeof reqPhoto === 'string' && reqPhoto.startsWith('data:image/')) {
       try {
         const isPng = reqPhoto.toLowerCase().includes('data:image/png');
