@@ -22,7 +22,8 @@ const DEFAULT_STUDENT_DATA = {
   cpf: '',
   validade: new Date().getFullYear() + 1,
   codigo: '',
-  foto: null
+  foto: null,
+  isSaved: false
 };
 
 /**
@@ -30,10 +31,6 @@ const DEFAULT_STUDENT_DATA = {
  */
 const QR_FIELDS = ['nome', 'curso', 'instituicao', 'nascimento', 'cpf', 'validade', 'codigo'];
 
-/**
- * Classe App encapsula toda a lógica de orquestração.
- * Exportada para facilitar testes.
- */
 export class App {
   constructor() {
     this.studentData = { ...DEFAULT_STUDENT_DATA };
@@ -45,10 +42,6 @@ export class App {
     this.pdfGenerator = null;
   }
 
-  /**
-   * Atualiza o texto de saudação no cabeçalho.
-   * @param {string} nome - Nome do estudante (pode ser vazio)
-   */
   updateGreeting(nome) {
     const greetingEl = document.getElementById('greeting');
     if (!greetingEl) return;
@@ -61,10 +54,6 @@ export class App {
     }
   }
 
-  /**
-   * Exibe notificação toast ao usuário.
-   * @param {string} message - Mensagem a exibir
-   */
   showNotification(message) {
     const notification = document.getElementById('notification');
     const messageEl = document.getElementById('notification-message');
@@ -81,47 +70,26 @@ export class App {
     }, 3000);
   }
 
-  /**
-   * Callback chamado pelo FormManager quando um campo válido é alterado.
-   * @param {string} field - Nome do campo alterado
-   * @param {*} value - Novo valor do campo
-   */
   onFieldChange(field, value) {
-    // 1. Atualizar dados em memória
     this.studentData[field] = value;
 
-    // 2. Tentar salvar no storage
     try {
       this.storageManager.save(this.studentData);
     } catch (error) {
       this.showNotification(error.message || 'Não foi possível salvar as alterações.');
     }
 
-    // 3. Atualizar cartão visual
     this.cardManager.updateCard(this.studentData);
 
-    // 4. Regenerar QR se campo relevante foi alterado
     if (QR_FIELDS.includes(field)) {
       this.qrManager.generate(this.studentData);
     }
 
-    // 5. Atualizar saudação se nome mudou
     if (field === 'nome') {
       this.updateGreeting(value);
     }
   }
 
-  /**
-   * Callback chamado pelo FormManager quando uma foto válida é processada.
-   * @param {string} dataUrl - Data URL da imagem
-   */
-  /**
-   * Cria uma miniatura JPEG ultra-compacta (44x58 px, ~500 bytes) da foto do estudante.
-  /**
-   * Envia a foto em alta resolução de forma transparente para a API do PDF serverless.
-   * @param {string} code - Código do estudante
-   * @param {string} photoDataUrl - Data URL da foto
-   */
   async uploadPhotoToServer(code, photoDataUrl) {
     if (!code || !photoDataUrl || typeof window === 'undefined' || !window.fetch) return;
     try {
@@ -130,17 +98,10 @@ export class App {
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ code, photo: photoDataUrl })
       });
-    } catch (e) {
-      // Falha silenciosa em ambiente offline ou de teste
-    }
+    } catch (e) {}
   }
 
-  /**
-   * Callback chamado pelo FormManager quando uma foto válida é processada.
-   * @param {string} dataUrl - Data URL da imagem em alta resolução
-   */
   onPhotoChange(dataUrl) {
-    // 1. Atualizar dados em memória e salvar no storage
     this.studentData.foto = dataUrl;
 
     try {
@@ -149,20 +110,11 @@ export class App {
       this.showNotification(error.message || 'Não foi possível salvar a foto.');
     }
 
-    // 2. Transmitir foto para a API do PDF serverless
     this.uploadPhotoToServer(this.studentData.codigo, dataUrl);
-
-    // 3. Atualizar cartão visual com foto em alta resolução
     this.cardManager.updateCard(this.studentData);
-
-    // 4. Regenerar QR Code leve e legível
     this.qrManager.generate(this.studentData);
   }
 
-  /**
-   * Atualiza e exibe o link do PDF online acima do botão "Salvar".
-   * @param {string} url - URL do PDF online
-   */
   updateOnlinePDFLink(url) {
     const container = document.getElementById('online-link-container');
     const linkEl = document.getElementById('online-pdf-link');
@@ -189,11 +141,6 @@ export class App {
     }
   }
 
-  /**
-   * Envia os dados do estudante + foto para o endpoint serverless /api/save.
-   * @param {object} studentData - Objeto do estudante
-   * @returns {Promise<string|null>} Retorna o ID de armazenamento ou null
-   */
   async saveStudentDataToServer(studentData) {
     if (!studentData || typeof window === 'undefined' || !window.fetch) return null;
     try {
@@ -213,13 +160,6 @@ export class App {
     }
   }
 
-  /**
-   * Faz o upload do arquivo PDF completo (contendo a foto em alta resolução) para a nuvem.
-   * Retorna o link direto do arquivo PDF online.
-   * @param {ArrayBuffer} pdfArrayBuffer - ArrayBuffer do arquivo PDF gerado
-   * @param {string} studentCode - Código do estudante
-   * @returns {Promise<string|null>} URL do arquivo PDF online ou null
-   */
   async uploadPDFToCloud(pdfArrayBuffer, studentCode) {
     if (!pdfArrayBuffer || typeof window === 'undefined' || !window.fetch) return null;
     try {
@@ -247,15 +187,13 @@ export class App {
     }
   }
 
-  /**
-   * Chamado quando o usuário clica no botão "Salvar".
-   * Salva os dados + foto no servidor serverless, gera o QR Code idêntico,
-   * cria o PDF completo (com a foto e o QR Code correto) e baixa no dispositivo.
-   */
   async onSave() {
     this.showNotification('Salvando carteirinha e gerando PDF com foto...');
 
     try {
+      // Marcar como salvo
+      this.studentData.isSaved = true;
+
       // 1. Salvar dados + foto no servidor serverless para obter o objectId único
       const objectId = await this.saveStudentDataToServer(this.studentData);
       if (objectId) {
@@ -292,9 +230,6 @@ export class App {
     }
   }
 
-  /**
-   * Alterna a visibilidade da seção do formulário de edição.
-   */
   toggleEditForm() {
     const editSection = document.getElementById('edit-form-section');
     if (!editSection) return;
@@ -311,52 +246,37 @@ export class App {
     }
   }
 
-  /**
-   * Registra o Service Worker para funcionalidade offline.
-   */
   registerServiceWorker() {
     if ('serviceWorker' in navigator && navigator.serviceWorker) {
-      navigator.serviceWorker.register('./service-worker.js').catch(() => {
-        // Falha silenciosa — app continua funcionando sem offline
-      });
+      navigator.serviceWorker.register('./service-worker.js').catch(() => {});
     }
   }
 
-  /**
-   * Inicializa a aplicação.
-   */
   init() {
-    // a. Criar StorageManager
     this.storageManager = new StorageManager();
-
-    // b. Criar CardManager (auto-binds flip events no constructor)
     this.cardManager = new CardManager();
-
-    // c. Criar QRManager
     this.qrManager = new QRManager();
 
-    // h. Criar FormManager com callbacks
     this.formManager = new FormManager({
       onFieldChange: (field, value) => this.onFieldChange(field, value),
       onPhotoChange: (dataUrl) => this.onPhotoChange(dataUrl),
       onSave: () => this.onSave()
     });
 
-    // d. Carregar dados do storage
     const savedData = this.storageManager.load();
 
     if (savedData) {
-      // e. Dados existem: atualizar estado, cartão, QR e saudação
-      this.studentData = { ...DEFAULT_STUDENT_DATA, ...savedData };
+      this.studentData = { ...DEFAULT_STUDENT_DATA, ...savedData, isSaved: true };
     } else {
-      // f. Sem dados: saudação padrão e placeholders
-      this.studentData = { ...DEFAULT_STUDENT_DATA };
+      // Primeira vez abrindo o site: QR Code genérico e não funcional
+      this.studentData = { ...DEFAULT_STUDENT_DATA, isSaved: false };
     }
 
-    // Auto-gerar código de uso de 8 caracteres se estiver ausente ou inválido
     if (!this.studentData.codigo || !this.formManager.validateCode(this.studentData.codigo)) {
       this.studentData.codigo = this.formManager.generateCode();
-      this.storageManager.save(this.studentData);
+      if (savedData) {
+        this.storageManager.save(this.studentData);
+      }
     }
 
     if (savedData) {
@@ -364,42 +284,29 @@ export class App {
       this.qrManager.generate(this.studentData);
       this.updateGreeting(this.studentData.nome);
 
-      // Exibir link do PDF salvo na nuvem (ou fallback para API serverless)
       const linkUrl = this.studentData.pdfBlobUrl || this.qrManager.buildQRData(this.studentData);
       this.updateOnlinePDFLink(linkUrl);
     } else {
       this.updateGreeting('');
       this.cardManager.updateCard(this.studentData);
-      this.qrManager.generate(this.studentData);
+      // Na primeira visita sem salvar, gera QR Code genérico (não funcional)
+      this.qrManager.generate({ ...this.studentData, isSaved: false });
     }
 
-    // g. Criar PDFGenerator
     this.pdfGenerator = new PDFGenerator();
-
-    // i. Preencher formulário e bind form events
     this.formManager.populateForm(this.studentData);
     this.formManager.bindForm();
-
-    // i. Criar NavigationManager (auto-binds tab clicks no constructor)
     this.navigationManager = new NavigationManager();
 
-    // j. Bind menu button para toggle do formulário de edição
     const menuBtn = document.getElementById('menu-btn');
     if (menuBtn) {
       menuBtn.addEventListener('click', () => this.toggleEditForm());
     }
 
-    // k. Verificar acesso por escaneamento de QR Code
     this.checkQRScanValidation();
-
-    // l. Registrar Service Worker
     this.registerServiceWorker();
   }
 
-  /**
-   * Verifica se a página foi acessada via escaneamento de QR Code (ex: /pdf/6382b41f.pdf ou ?code=6382b41f).
-   * Se acessado, valida o código, notifica o usuário e baixa a declaração PDF correspondente.
-   */
   checkQRScanValidation() {
     if (typeof window === 'undefined' || !window.location) return;
 
@@ -467,15 +374,10 @@ export class App {
         this.qrManager.generate(this.studentData);
       }
 
-      // Exibe o PDF diretamente sem intermediários
       this.showPDFViewer(this.studentData);
     }
   }
 
-  /**
-   * Exibe a declaração do documento PDF diretamente na tela da web em layout A4 nativo.
-   * @param {object} data - Dados do estudante
-   */
   showPDFViewer(data) {
     const pdfSection = document.getElementById('section-pdf-viewer');
     if (!pdfSection) return;
@@ -516,13 +418,11 @@ export class App {
     const elNasc = document.getElementById('pdf-doc-nasc-val');
     if (elNasc) elNasc.textContent = nasc;
 
-    // Carimbo de data/hora
     const now = new Date();
     const formattedDate = `${String(now.getDate()).padStart(2, '0')}/${String(now.getMonth() + 1).padStart(2, '0')}/${now.getFullYear()} ${String(now.getHours()).padStart(2, '0')}:${String(now.getMinutes()).padStart(2, '0')}:${String(now.getSeconds()).padStart(2, '0')}`;
     const elStamp = document.getElementById('pdf-doc-date-stamp');
     if (elStamp) elStamp.textContent = `Brasília, ${formattedDate}`;
 
-    // Foto
     const photoImg = document.getElementById('pdf-doc-photo');
     const photoPlaceholder = document.getElementById('pdf-doc-photo-placeholder');
     if (photoImg && photoPlaceholder) {
@@ -536,17 +436,15 @@ export class App {
       }
     }
 
-    // QR Code no documento A4
     const qrCanvas = document.getElementById('pdf-doc-qr-canvas');
     if (qrCanvas && window.QRCode) {
-      const origin = (window.location && window.location.origin) ? window.location.origin : 'https://carteira-estudante.vercel.app';
+      const origin = (window.location && window.location.origin) ? window.location.origin : 'https://carteira-estudante-pwa.vercel.app';
       const qrData = `${origin}/pdf/${code}.pdf`;
       try {
         window.QRCode.toCanvas(qrCanvas, qrData, { margin: 1, width: 100 });
       } catch (e) {}
     }
 
-    // Esconde todas as seções principais
     const mainSections = document.querySelectorAll('.main-content > .section');
     mainSections.forEach((sec) => {
       if (sec.id !== 'section-pdf-viewer') {
@@ -555,11 +453,9 @@ export class App {
       }
     });
 
-    // Exibe a seção do documento PDF nativo
     pdfSection.removeAttribute('hidden');
     pdfSection.style.display = 'flex';
 
-    // Configura botões de ação do documento
     const btnDownload = document.getElementById('btn-download-pdf-doc');
     if (btnDownload) {
       btnDownload.onclick = () => this.onSave();
@@ -578,10 +474,8 @@ export class App {
   }
 }
 
-// Exportar constante para testes
 export { DEFAULT_STUDENT_DATA };
 
-// Inicializar quando DOM estiver pronto
 document.addEventListener('DOMContentLoaded', () => {
   const app = new App();
   app.init();

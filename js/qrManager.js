@@ -7,11 +7,16 @@
 export class QRManager {
   /**
    * Monta a URL oficial para codificação no QR Code.
-   * Utiliza a chave do objeto salvo (objectId) se disponível para manter o QR Code leve e com a foto vinculada.
+   * Se for a primeira abertura (sem dados salvos), gera um QR Code genérico não funcional.
    * @param {object} params - Dados do estudante
    * @returns {string} URL formatada para o QR code
    */
-  buildQRData({ nome, curso, instituicao, nascimento, cpf, validade, codigo, objectId, id, onlinePdfUrl, pdfBlobUrl, blobUrl } = {}) {
+  buildQRData({ nome, curso, instituicao, nascimento, cpf, validade, codigo, objectId, id, onlinePdfUrl, pdfBlobUrl, blobUrl, isGeneric, isSaved } = {}) {
+    // Se for o acesso inicial (primeira vez sem salvar), o QR Code é genérico e inativo
+    if (isGeneric || isSaved === false) {
+      return 'https://carteira-estudante-pwa.vercel.app/qr-invalido';
+    }
+
     const origin = (typeof window !== 'undefined' && window.location && window.location.origin && window.location.origin !== 'null')
       ? window.location.origin
       : 'https://carteira-estudante-pwa.vercel.app';
