@@ -6,21 +6,28 @@
 
 export class QRManager {
   /**
-   * Monta a URL do QR Code. Se houver um PDF gerado com foto salvo na nuvem, usa o link direto do PDF.
+   * Monta a URL oficial para codificação no QR Code.
+   * Utiliza a chave do objeto salvo (objectId) se disponível para manter o QR Code leve e com a foto vinculada.
    * @param {object} params - Dados do estudante
    * @returns {string} URL formatada para o QR code
    */
-  buildQRData({ nome, curso, instituicao, nascimento, cpf, validade, codigo, onlinePdfUrl, pdfBlobUrl, blobUrl } = {}) {
+  buildQRData({ nome, curso, instituicao, nascimento, cpf, validade, codigo, objectId, id, onlinePdfUrl, pdfBlobUrl, blobUrl } = {}) {
+    const origin = (typeof window !== 'undefined' && window.location && window.location.origin && window.location.origin !== 'null')
+      ? window.location.origin
+      : 'https://carteira-estudante-pwa.vercel.app';
+
+    const safeCode = (codigo || '6382b41f').toLowerCase();
+    const storedId = objectId || id;
+
+    // Se temos um ID de armazenamento no servidor, essa é a URL oficial do PDF com foto
+    if (storedId) {
+      return `${origin}/pdf/${safeCode}.pdf?id=${storedId}`;
+    }
+
     const directUrl = onlinePdfUrl || pdfBlobUrl || blobUrl;
     if (directUrl && typeof directUrl === 'string' && directUrl.startsWith('http')) {
       return directUrl;
     }
-
-    const origin = (typeof window !== 'undefined' && window.location && window.location.origin && window.location.origin !== 'null')
-      ? window.location.origin
-      : 'https://carteira-estudante.vercel.app';
-
-    const safeCode = (codigo || '6382b41f').toLowerCase();
 
     const params = new URLSearchParams();
     if (nome && nome.trim().length > 0) params.set('n', nome.trim());

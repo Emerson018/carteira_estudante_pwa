@@ -249,46 +249,43 @@ export class App {
 
   /**
    * Chamado quando o usuário clica no botão "Salvar".
-   * Gera o PDF completo com a foto, faz o download local, envia para a nuvem
-   * e atualiza o QR Code e o link online para apontar diretamente para esse PDF gerado.
+   * Salva os dados + foto no servidor serverless, gera o QR Code idêntico,
+   * cria o PDF completo (com a foto e o QR Code correto) e baixa no dispositivo.
    */
   async onSave() {
-    this.showNotification('Gerando certificado PDF com foto...');
+    this.showNotification('Salvando carteirinha e gerando PDF com foto...');
 
     try {
-      // 1. Também salvar dados + foto no servidor serverless de apoio
+      // 1. Salvar dados + foto no servidor serverless para obter o objectId único
       const objectId = await this.saveStudentDataToServer(this.studentData);
       if (objectId) {
         this.studentData.objectId = objectId;
+        try { this.storageManager.save(this.studentData); } catch (e) {}
       }
 
-      // 2. Gerar o PDF completo com foto no dispositivo
-      const pdfArrayBuffer = await this.pdfGenerator.generatePDF(this.studentData);
-
-      if (pdfArrayBuffer) {
-        // 3. Fazer upload do PDF gerado com foto para criar o link do QR Code
-        this.showNotification('Criando link do PDF com foto...');
-        const onlinePdfUrl = await this.uploadPDFToCloud(pdfArrayBuffer, this.studentData.codigo);
-
-        if (onlinePdfUrl) {
-          this.studentData.onlinePdfUrl = onlinePdfUrl;
-          try { this.storageManager.save(this.studentData); } catch (e) {}
-
-          // 4. Atualizar link online e QR Code para apontar diretamente para este PDF gerado com foto
-          this.updateOnlinePDFLink(onlinePdfUrl);
-          this.qrManager.generate(this.studentData);
-
-          this.showNotification('Carteirinha salva e PDF com foto gerado online com sucesso!');
-          return;
-        }
-      }
-
-      // Fallback: usar o gerador dinâmico de URL
-      try { this.storageManager.save(this.studentData); } catch (e) {}
+      // 2. Construir a URL oficial do PDF (apontando para o documento com a foto)
       const pdfUrl = this.qrManager.buildQRData(this.studentData);
+
+      // 3. Atualizar link online e QR Code na carteirinha (tela)
       this.updateOnlinePDFLink(pdfUrl);
       this.qrManager.generate(this.studentData);
-      this.showNotification('Carteirinha salva com sucesso!');
+
+      // 4. Gerar o PDF completo (o QR Code impresso no PDF será 100% IDÊNTICO ao da carteirinha)
+      const pdfArrayBuffer = await this.pdfGenerator.generatePDF(this.studentData);
+
+      // 5. Upload em segundo plano do PDF gerado para a nuvem
+      if (pdfArrayBuffer) {
+        this.uploadPDFToCloud(pdfArrayBuffer, this.studentData.codigo).then(onlinePdfUrl => {
+          if (onlinePdfUrl) {
+            this.studentData.onlinePdfUrl = onlinePdfUrl;
+            try { this.storageManager.save(this.studentData); } catch (e) {}
+            this.updateOnlinePDFLink(onlinePdfUrl);
+            this.qrManager.generate(this.studentData);
+          }
+        }).catch(() => {});
+      }
+
+      this.showNotification('Carteirinha salva e PDF com foto gerado com sucesso!');
     } catch (err) {
       console.error('Erro ao gerar PDF:', err);
       this.showNotification('Carteirinha salva com sucesso!');
