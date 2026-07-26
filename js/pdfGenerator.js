@@ -83,11 +83,13 @@ export class PDFGenerator {
             }
           });
           const canvas = document.createElement('canvas');
-          canvas.width = photoImg.naturalWidth || 144;
-          canvas.height = photoImg.naturalHeight || 184;
+          canvas.width = photoImg.naturalWidth || 400;
+          canvas.height = photoImg.naturalHeight || 512;
           const ctx = canvas.getContext('2d');
+          ctx.imageSmoothingEnabled = true;
+          ctx.imageSmoothingQuality = 'high';
           ctx.drawImage(photoImg, 0, 0, canvas.width, canvas.height);
-          const cleanJpeg = canvas.toDataURL('image/jpeg', 0.95);
+          const cleanJpeg = canvas.toDataURL('image/jpeg', 0.98);
           pdf.addImage(cleanJpeg, 'JPEG', 22, 72, 36, 46);
         } catch (e) {
           console.warn('Erro ao normalizar foto para o PDF:', e);

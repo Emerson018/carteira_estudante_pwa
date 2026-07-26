@@ -25,8 +25,6 @@ module.exports = async function handler(req, res) {
       if (req.query.cpf) params.set('cpf', req.query.cpf.replace(/\D/g, ''));
       if (nascimento) params.set('d', nascimento);
       if (req.query.v || req.query.validade) params.set('v', String(req.query.v || req.query.validade));
-      const reqPhoto = req.query.f || req.query.foto;
-      if (reqPhoto) params.set('f', reqPhoto);
 
       const queryString = params.toString();
       const qrTargetUrl = queryString ? `${protocol}://${host}/pdf/${safeCode}.pdf?${queryString}` : `${protocol}://${host}/pdf/${safeCode}.pdf`;

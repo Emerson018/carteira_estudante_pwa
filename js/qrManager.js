@@ -6,11 +6,11 @@
 
 export class QRManager {
   /**
-   * Monta a URL otimizada para codificação no QR com chaves compactas e foto minificada.
+   * Monta a URL ultraleve para codificação no QR com chaves compactas de 1 caractere.
    * @param {object} params - Dados do estudante
    * @returns {string} URL formatada para o QR code
    */
-  buildQRData({ nome, curso, instituicao, nascimento, cpf, validade, codigo, fotoThumb, foto } = {}) {
+  buildQRData({ nome, curso, instituicao, nascimento, cpf, validade, codigo } = {}) {
     const origin = (typeof window !== 'undefined' && window.location && window.location.origin && window.location.origin !== 'null')
       ? window.location.origin
       : 'https://carteira-estudante.vercel.app';
@@ -25,15 +25,12 @@ export class QRManager {
     if (nascimento && nascimento.trim().length > 0) params.set('d', nascimento.trim());
     if (validade) params.set('v', String(validade));
 
-    const photoData = fotoThumb || (foto && foto.length < 2000 ? foto : null);
-    if (photoData) params.set('f', photoData);
-
     const queryString = params.toString();
     return queryString ? `${origin}/pdf/${safeCode}.pdf?${queryString}` : `${origin}/pdf/${safeCode}.pdf`;
   }
 
   /**
-   * Gera QR code com dados do estudante no canvas (alta legibilidade, matriz espaçada).
+   * Gera QR code com dados do estudante no canvas (matriz ultraleve, quadrados grandes).
    * @param {object} params - Dados do estudante
    * @returns {boolean} true se gerado com sucesso, false se falhou
    */
