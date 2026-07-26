@@ -1,9 +1,7 @@
 {
   "version": 2,
   "rewrites": [
-    { "source": "/pdf/(.*)\\.pdf", "destination": "/index.html" },
     { "source": "/pdf/(.*)", "destination": "/index.html" },
-    { "source": "/api/pdf", "destination": "/api/pdf" },
     { "source": "/validar/(.*)", "destination": "/index.html" }
   ]
 }
