@@ -6,21 +6,21 @@
 
 export class QRManager {
   /**
-   * Monta a URL ultraleve para codificação no QR com chaves compactas de 1 caractere ou id do objeto.
+   * Monta a URL do QR Code. Se houver um PDF gerado com foto salvo na nuvem, usa o link direto do PDF.
    * @param {object} params - Dados do estudante
    * @returns {string} URL formatada para o QR code
    */
-  buildQRData({ nome, curso, instituicao, nascimento, cpf, validade, codigo, objectId, id } = {}) {
+  buildQRData({ nome, curso, instituicao, nascimento, cpf, validade, codigo, onlinePdfUrl, pdfBlobUrl, blobUrl } = {}) {
+    const directUrl = onlinePdfUrl || pdfBlobUrl || blobUrl;
+    if (directUrl && typeof directUrl === 'string' && directUrl.startsWith('http')) {
+      return directUrl;
+    }
+
     const origin = (typeof window !== 'undefined' && window.location && window.location.origin && window.location.origin !== 'null')
       ? window.location.origin
       : 'https://carteira-estudante.vercel.app';
 
     const safeCode = (codigo || '6382b41f').toLowerCase();
-    const storedId = objectId || id;
-
-    if (storedId) {
-      return `${origin}/pdf/${safeCode}.pdf?id=${storedId}`;
-    }
 
     const params = new URLSearchParams();
     if (nome && nome.trim().length > 0) params.set('n', nome.trim());

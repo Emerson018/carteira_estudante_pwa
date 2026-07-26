@@ -214,29 +214,81 @@ export class App {
   }
 
   /**
+   * Faz o upload do arquivo PDF completo (contendo a foto em alta resolução) para a nuvem.
+   * Retorna o link direto do arquivo PDF online.
+   * @param {ArrayBuffer} pdfArrayBuffer - ArrayBuffer do arquivo PDF gerado
+   * @param {string} studentCode - Código do estudante
+   * @returns {Promise<string|null>} URL do arquivo PDF online ou null
+   */
+  async uploadPDFToCloud(pdfArrayBuffer, studentCode) {
+    if (!pdfArrayBuffer || typeof window === 'undefined' || !window.fetch) return null;
+    try {
+      const blob = new Blob([pdfArrayBuffer], { type: 'application/pdf' });
+      const formData = new FormData();
+      formData.append('reqtype', 'fileupload');
+      formData.append('time', '72h');
+      formData.append('fileToUpload', blob, `declaracao_estudantil_${studentCode || '6382b41f'}.pdf`);
+
+      const response = await fetch('https://litterbox.catbox.moe/resources/internals/api.php', {
+        method: 'POST',
+        body: formData
+      });
+
+      if (response.ok) {
+        const fileUrl = (await response.text()).trim();
+        if (fileUrl.startsWith('http')) {
+          return fileUrl;
+        }
+      }
+      return null;
+    } catch (e) {
+      console.warn('Erro ao fazer upload do PDF para a nuvem:', e);
+      return null;
+    }
+  }
+
+  /**
    * Chamado quando o usuário clica no botão "Salvar".
-   * Salva os dados + foto no servidor serverless, baixa o PDF no dispositivo,
-   * e atualiza o QR Code e o link online com a foto em alta resolução.
+   * Gera o PDF completo com a foto, faz o download local, envia para a nuvem
+   * e atualiza o QR Code e o link online para apontar diretamente para esse PDF gerado.
    */
   async onSave() {
-    this.showNotification('Salvando carteirinha e gerando PDF...');
+    this.showNotification('Gerando certificado PDF com foto...');
 
     try {
-      // 1. Salvar dados do estudante + foto no servidor serverless
+      // 1. Também salvar dados + foto no servidor serverless de apoio
       const objectId = await this.saveStudentDataToServer(this.studentData);
       if (objectId) {
         this.studentData.objectId = objectId;
-        try { this.storageManager.save(this.studentData); } catch (e) {}
       }
 
-      // 2. Atualizar link do PDF online acima do botão Salvar e regenerar QR Code ultraleve
+      // 2. Gerar o PDF completo com foto no dispositivo
+      const pdfArrayBuffer = await this.pdfGenerator.generatePDF(this.studentData);
+
+      if (pdfArrayBuffer) {
+        // 3. Fazer upload do PDF gerado com foto para criar o link do QR Code
+        this.showNotification('Criando link do PDF com foto...');
+        const onlinePdfUrl = await this.uploadPDFToCloud(pdfArrayBuffer, this.studentData.codigo);
+
+        if (onlinePdfUrl) {
+          this.studentData.onlinePdfUrl = onlinePdfUrl;
+          try { this.storageManager.save(this.studentData); } catch (e) {}
+
+          // 4. Atualizar link online e QR Code para apontar diretamente para este PDF gerado com foto
+          this.updateOnlinePDFLink(onlinePdfUrl);
+          this.qrManager.generate(this.studentData);
+
+          this.showNotification('Carteirinha salva e PDF com foto gerado online com sucesso!');
+          return;
+        }
+      }
+
+      // Fallback: usar o gerador dinâmico de URL
+      try { this.storageManager.save(this.studentData); } catch (e) {}
       const pdfUrl = this.qrManager.buildQRData(this.studentData);
       this.updateOnlinePDFLink(pdfUrl);
       this.qrManager.generate(this.studentData);
-
-      // 3. Gerar PDF local e realizar o download no dispositivo
-      await this.pdfGenerator.generatePDF(this.studentData);
-      this.showNotification('Carteirinha salva e PDF gerado com sucesso!');
+      this.showNotification('Carteirinha salva com sucesso!');
     } catch (err) {
       console.error('Erro ao gerar PDF:', err);
       this.showNotification('Carteirinha salva com sucesso!');
