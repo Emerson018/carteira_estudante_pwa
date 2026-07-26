@@ -264,10 +264,47 @@ export class App {
 
     if (scannedCode) {
       const cleanCode = scannedCode.toLowerCase();
+      let updated = false;
 
-      // Sincroniza o código escaneado nos dados da sessão do estudante se necessário
       if (!this.studentData.codigo || this.studentData.codigo.toLowerCase() !== cleanCode) {
         this.studentData.codigo = cleanCode;
+        updated = true;
+      }
+
+      const scannedNome = urlParams.get('n') || urlParams.get('nome');
+      if (scannedNome && scannedNome !== this.studentData.nome) {
+        this.studentData.nome = scannedNome;
+        updated = true;
+      }
+
+      const scannedCurso = urlParams.get('c') || urlParams.get('curso');
+      if (scannedCurso && scannedCurso !== this.studentData.curso) {
+        this.studentData.curso = scannedCurso;
+        updated = true;
+      }
+
+      const scannedInst = urlParams.get('i') || urlParams.get('instituicao');
+      if (scannedInst && scannedInst !== this.studentData.instituicao) {
+        this.studentData.instituicao = scannedInst;
+        updated = true;
+      }
+
+      const scannedCpf = urlParams.get('cpf');
+      if (scannedCpf) {
+        const formattedCpf = scannedCpf.length === 11 ? scannedCpf.replace(/(\d{3})(\d{3})(\d{3})(\d{2})/, '$1.$2.$3-$4') : scannedCpf;
+        if (formattedCpf !== this.studentData.cpf) {
+          this.studentData.cpf = formattedCpf;
+          updated = true;
+        }
+      }
+
+      const scannedNasc = urlParams.get('d') || urlParams.get('nascimento');
+      if (scannedNasc && scannedNasc !== this.studentData.nascimento) {
+        this.studentData.nascimento = scannedNasc;
+        updated = true;
+      }
+
+      if (updated) {
         try {
           this.storageManager.save(this.studentData);
         } catch (e) {}

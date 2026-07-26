@@ -84,7 +84,7 @@ describe('QRManager', () => {
       expect(globalThis.QRCode.toCanvas).toHaveBeenCalledWith(
         canvas,
         expect.stringContaining('/pdf/6382b41f.pdf'),
-        { width: 80, margin: 1, errorCorrectionLevel: 'M' }
+        { width: 80, margin: 1, errorCorrectionLevel: 'L' }
       );
 
       delete globalThis.QRCode;
@@ -130,7 +130,7 @@ describe('QRManager', () => {
       delete globalThis.QRCode;
     });
 
-    it('deve usar opções de QR corretas: width 80, margin 1, errorCorrectionLevel M', () => {
+    it('deve usar opções de QR corretas: width 80, margin 1, errorCorrectionLevel L', () => {
       globalThis.QRCode = {
         toCanvas: vi.fn()
       };
@@ -145,7 +145,7 @@ describe('QRManager', () => {
       expect(callArgs[2]).toEqual({
         width: 80,
         margin: 1,
-        errorCorrectionLevel: 'M'
+        errorCorrectionLevel: 'L'
       });
 
       delete globalThis.QRCode;

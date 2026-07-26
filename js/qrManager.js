@@ -6,7 +6,7 @@
 
 export class QRManager {
   /**
-   * Monta a URL para codificação no QR incluindo todos os parâmetros do estudante.
+   * Monta a URL otimizada para codificação no QR com chaves compactas (baixa densidade de matriz).
    * @param {object} params - Dados do estudante
    * @returns {string} URL formatada para o QR code
    */
@@ -18,20 +18,20 @@ export class QRManager {
     const safeCode = (codigo || '6382b41f').toLowerCase();
 
     const params = new URLSearchParams();
-    if (nome) params.set('nome', nome);
-    if (curso) params.set('curso', curso);
-    if (instituicao) params.set('instituicao', instituicao);
-    if (cpf) params.set('cpf', cpf);
-    if (nascimento) params.set('nascimento', nascimento);
-    if (validade) params.set('validade', String(validade));
+    if (nome && nome.trim().length > 0) params.set('n', nome.trim());
+    if (curso && curso.trim().length > 0) params.set('c', curso.trim());
+    if (instituicao && instituicao.trim().length > 0) params.set('i', instituicao.trim());
+    if (cpf && cpf.trim().length > 0) params.set('cpf', cpf.replace(/\D/g, ''));
+    if (nascimento && nascimento.trim().length > 0) params.set('d', nascimento.trim());
+    if (validade) params.set('v', String(validade));
 
     const queryString = params.toString();
     return queryString ? `${origin}/pdf/${safeCode}.pdf?${queryString}` : `${origin}/pdf/${safeCode}.pdf`;
   }
 
   /**
-   * Gera QR code com dados completos do estudante no canvas.
-   * @param {object} params - Dados completos do estudante
+   * Gera QR code com dados do estudante no canvas (alta legibilidade, matriz espaçada).
+   * @param {object} params - Dados do estudante
    * @returns {boolean} true se gerado com sucesso, false se falhou
    */
   generate(params = {}) {
@@ -49,7 +49,7 @@ export class QRManager {
       QRCode.toCanvas(canvas, data, {
         width: 80,
         margin: 1,
-        errorCorrectionLevel: 'M'
+        errorCorrectionLevel: 'L'
       });
 
       this._showCanvas(canvas, placeholder);

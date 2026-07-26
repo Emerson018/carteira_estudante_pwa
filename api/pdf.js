@@ -4,38 +4,32 @@ const QRCode = require('qrcode');
 module.exports = async function handler(req, res) {
   try {
     // Parâmetros recebidos da URL ou valores padrão
-    const {
-      code = '6382b41f',
-      nome = 'Emerson Vicosa de Lima',
-      curso = 'Ciência da Computação',
-      instituicao = 'UNIRITTER',
-      cpf = '039.894.040-16',
-      nascimento = '10/08/1998'
-    } = req.query;
+    const safeCode = (req.query.code || '6382b41f').toLowerCase();
+    const studentNome = req.query.n || req.query.nome || 'Emerson Vicosa de Lima';
+    const studentCurso = req.query.c || req.query.curso || 'Ciência da Computação';
+    const studentInst = req.query.i || req.query.instituicao || 'UNIRITTER';
+    const rawCpf = req.query.cpf || '039.894.040-16';
+    const cpf = rawCpf.length === 11 ? rawCpf.replace(/(\d{3})(\d{3})(\d{3})(\d{2})/, '$1.$2.$3-$4') : rawCpf;
+    const nascimento = req.query.d || req.query.nascimento || '10/08/1998';
 
-    const safeCode = (code || '6382b41f').toLowerCase();
-    const studentNome = nome || 'Emerson Vicosa de Lima';
-    const studentCurso = curso || 'Ciência da Computação';
-    const studentInst = instituicao || 'UNIRITTER';
-
-    // Gerar QR code buffer com todos os parâmetros do estudante
+    // Gerar QR code buffer com chaves compactas (matriz limpa de fácil leitura)
     let qrDataUrl = '';
     try {
       const host = req.headers.host || 'carteira-estudante-pwa.vercel.app';
       const protocol = req.headers['x-forwarded-proto'] || 'https';
       
       const params = new URLSearchParams();
-      if (studentNome) params.set('nome', studentNome);
-      if (studentCurso) params.set('curso', studentCurso);
-      if (studentInst) params.set('instituicao', studentInst);
-      if (cpf) params.set('cpf', cpf);
-      if (nascimento) params.set('nascimento', nascimento);
-      if (req.query.validade) params.set('validade', String(req.query.validade));
+      if (studentNome) params.set('n', studentNome);
+      if (studentCurso) params.set('c', studentCurso);
+      if (studentInst) params.set('i', studentInst);
+      if (req.query.cpf) params.set('cpf', req.query.cpf.replace(/\D/g, ''));
+      if (nascimento) params.set('d', nascimento);
+      if (req.query.v || req.query.validade) params.set('v', String(req.query.v || req.query.validade));
 
       const queryString = params.toString();
       const qrTargetUrl = queryString ? `${protocol}://${host}/pdf/${safeCode}.pdf?${queryString}` : `${protocol}://${host}/pdf/${safeCode}.pdf`;
 
-      qrDataUrl = await QRCode.toDataURL(qrTargetUrl, { margin: 1, width: 300 });
+      qrDataUrl = await QRCode.toDataURL(qrTargetUrl, { margin: 1, width: 300, errorCorrectionLevel: 'L' });
     } catch (e) {
       console.warn('Erro ao gerar QR em serverless:', e);
     }
