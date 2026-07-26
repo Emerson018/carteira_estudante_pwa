@@ -1,8 +1,4 @@
-/**
- * PDFGenerator — Gera o PDF da Declaração/Certificado Estudantil
- * em formato VETORIAL NATIVO (PDF editável no Canva, texto pesquisável, sem perda de resolução).
- * @module pdfGenerator
- */
+import { QRManager } from './qrManager.js';
 
 export class PDFGenerator {
   /**
@@ -20,17 +16,14 @@ export class PDFGenerator {
 
     const { jsPDF } = window.jspdf;
 
-    // 1. Gerar QR Code em Canvas temporário
+    // 1. Gerar QR Code dinâmico em Canvas temporário com todos os parâmetros do estudante
     let qrDataUrl = '';
-    if (window.QRCode && (data.codigo || data.cpf)) {
+    if (window.QRCode) {
       const qrCanvas = document.createElement('canvas');
       qrCanvas.width = 300;
       qrCanvas.height = 300;
-      const origin = (typeof window !== 'undefined' && window.location && window.location.origin && window.location.origin !== 'null')
-        ? window.location.origin
-        : 'https://carteira-estudante.vercel.app';
-      const safeCode = (data.codigo || '6382b41f').toLowerCase();
-      const qrData = `${origin}/pdf/${safeCode}.pdf`;
+      const qrManager = new QRManager();
+      const qrData = qrManager.buildQRData(data);
       try {
         await window.QRCode.toCanvas(qrCanvas, qrData, { margin: 1, width: 300 });
         qrDataUrl = qrCanvas.toDataURL('image/png');
@@ -78,16 +71,29 @@ export class PDFGenerator {
       pdf.setFillColor(255, 255, 255);
       pdf.roundedRect(15, 65, 180, 78, 4, 4, 'FD');
 
-      if (data.foto && typeof data.foto === 'string') {
+      if (data.foto && typeof data.foto === 'string' && data.foto.startsWith('data:image/')) {
         try {
-          const isPng = data.foto.toLowerCase().includes('data:image/png');
-          const format = isPng ? 'PNG' : 'JPEG';
-          pdf.addImage(data.foto, format, 22, 72, 36, 46);
+          const photoImg = new Image();
+          photoImg.src = data.foto;
+          await new Promise((resolve) => {
+            if (photoImg.complete) resolve();
+            else {
+              photoImg.onload = resolve;
+              photoImg.onerror = resolve;
+            }
+          });
+          const canvas = document.createElement('canvas');
+          canvas.width = photoImg.naturalWidth || 144;
+          canvas.height = photoImg.naturalHeight || 184;
+          const ctx = canvas.getContext('2d');
+          ctx.drawImage(photoImg, 0, 0, canvas.width, canvas.height);
+          const cleanJpeg = canvas.toDataURL('image/jpeg', 0.95);
+          pdf.addImage(cleanJpeg, 'JPEG', 22, 72, 36, 46);
         } catch (e) {
+          console.warn('Erro ao normalizar foto para o PDF:', e);
           try {
             pdf.addImage(data.foto, 22, 72, 36, 46);
           } catch (e2) {
-            console.warn('Erro ao inserir foto no PDF:', e2);
             pdf.setFillColor(238, 238, 238);
             pdf.rect(22, 72, 36, 46, 'F');
           }

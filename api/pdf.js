@@ -18,12 +18,23 @@ module.exports = async function handler(req, res) {
     const studentCurso = curso || 'Ciência da Computação';
     const studentInst = instituicao || 'UNIRITTER';
 
-    // Gerar QR code buffer
+    // Gerar QR code buffer com todos os parâmetros do estudante
     let qrDataUrl = '';
     try {
       const host = req.headers.host || 'carteira-estudante-pwa.vercel.app';
       const protocol = req.headers['x-forwarded-proto'] || 'https';
-      const qrTargetUrl = `${protocol}://${host}/pdf/${safeCode}.pdf`;
+      
+      const params = new URLSearchParams();
+      if (studentNome) params.set('nome', studentNome);
+      if (studentCurso) params.set('curso', studentCurso);
+      if (studentInst) params.set('instituicao', studentInst);
+      if (cpf) params.set('cpf', cpf);
+      if (nascimento) params.set('nascimento', nascimento);
+      if (req.query.validade) params.set('validade', String(req.query.validade));
+
+      const queryString = params.toString();
+      const qrTargetUrl = queryString ? `${protocol}://${host}/pdf/${safeCode}.pdf?${queryString}` : `${protocol}://${host}/pdf/${safeCode}.pdf`;
+
       qrDataUrl = await QRCode.toDataURL(qrTargetUrl, { margin: 1, width: 300 });
     } catch (e) {
       console.warn('Erro ao gerar QR em serverless:', e);
