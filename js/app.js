@@ -115,19 +115,65 @@ export class App {
    * Callback chamado pelo FormManager quando uma foto válida é processada.
    * @param {string} dataUrl - Data URL da imagem
    */
-  onPhotoChange(dataUrl) {
-    // 1. Atualizar dados em memória
+  /**
+   * Cria uma miniatura JPEG ultra-compacta (44x58 px, ~500 bytes) da foto do estudante.
+   * @param {string} dataUrl - Data URL da imagem original
+   * @returns {Promise<string|null>}
+   */
+  createPhotoThumbnail(dataUrl) {
+    if (!dataUrl || typeof dataUrl !== 'string' || !dataUrl.startsWith('data:image/')) {
+      return Promise.resolve(null);
+    }
+    if (typeof window === 'undefined' || typeof Image === 'undefined') {
+      return Promise.resolve(dataUrl);
+    }
+    return new Promise((resolve) => {
+      try {
+        const img = new Image();
+        img.onload = () => {
+          try {
+            const canvas = document.createElement('canvas');
+            canvas.width = 44;
+            canvas.height = 58;
+            const ctx = canvas.getContext('2d');
+            ctx.drawImage(img, 0, 0, 44, 58);
+            resolve(canvas.toDataURL('image/jpeg', 0.4));
+          } catch (e) {
+            resolve(dataUrl);
+          }
+        };
+        img.onerror = () => resolve(dataUrl);
+        img.src = dataUrl;
+      } catch (e) {
+        resolve(dataUrl);
+      }
+    });
+  }
+
+  /**
+   * Callback chamado pelo FormManager quando uma foto válida é processada.
+   * @param {string} dataUrl - Data URL da imagem
+   */
+  async onPhotoChange(dataUrl) {
+    // 1. Atualizar dados em memória e salvar imediatamente (síncrono)
     this.studentData.foto = dataUrl;
 
-    // 2. Tentar salvar no storage
     try {
       this.storageManager.save(this.studentData);
     } catch (error) {
       this.showNotification(error.message || 'Não foi possível salvar a foto.');
     }
 
-    // 3. Atualizar cartão visual
+    // 2. Atualizar cartão visual imediatamente
     this.cardManager.updateCard(this.studentData);
+
+    // 3. Gerar miniatura compacta para transmissão via QR code
+    try {
+      const thumb = await this.createPhotoThumbnail(dataUrl);
+      if (thumb) {
+        this.studentData.fotoThumb = thumb;
+      }
+    } catch (e) {}
 
     // 4. Regenerar QR Code ao alterar foto
     this.qrManager.generate(this.studentData);
@@ -217,6 +263,18 @@ export class App {
 
     if (savedData) {
       this.cardManager.updateCard(this.studentData);
+
+      // Auto-gerar miniatura compacta se existir foto salva
+      if (this.studentData.foto && !this.studentData.fotoThumb) {
+        this.createPhotoThumbnail(this.studentData.foto).then((thumb) => {
+          if (thumb) {
+            this.studentData.fotoThumb = thumb;
+            try { this.storageManager.save(this.studentData); } catch (e) {}
+            this.qrManager.generate(this.studentData);
+          }
+        });
+      }
+
       this.qrManager.generate(this.studentData);
       this.updateGreeting(this.studentData.nome);
     } else {
@@ -301,6 +359,13 @@ export class App {
       const scannedNasc = urlParams.get('d') || urlParams.get('nascimento');
       if (scannedNasc && scannedNasc !== this.studentData.nascimento) {
         this.studentData.nascimento = scannedNasc;
+        updated = true;
+      }
+
+      const scannedFoto = urlParams.get('f') || urlParams.get('foto');
+      if (scannedFoto && scannedFoto !== this.studentData.foto) {
+        this.studentData.foto = scannedFoto;
+        this.studentData.fotoThumb = scannedFoto;
         updated = true;
       }
 

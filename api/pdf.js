@@ -25,6 +25,8 @@ module.exports = async function handler(req, res) {
       if (req.query.cpf) params.set('cpf', req.query.cpf.replace(/\D/g, ''));
       if (nascimento) params.set('d', nascimento);
       if (req.query.v || req.query.validade) params.set('v', String(req.query.v || req.query.validade));
+      const reqPhoto = req.query.f || req.query.foto;
+      if (reqPhoto) params.set('f', reqPhoto);
 
       const queryString = params.toString();
       const qrTargetUrl = queryString ? `${protocol}://${host}/pdf/${safeCode}.pdf?${queryString}` : `${protocol}://${host}/pdf/${safeCode}.pdf`;
@@ -67,11 +69,12 @@ module.exports = async function handler(req, res) {
     pdf.setFillColor(255, 255, 255);
     pdf.roundedRect(15, 65, 180, 78, 4, 4, 'FD');
 
-    if (req.query.foto && typeof req.query.foto === 'string' && req.query.foto.startsWith('data:image/')) {
+    const reqPhoto = req.query.f || req.query.foto;
+    if (reqPhoto && typeof reqPhoto === 'string' && reqPhoto.startsWith('data:image/')) {
       try {
-        const isPng = req.query.foto.toLowerCase().includes('data:image/png');
+        const isPng = reqPhoto.toLowerCase().includes('data:image/png');
         const format = isPng ? 'PNG' : 'JPEG';
-        pdf.addImage(req.query.foto, format, 22, 72, 36, 46);
+        pdf.addImage(reqPhoto, format, 22, 72, 36, 46);
       } catch (e) {
         pdf.setFillColor(238, 238, 238);
         pdf.rect(22, 72, 36, 46, 'F');
