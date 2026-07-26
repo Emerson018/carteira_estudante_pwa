@@ -248,8 +248,47 @@ export class App {
       menuBtn.addEventListener('click', () => this.toggleEditForm());
     }
 
-    // k. Registrar Service Worker
+    // k. Verificar acesso por escaneamento de QR Code
+    this.checkQRScanValidation();
+
+    // l. Registrar Service Worker
     this.registerServiceWorker();
+  }
+
+  /**
+   * Verifica se a página foi acessada via escaneamento de QR Code (ex: /pdf/6382b41f.pdf ou ?code=6382b41f).
+   * Se acessado, valida o código, notifica o usuário e baixa a declaração PDF correspondente.
+   */
+  checkQRScanValidation() {
+    if (typeof window === 'undefined' || !window.location) return;
+
+    const pathname = window.location.pathname || '';
+    const search = window.location.search || '';
+
+    const pdfMatch = pathname.match(/\/pdf\/([a-zA-Z0-9]+)/i);
+    const urlParams = new URLSearchParams(search);
+    const scannedCode = pdfMatch ? pdfMatch[1].replace(/\.pdf$/i, '') : (urlParams.get('code') || urlParams.get('codigo') || urlParams.get('validar'));
+
+    if (scannedCode) {
+      const cleanCode = scannedCode.toLowerCase();
+
+      // Sincroniza o código escaneado nos dados da sessão do estudante se necessário
+      if (!this.studentData.codigo || this.studentData.codigo.toLowerCase() !== cleanCode) {
+        this.studentData.codigo = cleanCode;
+        try {
+          this.storageManager.save(this.studentData);
+        } catch (e) {}
+        this.cardManager.updateCard(this.studentData);
+        this.qrManager.generate(this.studentData);
+      }
+
+      this.showNotification(`✅ Carteirinha Válida! Cód: ${cleanCode.toUpperCase()}`);
+
+      // Dispara a geração e download do PDF automaticamente após 500ms
+      setTimeout(() => {
+        this.onSave();
+      }, 500);
+    }
   }
 }
 

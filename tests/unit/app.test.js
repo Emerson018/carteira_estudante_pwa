@@ -309,6 +309,27 @@ describe('App Module', () => {
     });
   });
 
+  describe('checkQRScanValidation', () => {
+    it('should show notification and trigger save when pathname contains pdf code', () => {
+      vi.useFakeTimers();
+      const saveSpy = vi.spyOn(app, 'onSave').mockImplementation(() => Promise.resolve());
+      
+      // Mock window.location.pathname
+      Object.defineProperty(window, 'location', {
+        value: { pathname: '/pdf/6382b41f.pdf', search: '', origin: 'https://test.com' },
+        writable: true
+      });
+
+      app.init();
+      vi.advanceTimersByTime(600);
+
+      expect(document.getElementById('notification-message').textContent).toContain('Carteirinha Válida');
+      expect(saveSpy).toHaveBeenCalled();
+
+      vi.useRealTimers();
+    });
+  });
+
   describe('DEFAULT_STUDENT_DATA', () => {
     it('should have correct default values', () => {
       expect(DEFAULT_STUDENT_DATA.nome).toBe('');
