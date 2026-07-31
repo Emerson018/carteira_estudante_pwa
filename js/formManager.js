@@ -18,7 +18,7 @@ export class FormManager {
    * Mensagens de erro padrão.
    */
   static ERRORS = {
-    nome: 'Nome é obrigatório (máximo 30 caracteres).',
+    nome: 'Nome é obrigatório (máximo 40 caracteres).',
     curso: 'Curso é obrigatório (máximo 50 caracteres).',
     instituicao: 'Instituição é obrigatória (máximo 50 caracteres).',
     nascimento: 'Data inválida. Use o formato DD/MM/AAAA.',
@@ -148,8 +148,8 @@ export class FormManager {
   validate(data) {
     const errors = {};
 
-    // Nome: obrigatório, máx. 30 chars
-    if (!data.nome || typeof data.nome !== 'string' || data.nome.trim().length === 0 || data.nome.length > 30) {
+    // Nome: obrigatório, máx. 40 chars
+    if (!data.nome || typeof data.nome !== 'string' || data.nome.trim().length === 0 || data.nome.length > 40) {
       errors.nome = FormManager.ERRORS.nome;
     }
 
@@ -344,13 +344,13 @@ export class FormManager {
 
     switch (field) {
       case 'nome':
-        isValid = typeof value === 'string' && value.trim().length > 0 && value.length <= 30;
+        isValid = typeof value === 'string' && value.trim().length > 0 && value.length <= 40;
         break;
       case 'curso':
         isValid = typeof value === 'string' && value.trim().length > 0 && value.length <= 50;
         break;
       case 'instituicao':
-        isValid = typeof value === 'string' && value.trim().length > 0 && value.length <= 30;
+        isValid = typeof value === 'string' && value.trim().length > 0 && value.length <= 50;
         break;
       case 'codigo':
         isValid = this.validateCode(value);

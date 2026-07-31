@@ -120,9 +120,9 @@ describe('FormManager', () => {
   describe('validate', () => {
     it('retorna isValid=true para dados válidos dentro dos limites de tamanho', () => {
       const result = fm.validate({
-        nome: 'Maria Silva', // <= 30
+        nome: 'Maria da Silva Sauro Gomes Ribeiro', // <= 40
         curso: 'Ciência da Computação', // <= 50
-        instituicao: 'Uniritter', // <= 30
+        instituicao: 'Universidade Ritter dos Reis - UniRitter Porto', // <= 50
         nascimento: '15/03/2000',
         cpf: '039.894.040-16',
         codigo: '6382b41f',
@@ -132,9 +132,9 @@ describe('FormManager', () => {
       expect(Object.keys(result.errors)).toHaveLength(0);
     });
 
-    it('retorna erro se o nome exceder 30 caracteres', () => {
+    it('retorna erro se o nome exceder 40 caracteres', () => {
       const result = fm.validate({
-        nome: 'Este Nome Tem Mais De Trinta Caracteres Aqui',
+        nome: 'Este Nome É Muito Grande E Excede O Limite De Quarenta Caracteres Permitidos',
         curso: 'Curso',
         instituicao: 'Uniritter'
       });
